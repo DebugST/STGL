@@ -1,0 +1,94 @@
+void,                   void
+GLfloat,                float
+GLfixed,                int
+GLuint,                 uint
+GLenum,                 uint
+const GLchar *,         byte*
+GLclampf,               float
+GLboolean *,            bool*
+GLint,                  int
+const GLuint64 *,       UInt64*
+GLhandleARB,            uint
+const GLcharARB *,      uint*
+GLintptr,               IntPtr
+GLsizeiptr,             IntPtr
+const GLuint *,         uint*
+const GLsizeiptr *,     IntPtr    
+GLsizei,                int   
+GLsizei *,              int*
+const GLsizei *,        int*
+GLintptrARB,            IntPtr
+GLbyte,                 byte
+const GLbyte *,         byte*
+GLdouble,               double
+const GLdouble *,       double*       
+const GLfloat *,        float*
+const GLint *,          int*
+GLshort,                short
+const GLshort *,        short*
+const void *,           void*
+const GLubyte *,        byte*
+GLuint64,               UInt64
+GLboolean,              bool
+GLbitfield,             uint
+const GLfixed *,        int*
+GLhalfNV,               ushort
+const GLhalfNV *,       ushort*
+GLubyte,                byte
+GLushort,               ushort
+const GLushort *,       ushort*
+const void **,          void**
+GLuint *,               uint*
+const GLchar *const*,   byte**
+const void *const*,     IntPtr
+const GLchar **,        byte**
+GLdouble *,             double*
+GLfloat *,              float*
+void *,                 void*
+GLsync,                 IntPtr
+GLclampd,               double
+const GLenum *,         uint*
+GLeglImageOES,          IntPtr
+const GLint*,           int*
+const GLboolean *,      bool*
+void **,                void**
+GLint *,                int*
+GLchar *,               byte*
+GLcharARB *,            uint*
+GLhandleARB *,          uint*
+GLint64 *,              UInt64*
+GLuint64EXT *,          UInt64*
+GLfixed *,              int*
+GLenum *,               uint*
+GLubyte *,              byte*
+GLuint64 *,             UInt64*
+GLushort *,             ushort*
+GLint64EXT *,           Int64*
+const GLclampf *,       float*
+GLint64,                Int64
+GLint64EXT,             Int64
+const GLint64 *,        Int64*
+const GLint64EXT *,     Int64*
+GLuint64EXT,            UInt64
+const GLuint64EXT *,    UInt64*
+GLvdpauSurfaceNV,       IntPtr
+const GLvdpauSurfaceNV *,IntPtr
+GLdouble*,              double*
+GLUquadric*,            IntPtr
+GLUnurbs*,              IntPtr
+GLfloat*,               float*
+void*,                  void*
+const GLintptr *,       IntPtr
+const char *,           byte*
+GLsizeiptrARB,          IntPtr
+GLeglClientBufferEXT,   IntPtr
+const char **,          byte**
+struct _cl_context *,   IntPtr
+struct _cl_event *,     IntPtr
+const GLboolean **,     bool**
+char *,                 byte*
+const void * const *,   IntPtr
+GLclampx,               Int32
+const GLcharARB **,     uint**
+_GLUfuncptr,            fuck
+GLUtesselator*,         fuck

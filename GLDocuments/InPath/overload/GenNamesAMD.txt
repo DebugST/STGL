@@ -1,0 +1,18 @@
+/// <summary>
+/// [Overload] - void GenNamesAMD(uint identifier,uint num,uint* names)
+/// </summary>
+public unsafe static uint GenNamesAMD(uint identifier) {
+    uint names = 0;
+    GLNative.glGenNamesAMD(identifier, 1, &names);
+    return names;
+}
+/// <summary>
+/// [Overload] - void GenNamesAMD(uint identifier,uint num,uint* names)
+/// </summary>
+public unsafe static uint[] GenNamesAMD(uint identifier, uint num) {
+    uint[] names = new uint[num];
+    fixed (uint* pNames = &names[0]) {
+        GLNative.glGenNamesAMD(identifier, num, pNames);
+    }
+    return names;
+}

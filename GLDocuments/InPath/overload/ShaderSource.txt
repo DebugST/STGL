@@ -1,0 +1,26 @@
+/// <summary>
+/// [Overload] - void ShaderSource(uint shader,int count,byte** str,int* length)
+/// </summary>
+public unsafe static void ShaderSource(uint shader, string str) {
+    GL.ShaderSource(shader, new string[] { str }, 1);
+}
+/// <summary>
+/// [Overload] - void ShaderSource(uint shader,int count,byte** str,int* length)
+/// </summary>
+public unsafe static void ShaderSource(uint shader, string[] strs) {
+    GL.ShaderSource(shader, strs, strs.Length);
+}
+/// <summary>
+/// [Overload] - void ShaderSource(uint shader,int count,byte** str,int* length)
+/// </summary>
+public unsafe static void ShaderSource(uint shader, string[] strs, int count) {
+    int[] nLens = new int[strs.Length];
+    IntPtr ptr = MarshalExtend.AllocStringArr(strs, nLens, Encoding.UTF8);
+    try {
+        fixed (int* pNLens = &nLens[0]) {
+            GLNative.glShaderSource(shader, strs.Length, (byte**)ptr, pNLens);
+        }
+    } finally {
+        MarshalExtend.FreeStringArr(ptr, strs.Length);
+    }
+}

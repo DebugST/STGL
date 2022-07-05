@@ -1,0 +1,16 @@
+/// <summary>
+/// [Overload] - void DeleteNamesAMD(uint identifier,uint num,uint* names)
+/// </summary>
+public unsafe static void DeleteNamesAMD(uint identifier, uint[] names) {
+    fixed (uint* pNames = &names[0]) {
+        GLNative.glDeleteNamesAMD(identifier, (uint)names.Length, pNames);
+    }
+}
+/// <summary>
+/// [Overload] - void DeleteNamesAMD(uint identifier,uint num,uint* names)
+/// </summary>
+public unsafe static void DeleteNamesAMD(uint identifier, uint[] names, uint num) {
+    fixed (uint* pNames = &names[0]) {
+        GLNative.glDeleteNamesAMD(identifier, num, pNames);
+    }
+}
