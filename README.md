@@ -22,7 +22,7 @@ GL_XXX   replace to GL.GL_XXX
 Of course, due to pointers, some functions are overloaded, such as: glGenXXX, glCreateXXX, glDeleteXXX, glGetXXX, and some functions that require strings or arrays
 Overloaded functions are contained in `GL.Overload.cs`
 
-## 代码组织
+## Code Organization
 
 * `GL.Const.cs`
     * All constant values in GL
