@@ -65,11 +65,12 @@ namespace STLib.OpenGL
                 return IntPtr.Zero;
             }
             if (nCount > strs.Length) throw new ArgumentOutOfRangeException("strs");
-            if (strs.Length > nLens.Length) throw new ArgumentOutOfRangeException("nLens");
+            if (nCount > nLens.Length) throw new ArgumentOutOfRangeException("nLens");
             int nWidth = IntPtr.Size;
             IntPtr[] ps = new IntPtr[nCount];
-            IntPtr ptr = Marshal.AllocHGlobal(strs.Length * nWidth);
+            IntPtr ptr = IntPtr.Zero;
             try {
+                ptr = Marshal.AllocHGlobal(strs.Length * nWidth);
                 for (int i = 0; i < nCount; i++) {
                     var by = coding.GetBytes(strs[i]);
                     nLens[i] = by.Length;
@@ -78,11 +79,13 @@ namespace STLib.OpenGL
                     Marshal.WriteIntPtr(ptr, i * nWidth, p);
                     ps[i] = p;
                 }
-            } catch {
+            } catch(Exception ex) {
                 for (int i = 0; i < ps.Length; i++) {
-                    if (ps[i] == IntPtr.Zero) return IntPtr.Zero;
+                    if (ps[i] == IntPtr.Zero) break;
                     Marshal.FreeHGlobal(ps[i]);
                 }
+                if (ptr != IntPtr.Zero) Marshal.FreeHGlobal(ptr);
+                throw ex;
             }
             return ptr;
         }
@@ -91,6 +94,7 @@ namespace STLib.OpenGL
             int nWidth = IntPtr.Size;
             for (int i = 0; i < nCount; i++) {
                 IntPtr p = Marshal.ReadIntPtr(ptr, i * nWidth);
+                if (p == IntPtr.Zero) continue;
                 Marshal.FreeHGlobal(p);
             }
             Marshal.FreeHGlobal(ptr);
