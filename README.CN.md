@@ -2,6 +2,8 @@
 [![.NetCore](https://img.shields.io/badge/DotNet-Core-blueviolet)](https://dotnet.microsoft.com/)
 [![LICENSE](https://img.shields.io/badge/License-MIT-green)](https://github.com/DebugST/STNodeEditor/blob/main/LICENSE)
 
+[English](./README.md)
+
 ## 学习OpenGL
 [https://learnopengl.com/](https://learnopengl.com/)
 
@@ -113,9 +115,18 @@ STGL依赖`GLFW`项目，在STGL的库中已打包`Windows`和`Mac`的`GLFW`库�
 * Mac_X86_64
 * Mac_Arm_64
 
+![Windows](https://s3.bmp.ovh/imgs/2022/07/06/eb03f437a406acd8.png)
+
+![Mac](https://s3.bmp.ovh/imgs/2022/07/06/602a7aa7f193a21c.png)
+
+![Ubuntu](https://s3.bmp.ovh/imgs/2022/07/06/f1f1910e2e803683.png)
+
 当程序运行时，`STGL`会自动识别当前系统版本以及应用程序目标平台并解压其中一个和`LICENSE`文件到`runtime`目录中
+
 如果需要在Linux系统中允许，可以下载GLFW的源码并编译
+
 [https://www.glfw.org/docs/latest/compile_guide.html#compile_deps_x11](https://www.glfw.org/docs/latest/compile_guide.html#compile_deps_x11)
+
 并且在CMake的时候需要加上`-D BUILD_SHARED_LIBS=ON`
 
 然后将编编译号的`so`文件拷贝至`runtime`目录中并命名为`glfw3`

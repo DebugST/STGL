@@ -2,6 +2,8 @@
 [![.NetCore](https://img.shields.io/badge/DotNet-Core-blueviolet)](https://dotnet.microsoft.com/)
 [![LICENSE](https://img.shields.io/badge/License-MIT-green)](https://github.com/DebugST/STNodeEditor/blob/main/LICENSE)
 
+[简体中文](./README.CN.md)
+
 ## Learn OpenGL
 [https://learnopengl.com/](https://learnopengl.com/)
 
@@ -113,9 +115,18 @@ STGL relies on the `GLFW` project. The `GLFW` library of `Windows` and `Mac` has
 * Mac_X86_64
 * Mac_Arm_64
 
+![Windows](https://s3.bmp.ovh/imgs/2022/07/06/eb03f437a406acd8.png)
+
+![Mac](https://s3.bmp.ovh/imgs/2022/07/06/602a7aa7f193a21c.png)
+
+![Ubuntu](https://s3.bmp.ovh/imgs/2022/07/06/f1f1910e2e803683.png)
+
 When the program is run, `STGL` will automatically detect the current system version and application platform target and extract one of them and the `LICENSE` file into the `runtime` directory.
+
 If you need to allow it in the Linux system, you can download the source code of GLFW and compile it:
+
 [https://www.glfw.org/docs/latest/compile_guide.html#compile_deps_x11](https://www.glfw.org/docs/latest/compile_guide.html#compile_deps_x11)
+
 And you need to add `-D BUILD_SHARED_LIBS=ON` in CMake.
 
 Then copy the compiled `so` file to the `runtime` directory and name it `glfw3`
