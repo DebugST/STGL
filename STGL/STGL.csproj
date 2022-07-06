@@ -45,6 +45,7 @@
     <Compile Include="Demo\Hello.cs" />
     <Compile Include="Demo\HelloTriangle.cs" />
     <Compile Include="Demo\HelloWindow.cs" />
+    <Compile Include="Demo\Test.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

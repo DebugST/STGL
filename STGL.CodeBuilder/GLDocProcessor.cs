@@ -719,6 +719,9 @@ namespace STGL.CodeBuilder
         // [unsafe to safe] =============================================
 
         private static void OutOverload(StreamWriter writer, FuncInfo fi, string strSign) {
+            if (fi.Name == "glGetUniformLocation") {
+                int fasf = 0;
+            }
             if (m_dic_overload_func.ContainsKey(fi.Name.Substring(2))) {
                 writer.WriteLine(m_dic_overload_func[fi.Name.Substring(2)]);
                 return;
@@ -733,10 +736,15 @@ namespace STGL.CodeBuilder
             }
             if (strSign.IndexOf("IntPtr size,void* data") != -1) {
                 OverLoadSizeDataMethod(writer, fi);
+                return;
             }
             int nLeft = strSign.IndexOf("*");
             int nRight = strSign.LastIndexOf("*");
             if (nLeft == nRight && !fi.Type.Contains("*")) {
+                if (strSign.IndexOf("byte* name") != -1) {
+                    OverLoadByteNameMethod(writer, fi);
+                    return;
+                }
                 if (fi.Type == "void") {
                     if (fi.Name.StartsWith("glGet")) {
                         OverLoadGetMethod(writer, fi);
@@ -1101,8 +1109,6 @@ namespace STGL.CodeBuilder
             writer.WriteLine("GLNative." + fi.Name + "(" + strArgsCall + ");");
             writer.WriteLine("}");
             writer.WriteLine("}\r\n");
-
-
         }
 
         private static void OverLoadSizeDataMethod(StreamWriter writer, FuncInfo fi) {
@@ -1155,6 +1161,43 @@ namespace STGL.CodeBuilder
                 writer.WriteLine("}");
                 writer.WriteLine("}\r\n");
             }
+        }
+
+        private static void OverLoadByteNameMethod(StreamWriter writer, FuncInfo fi) {
+            string strName = string.Empty;
+            string strPName = string.Empty;
+            string strArgsSign = string.Empty;
+            string strArgsCall = string.Empty;
+            foreach (var v in fi.ArgLst) {
+                if (GetType(fi.ArgDic[v]) == "byte*") {
+                    strName = v;
+                    strPName = "p" + strName.ToUpper()[0] + strName.Substring(1);
+                    break;
+                }
+            }
+            foreach (var v in fi.ArgLst) {
+                if (v == strName) {
+                    strArgsCall += strPName + ",";
+                    strArgsSign += "string " + strName + ",";
+                } else {
+                    string strTemp = GetType(fi.ArgDic[v]);
+                    if (strTemp == "void*") strTemp = "IntPtr";
+                    strArgsSign += strTemp + " " + v + ",";
+                    strArgsCall += (strTemp == "IntPtr" ? "(void*)" : "") + v + ",";
+                }
+            }
+            strArgsCall = strArgsCall.Trim(',');
+            strArgsSign = strArgsSign.Trim(',');
+
+            writer.WriteLine("/// <summary>");
+            writer.WriteLine("/// [Overload] - " + GetFuncSignature(fi));
+            writer.WriteLine("/// </summary>");
+            writer.WriteLine("public unsafe static " + GetType(fi.Type) + " " + fi.Name.Substring(2) + "(" + strArgsSign + "){");
+            writer.WriteLine("byte[] byBuffer = Encoding.UTF8.GetBytes(" + strName + ");");
+            writer.WriteLine("fixed(byte*" + strPName + "= &byBuffer[0]){");
+            writer.WriteLine((fi.Type == "void" ? "" : "return ") + "GLNative." + fi.Name + "(" + strArgsCall + ");");
+            writer.WriteLine("}");
+            writer.WriteLine("}\r\n");
         }
 
         private static string ProcessUnsafeProc(FuncInfo fi, string strSign) {

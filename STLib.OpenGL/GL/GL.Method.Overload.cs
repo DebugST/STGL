@@ -14,6 +14,7 @@ namespace STLib.OpenGL.GL
          * Link: https://github.com/KhronosGroup/OpenGL-Registry/xml/gl.xml
          **********************************************************************************/
 
+
         #region GL_VERSION_1_0
 
         // [not processed] - void TexParameterfv(uint target,uint pname,float* ps)
@@ -1032,7 +1033,6 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [not processed] - void BufferData(uint target,IntPtr size,void* data,uint usage)
         /// <summary>
         /// [Overload] - void BufferSubData(uint target,IntPtr offset,IntPtr size,void* data)
         /// </summary>
@@ -1159,7 +1159,6 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [not processed] - void BufferSubData(uint target,IntPtr offset,IntPtr size,void* data)
         /// <summary>
         /// [Overload] - void GetBufferSubData(uint target,IntPtr offset,IntPtr size,void* data)
         /// </summary>
@@ -1286,7 +1285,6 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [ignore] - void GetBufferSubData(uint target,IntPtr offset,IntPtr size,void* data)
         // [not processed] - void* MapBuffer(uint target,uint access)
         /// <summary>
         /// [Overload] - void GetBufferParameteriv(uint target,uint value,int* data)
@@ -1304,11 +1302,29 @@ namespace STLib.OpenGL.GL
         #region GL_VERSION_2_0
 
         // [not processed] - void DrawBuffers(int n,uint* bufs)
-        // [not processed] - void BindAttribLocation(uint program,uint index,byte* name)
+        /// <summary>
+        /// [Overload] - void BindAttribLocation(uint program,uint index,byte* name)
+        /// </summary>
+        public unsafe static void BindAttribLocation(uint program, uint index, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                GLNative.glBindAttribLocation(program, index, pName);
+            }
+        }
+
         // [not processed] - void GetActiveAttrib(uint program,uint index,int bufSize,int* length,int* size,uint* type,byte* name)
         // [not processed] - void GetActiveUniform(uint program,uint index,int bufSize,int* length,int* size,uint* type,byte* name)
         // [not processed] - void GetAttachedShaders(uint program,int maxCount,int* count,uint* shaders)
-        // [not processed] - int GetAttribLocation(uint program,byte* name)
+        /// <summary>
+        /// [Overload] - int GetAttribLocation(uint program,byte* name)
+        /// </summary>
+        public unsafe static int GetAttribLocation(uint program, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                return GLNative.glGetAttribLocation(program, pName);
+            }
+        }
+
         /// <summary>
         /// [Overload] - void GetProgramiv(uint program,uint pname,int* ps)
         /// </summary>
@@ -1405,7 +1421,16 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [not processed] - int GetUniformLocation(uint program,byte* name)
+        /// <summary>
+        /// [Overload] - int GetUniformLocation(uint program,byte* name)
+        /// </summary>
+        public unsafe static int GetUniformLocation(uint program, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                return GLNative.glGetUniformLocation(program, pName);
+            }
+        }
+
         /// <summary>
         /// [Overload] - void GetUniformfv(uint program,int location,float* ps)
         /// </summary>
@@ -1589,8 +1614,26 @@ namespace STLib.OpenGL.GL
             return ps;
         }
 
-        // [not processed] - void BindFragDataLocation(uint program,uint colorNumber,byte* name)
-        // [not processed] - int GetFragDataLocation(uint program,byte* name)
+        /// <summary>
+        /// [Overload] - void BindFragDataLocation(uint program,uint colorNumber,byte* name)
+        /// </summary>
+        public unsafe static void BindFragDataLocation(uint program, uint colorNumber, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                GLNative.glBindFragDataLocation(program, colorNumber, pName);
+            }
+        }
+
+        /// <summary>
+        /// [Overload] - int GetFragDataLocation(uint program,byte* name)
+        /// </summary>
+        public unsafe static int GetFragDataLocation(uint program, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                return GLNative.glGetFragDataLocation(program, pName);
+            }
+        }
+
         // [not processed] - void Uniform1uiv(int location,int count,uint* value)
         // [not processed] - void Uniform2uiv(int location,int count,uint* value)
         // [not processed] - void Uniform3uiv(int location,int count,uint* value)
@@ -2610,8 +2653,26 @@ namespace STLib.OpenGL.GL
 
         #region Reuse ARB_blend_func_extended
 
-        // [not processed] - void BindFragDataLocationIndexed(uint program,uint colorNumber,uint index,byte* name)
-        // [not processed] - int GetFragDataIndex(uint program,byte* name)
+        /// <summary>
+        /// [Overload] - void BindFragDataLocationIndexed(uint program,uint colorNumber,uint index,byte* name)
+        /// </summary>
+        public unsafe static void BindFragDataLocationIndexed(uint program, uint colorNumber, uint index, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                GLNative.glBindFragDataLocationIndexed(program, colorNumber, index, pName);
+            }
+        }
+
+        /// <summary>
+        /// [Overload] - int GetFragDataIndex(uint program,byte* name)
+        /// </summary>
+        public unsafe static int GetFragDataIndex(uint program, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                return GLNative.glGetFragDataIndex(program, pName);
+            }
+        }
+
 
         #endregion Reuse ARB_blend_func_extended
 
@@ -2791,8 +2852,26 @@ namespace STLib.OpenGL.GL
 
         #region Reuse ARB_shader_subroutine
 
-        // [not processed] - int GetSubroutineUniformLocation(uint program,uint shadertype,byte* name)
-        // [not processed] - uint GetSubroutineIndex(uint program,uint shadertype,byte* name)
+        /// <summary>
+        /// [Overload] - int GetSubroutineUniformLocation(uint program,uint shadertype,byte* name)
+        /// </summary>
+        public unsafe static int GetSubroutineUniformLocation(uint program, uint shadertype, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                return GLNative.glGetSubroutineUniformLocation(program, shadertype, pName);
+            }
+        }
+
+        /// <summary>
+        /// [Overload] - uint GetSubroutineIndex(uint program,uint shadertype,byte* name)
+        /// </summary>
+        public unsafe static uint GetSubroutineIndex(uint program, uint shadertype, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                return GLNative.glGetSubroutineIndex(program, shadertype, pName);
+            }
+        }
+
         /// <summary>
         /// [Overload] - void GetActiveSubroutineUniformiv(uint program,uint shadertype,uint index,uint pname,int* values)
         /// </summary>
@@ -3587,7 +3666,16 @@ namespace STLib.OpenGL.GL
             return ps;
         }
 
-        // [not processed] - uint GetProgramResourceIndex(uint program,uint programInterface,byte* name)
+        /// <summary>
+        /// [Overload] - uint GetProgramResourceIndex(uint program,uint programInterface,byte* name)
+        /// </summary>
+        public unsafe static uint GetProgramResourceIndex(uint program, uint programInterface, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                return GLNative.glGetProgramResourceIndex(program, programInterface, pName);
+            }
+        }
+
         /// <summary>
         /// [Overload] - void GetProgramResourceName(uint program,uint programInterface,uint index,int bufSize,int* length,byte* name)
         /// </summary>
@@ -3615,8 +3703,26 @@ namespace STLib.OpenGL.GL
         }
 
         // [not processed] - void GetProgramResourceiv(uint program,uint programInterface,uint index,int propCount,uint* props,int bufSize,int* length,int* ps)
-        // [not processed] - int GetProgramResourceLocation(uint program,uint programInterface,byte* name)
-        // [not processed] - int GetProgramResourceLocationIndex(uint program,uint programInterface,byte* name)
+        /// <summary>
+        /// [Overload] - int GetProgramResourceLocation(uint program,uint programInterface,byte* name)
+        /// </summary>
+        public unsafe static int GetProgramResourceLocation(uint program, uint programInterface, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                return GLNative.glGetProgramResourceLocation(program, programInterface, pName);
+            }
+        }
+
+        /// <summary>
+        /// [Overload] - int GetProgramResourceLocationIndex(uint program,uint programInterface,byte* name)
+        /// </summary>
+        public unsafe static int GetProgramResourceLocationIndex(uint program, uint programInterface, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                return GLNative.glGetProgramResourceLocationIndex(program, programInterface, pName);
+            }
+        }
+
 
         #endregion Reuse commands from ARB_program_interface_query
 
@@ -3878,7 +3984,6 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [not processed] - void BufferStorage(uint target,IntPtr size,void* data,uint flags)
 
         #endregion Reuse GL_ARB_buffer_storage
 
@@ -4105,7 +4210,6 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [not processed] - void NamedBufferStorage(uint buffer,IntPtr size,void* data,uint flags)
         /// <summary>
         /// [Overload] - void NamedBufferData(uint buffer,IntPtr size,void* data,uint usage)
         /// </summary>
@@ -4232,7 +4336,6 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [not processed] - void NamedBufferData(uint buffer,IntPtr size,void* data,uint usage)
         /// <summary>
         /// [Overload] - void NamedBufferSubData(uint buffer,IntPtr offset,IntPtr size,void* data)
         /// </summary>
@@ -4359,7 +4462,6 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [not processed] - void NamedBufferSubData(uint buffer,IntPtr offset,IntPtr size,void* data)
         // [not processed] - void ClearNamedBufferData(uint buffer,uint internalformat,uint format,uint type,void* data)
         // [not processed] - void ClearNamedBufferSubData(uint buffer,uint internalformat,IntPtr offset,IntPtr size,uint format,uint type,void* data)
         // [not processed] - void* MapNamedBuffer(uint buffer,uint access)
@@ -4509,7 +4611,6 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [ignore] - void GetNamedBufferSubData(uint buffer,IntPtr offset,IntPtr size,void* data)
         /// <summary>
         /// [Overload] - void CreateFramebuffers(int n,uint* framebuffers)
         /// </summary>
@@ -5856,15 +5957,6 @@ namespace STLib.OpenGL.GL
         /// <summary>
         /// [Overload] - void MatrixIndexubvARB(int size,byte* indices)
         /// </summary>
-        public unsafe static void MatrixIndexubvARB(byte[] indices) {
-            fixed (byte* pIndices = &indices[0]) {
-                GLNative.glMatrixIndexubvARB(indices.Length, pIndices);
-            }
-        }
-
-        /// <summary>
-        /// [Overload] - void MatrixIndexubvARB(int size,byte* indices)
-        /// </summary>
         public unsafe static void MatrixIndexubvARB(byte[] indices, int size) {
             fixed (byte* pIndices = &indices[0]) {
                 GLNative.glMatrixIndexubvARB(size, pIndices);
@@ -5872,11 +5964,11 @@ namespace STLib.OpenGL.GL
         }
 
         /// <summary>
-        /// [Overload] - void MatrixIndexusvARB(int size,ushort* indices)
+        /// [Overload] - void MatrixIndexubvARB(int size,byte* indices)
         /// </summary>
-        public unsafe static void MatrixIndexusvARB(ushort[] indices) {
-            fixed (ushort* pIndices = &indices[0]) {
-                GLNative.glMatrixIndexusvARB(indices.Length * sizeof(ushort), pIndices);
+        public unsafe static void MatrixIndexubvARB(byte[] indices) {
+            fixed (byte* pIndices = &indices[0]) {
+                GLNative.glMatrixIndexubvARB(indices.Length, pIndices);
             }
         }
 
@@ -5890,11 +5982,11 @@ namespace STLib.OpenGL.GL
         }
 
         /// <summary>
-        /// [Overload] - void MatrixIndexuivARB(int size,uint* indices)
+        /// [Overload] - void MatrixIndexusvARB(int size,ushort* indices)
         /// </summary>
-        public unsafe static void MatrixIndexuivARB(uint[] indices) {
-            fixed (uint* pIndices = &indices[0]) {
-                GLNative.glMatrixIndexuivARB(indices.Length * sizeof(uint), pIndices);
+        public unsafe static void MatrixIndexusvARB(ushort[] indices) {
+            fixed (ushort* pIndices = &indices[0]) {
+                GLNative.glMatrixIndexusvARB(indices.Length * sizeof(ushort), pIndices);
             }
         }
 
@@ -5904,6 +5996,15 @@ namespace STLib.OpenGL.GL
         public unsafe static void MatrixIndexuivARB(uint[] indices, int size) {
             fixed (uint* pIndices = &indices[0]) {
                 GLNative.glMatrixIndexuivARB(size, pIndices);
+            }
+        }
+
+        /// <summary>
+        /// [Overload] - void MatrixIndexuivARB(int size,uint* indices)
+        /// </summary>
+        public unsafe static void MatrixIndexuivARB(uint[] indices) {
+            fixed (uint* pIndices = &indices[0]) {
+                GLNative.glMatrixIndexuivARB(indices.Length * sizeof(uint), pIndices);
             }
         }
 
@@ -6250,9 +6351,27 @@ namespace STLib.OpenGL.GL
         #region GL_ARB_shading_language_include
 
         // [not processed] - void NamedStringARB(uint type,int namelen,byte* name,int stringlen,byte* str)
-        // [ignore] - void DeleteNamedStringARB(int namelen,byte* name)
+        /// <summary>
+        /// [Overload] - void DeleteNamedStringARB(int namelen,byte* name)
+        /// </summary>
+        public unsafe static void DeleteNamedStringARB(int namelen, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                GLNative.glDeleteNamedStringARB(namelen, pName);
+            }
+        }
+
         // [not processed] - void CompileShaderIncludeARB(uint shader,int count,byte** path,int* length)
-        // [not processed] - bool IsNamedStringARB(int namelen,byte* name)
+        /// <summary>
+        /// [Overload] - bool IsNamedStringARB(int namelen,byte* name)
+        /// </summary>
+        public unsafe static bool IsNamedStringARB(int namelen, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                return GLNative.glIsNamedStringARB(namelen, pName);
+            }
+        }
+
         // [not processed] - void GetNamedStringARB(int namelen,byte* name,int bufSize,int* stringlen,byte* str)
         // [not processed] - void GetNamedStringivARB(int namelen,byte* name,uint pname,int* ps)
 
@@ -6554,7 +6673,6 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [not processed] - void BufferDataARB(uint target,IntPtr size,void* data,uint usage)
         /// <summary>
         /// [Overload] - void BufferSubDataARB(uint target,IntPtr offset,IntPtr size,void* data)
         /// </summary>
@@ -6681,7 +6799,6 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [not processed] - void BufferSubDataARB(uint target,IntPtr offset,IntPtr size,void* data)
         /// <summary>
         /// [Overload] - void GetBufferSubDataARB(uint target,IntPtr offset,IntPtr size,void* data)
         /// </summary>
@@ -6808,7 +6925,6 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [ignore] - void GetBufferSubDataARB(uint target,IntPtr offset,IntPtr size,void* data)
         // [not processed] - void* MapBufferARB(uint target,uint access)
         /// <summary>
         /// [Overload] - void GetBufferParameterivARB(uint target,uint pname,int* ps)
@@ -7840,8 +7956,26 @@ namespace STLib.OpenGL.GL
             return ps;
         }
 
-        // [not processed] - void BindFragDataLocationEXT(uint program,uint color,byte* name)
-        // [not processed] - int GetFragDataLocationEXT(uint program,byte* name)
+        /// <summary>
+        /// [Overload] - void BindFragDataLocationEXT(uint program,uint color,byte* name)
+        /// </summary>
+        public unsafe static void BindFragDataLocationEXT(uint program, uint color, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                GLNative.glBindFragDataLocationEXT(program, color, pName);
+            }
+        }
+
+        /// <summary>
+        /// [Overload] - int GetFragDataLocationEXT(uint program,byte* name)
+        /// </summary>
+        public unsafe static int GetFragDataLocationEXT(uint program, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                return GLNative.glGetFragDataLocationEXT(program, pName);
+            }
+        }
+
         // [not processed] - void Uniform1uivEXT(int location,int count,uint* value)
         // [not processed] - void Uniform2uivEXT(int location,int count,uint* value)
         // [not processed] - void Uniform3uivEXT(int location,int count,uint* value)
@@ -9043,7 +9177,6 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [not processed] - void LGPUNamedBufferSubDataNVX(uint gpuMask,uint buffer,IntPtr offset,IntPtr size,void* data)
 
         #endregion GL_NVX_linked_gpu_multicast
 
@@ -9206,7 +9339,16 @@ namespace STLib.OpenGL.GL
 
         #region GL_NV_draw_vulkan_image
 
-        // [not processed] - GLVULKANPROCNV GetVkProcAddrNV(byte* name)
+        /// <summary>
+        /// [Overload] - GLVULKANPROCNV GetVkProcAddrNV(byte* name)
+        /// </summary>
+        public unsafe static IntPtr GetVkProcAddrNV(string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                return GLNative.glGetVkProcAddrNV(pName);
+            }
+        }
+
 
         #endregion GL_NV_draw_vulkan_image
 
@@ -9592,7 +9734,6 @@ namespace STLib.OpenGL.GL
             }
         }
 
-        // [not processed] - void MulticastBufferSubDataNV(uint gpuMask,uint buffer,IntPtr offset,IntPtr size,void* data)
         // [not processed] - void MulticastFramebufferSampleLocationsfvNV(uint gpu,uint framebuffer,uint start,int count,float* v)
         // [not processed] - void MulticastGetQueryObjectivNV(uint gpu,uint id,uint pname,int* ps)
         // [not processed] - void MulticastGetQueryObjectuivNV(uint gpu,uint id,uint pname,uint* ps)
@@ -10110,8 +10251,26 @@ namespace STLib.OpenGL.GL
 
         // [not processed] - void TransformFeedbackAttribsNV(int count,int* attribs,uint bufferMode)
         // [not processed] - void TransformFeedbackVaryingsNV(uint program,int count,int* locations,uint bufferMode)
-        // [not processed] - void ActiveVaryingNV(uint program,byte* name)
-        // [not processed] - int GetVaryingLocationNV(uint program,byte* name)
+        /// <summary>
+        /// [Overload] - void ActiveVaryingNV(uint program,byte* name)
+        /// </summary>
+        public unsafe static void ActiveVaryingNV(uint program, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                GLNative.glActiveVaryingNV(program, pName);
+            }
+        }
+
+        /// <summary>
+        /// [Overload] - int GetVaryingLocationNV(uint program,byte* name)
+        /// </summary>
+        public unsafe static int GetVaryingLocationNV(uint program, string name) {
+            byte[] byBuffer = Encoding.UTF8.GetBytes(name);
+            fixed (byte* pName = &byBuffer[0]) {
+                return GLNative.glGetVaryingLocationNV(program, pName);
+            }
+        }
+
         // [not processed] - void GetActiveVaryingNV(uint program,uint index,int bufSize,int* length,int* size,uint* type,byte* name)
         /// <summary>
         /// [Overload] - void GetTransformFeedbackVaryingNV(uint program,uint index,int* location)
@@ -10942,5 +11101,6 @@ namespace STLib.OpenGL.GL
         // [not processed] - void ReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN(uint* rc,float* tc,float* c,float* n,float* v)
 
         #endregion GL_SUN_vertex
+
     }
 }
