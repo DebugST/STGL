@@ -47,6 +47,16 @@
     <Compile Include="GLFW\GLFW.Init.cs" />
     <Compile Include="GLFW\GLFW.Method.cs" />
     <Compile Include="GLFW\GLFWNative.cs" />
+    <Compile Include="GL\Exception\GLException.cs" />
+    <Compile Include="GL\Exception\GLOutOfMemoryException.cs" />
+    <Compile Include="GL\Exception\GLInvalidFrameBufferOperationException.cs" />
+    <Compile Include="GL\Exception\GLInvalidOperationException.cs" />
+    <Compile Include="GL\Exception\GLInvalidValueException.cs" />
+    <Compile Include="GL\Exception\GLInvalidEnumException.cs" />
+    <Compile Include="GL\Exception\GLProgramLinkException.cs" />
+    <Compile Include="GL\Exception\GLShaderCompileException.cs" />
+    <Compile Include="GL\Utils\GLShader.cs" />
+    <Compile Include="GL\Utils\GLProgram.cs" />
     <Compile Include="ResourceManager.cs" />
     <Compile Include="RuntimeInfo.cs" />
     <Compile Include="Pointer.cs" />

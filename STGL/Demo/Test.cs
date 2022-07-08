@@ -12,6 +12,7 @@ namespace STGL.Demo
     class Test
     {
         static uint m_pid;
+        static GLProgram m_sp;
         static string vertexShaderSource = "#version 330 core\n" +
             "layout (location = 0) in vec3 position;\n" +
             "layout (location = 1) in vec3 clr;\n" +
@@ -69,22 +70,7 @@ namespace STGL.Demo
                 return -1;
             }
 
-            var vertexShader = GL.CreateShader(GL.GL_VERTEX_SHADER);
-            GL.ShaderSource(vertexShader, vertexShaderSource);
-            GL.CompileShader(vertexShader);
-
-            var fragmentShader = GL.CreateShader(GL.GL_FRAGMENT_SHADER);
-            GL.ShaderSource(fragmentShader, fragmentShaderSource);
-            GL.CompileShader(fragmentShader);
-
-            var program = GL.CreateProgram();
-            GL.AttachShader(program, vertexShader);
-            GL.AttachShader(program, fragmentShader);
-            GL.LinkProgram(program);
-            m_pid = program;
-
-            GL.DeleteShader(vertexShader);
-            GL.DeleteShader(fragmentShader);
+            m_sp = GLProgram.CreateProgram(vertexShaderSource, fragmentShaderSource);
 
             float[] vertices = {
                                0.0f,0.5f,0.0f,
@@ -107,7 +93,6 @@ namespace STGL.Demo
             //var ebo = GL.GenBuffers();
             //GL.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
             //GL.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, indices, GL.GL_STATIC_DRAW);
-            int fsda = GL.GetIntegerv(GL.GL_MAX_VERTEX_ATTRIBS);
             var vao = GL.GenVertexArrays();
             GL.BindVertexArray(vao);
 
@@ -128,7 +113,8 @@ namespace STGL.Demo
                 GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
                 GL.Clear(GL.GL_COLOR_BUFFER_BIT);
 
-                GL.UseProgram(program);
+                m_sp.Use();
+                //GL.UseProgram(program);
                 GL.BindVertexArray(vao);
 
                 GL.BindVertexBuffer(0, vbos[0], IntPtr.Zero, 3 * sizeof(float));
@@ -159,9 +145,10 @@ namespace STGL.Demo
                 GLFW.SetWindowShouldClose(window, true);
             if (GLFW.GetKey(window, GLFW.KEY_A) == GLFW.PRESS) {
                 Random rnd = new Random();
-                int loc = GL.GetUniformLocation(m_pid, "outClr");
-                GL.Uniform4f(loc, (float)rnd.NextDouble(), (float)rnd.NextDouble(), (float)rnd.NextDouble(), 1);
-                Console.WriteLine(loc);
+                //int loc = GL.GetUniformLocation(m_pid, "outClr");
+                //GL.Uniform4f(loc, (float)rnd.NextDouble(), (float)rnd.NextDouble(), (float)rnd.NextDouble(), 1);
+                //Console.WriteLine(loc);
+                m_sp.SetUniform("outClr", (float)rnd.NextDouble(), (float)rnd.NextDouble(), (float)rnd.NextDouble(), 1);
             }
         }
 

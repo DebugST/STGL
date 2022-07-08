@@ -10,7 +10,8 @@
 [https://learnopengl-cn.readthedocs.io/](https://learnopengl-cn.readthedocs.io/)
 
 ## Buiding
-STGL was created by VS2010+Net3.5, So the syntax is compatible with almost all .Net platforms.
+Since STGL's current functions are not yet perfect, the calling library will not be uploaded for the time being. The author will update this source code from time to time. If you are interested in this project, you can download this project and compile it.
+STGL was created with `VS2010``Net3.5`, so the syntax is compatible with almost all `.Net` platforms. The project contains three projects, developers only need to compile `STLib.OpenGL`.
 
 ## STGL
 STGL is a very lightweight OpenGL library. At present, STGL only transplants the functions in OpenGL to C#, and there is no other additional Class encapsulation. So when using STGL, it feels very similar to using native OpenGL, which is very suitable for learning OpenGL.
