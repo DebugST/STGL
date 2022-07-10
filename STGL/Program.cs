@@ -13,6 +13,7 @@ namespace STGL
     class Program
     {
         static void Main(string[] args) {
+            //Demo.HelloTriangle.Start();
             Demo.Test.Start();
         }
     }

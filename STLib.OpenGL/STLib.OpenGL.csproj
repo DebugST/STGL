@@ -55,8 +55,10 @@
     <Compile Include="GL\Exception\GLInvalidEnumException.cs" />
     <Compile Include="GL\Exception\GLProgramLinkException.cs" />
     <Compile Include="GL\Exception\GLShaderCompileException.cs" />
+    <Compile Include="GL\Utils\GLObject.cs" />
     <Compile Include="GL\Utils\GLShader.cs" />
     <Compile Include="GL\Utils\GLProgram.cs" />
+    <Compile Include="GL\Utils\GLTexture2D.cs" />
     <Compile Include="ResourceManager.cs" />
     <Compile Include="RuntimeInfo.cs" />
     <Compile Include="Pointer.cs" />

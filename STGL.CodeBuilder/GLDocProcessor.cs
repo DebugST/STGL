@@ -794,7 +794,7 @@ namespace STGL.CodeBuilder
             writer.WriteLine("/// <summary>");
             writer.WriteLine("/// [Overload] - " + GetFuncSignature(fi));
             writer.WriteLine("/// </summary>");
-            writer.WriteLine("public unsafe static " + strType.Trim('*') + " " + fi.Name.Substring(2) + "(" + strArgs.Trim(',') + "){");
+            writer.WriteLine("public static " + strType.Trim('*') + " " + fi.Name.Substring(2) + "(" + strArgs.Trim(',') + "){");
             writer.WriteLine(strType.Trim('*') + " " + strName + " = " + (strType == "bool*" ? "false" : "0") + ";");
             writer.WriteLine("GLNative." + fi.Name + "(" + strArgsCall.Trim(',') + ");");
             writer.WriteLine("return " + strName + ";");

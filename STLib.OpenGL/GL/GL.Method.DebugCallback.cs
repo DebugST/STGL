@@ -33,6 +33,7 @@ namespace STLib.OpenGL.GL
         public unsafe static void DebugMessageCallback(DEBUGPROC callback, object userParam) {
             if (callback == null) {
                 GLNative.glDebugMessageCallback(null, null);
+                m_callback_method = null;
                 return;
             }
             m_callback_userparam = userParam;
@@ -43,6 +44,7 @@ namespace STLib.OpenGL.GL
         public unsafe static void DebugMessageCallbackARB(DEBUGPROC callback, object userParam) {
             if (callback == null) {
                 GLNative.glDebugMessageCallbackARB(null, null);
+                m_callback_method_arb = null;
                 return;
             }
             m_callback_userparam_arb = userParam;
@@ -53,6 +55,7 @@ namespace STLib.OpenGL.GL
         public unsafe static void DebugMessageCallbackAMD(DEBUGPROC callback, object userParam) {
             if (callback == null) {
                 GLNative.glDebugMessageCallbackAMD(null, null);
+                m_callback_method_amd = null;
                 return;
             }
             m_callback_userparam_amd = userParam;
@@ -63,6 +66,7 @@ namespace STLib.OpenGL.GL
         public unsafe static void DebugMessageCallbackKHR(DEBUGPROC callback, object userParam) {
             if (callback == null) {
                 GLNative.glDebugMessageCallbackKHR(null, null);
+                m_callback_method_khr = null;
                 return;
             }
             m_callback_userparam_khr = userParam;

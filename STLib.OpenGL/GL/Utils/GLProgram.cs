@@ -7,6 +7,8 @@ namespace STLib.OpenGL.GL
 {
     public class GLProgram : IDisposable
     {
+        private static GLProgram m_current_program;
+
         public uint UID { get; private set; }
 
         //private Dictionary<string, uint> m_dic_loc;
@@ -14,6 +16,13 @@ namespace STLib.OpenGL.GL
         private GLProgram(uint uid) {
             this.UID = uid;
             //m_dic_loc = new Dictionary<string, uint>();
+        }
+
+        public void Use() {
+            if (m_current_program == this) {
+                return;
+            }
+            GL.UseProgram(this.UID);
         }
 
         public static GLProgram CreateProgram(GLShader[] shaders) {
@@ -57,10 +66,6 @@ namespace STLib.OpenGL.GL
                 string strError = Encoding.UTF8.GetString(byBuffer, 0, nLen);
                 throw new GLProgramLinkException(strError);
             }
-        }
-
-        public void Use() {
-            GL.UseProgram(this.UID);
         }
 
         #region SetUniform
@@ -156,6 +161,9 @@ namespace STLib.OpenGL.GL
 
         public void SetUniform(string strName, int v0) {
             var loc = GL.GetUniformLocation(this.UID, strName);
+            if (loc == -1) {
+                // TODO: ADD exception
+            }
             GL.Uniform1i(loc, v0);
         }
 

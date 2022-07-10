@@ -18,14 +18,35 @@ namespace STLib.OpenGL.GLFW
     /// GLFW is licensed under the (zlib/libpng license)<see cref="https://www.glfw.org/license.html"/>.
     /// </para>
     /// <para>Note: These codes and comments are converted from GLFW(glfw3.h).</para>
-    /// <para>Version: 3.3.7 Win32 WGL EGL OSMesa VisualC DLL</para>
+    /// <para>Version: 3.3.7</para>
     /// <para>link: <see cref="https://www.glfw.org"/></para>
-    /// <para>Date: 2022-06-10</para>
+    /// <para>Date: 2022-07-11</para>
     /// <para>Author: DebugST -> <see cref="https://github.com/DebugST"/></para>
     /// </summary>
     public partial class GLFW
     {
         #region some callback process
+
+        //private static CBError m_cb_error = null;
+        private static CBWindowPos m_cb_window_pos = null;
+        private static CBWindowSize m_cb_window_size = null;
+        private static CBWindowClose m_cb_window_close = null;
+        private static CBWindowRefresh m_cb_window_refresh = null;
+        private static CBWindowFocus m_cb_window_focus = null;
+        private static CBWindowIconify m_cb_window_iconify = null;
+        private static CBWindowMaximize m_cb_window_maximize = null;
+        private static CBFrameBufferSize m_cb_frame_buffer_size = null;
+        private static CBWindowContentScale m_cb_window_content_scale = null;
+        private static CBMouseButton m_cb_mouse_button = null;
+        private static CBCursorPos m_cb_cursor_pos = null;
+        private static CBCursorEnter m_cb_cursor_enter = null;
+        private static CBScroll m_cb_scroll = null;
+        private static CBKey m_cb_key = null;
+        private static CBChar m_cb_char = null;
+        private static CBCharMods m_cb_char_mods = null;
+        //private static CBDrop m_cb_drop = null;
+        private static CBMonitor m_cb_monitor = null;
+        private static CBJoystick m_cb_joystick = null;
 
         /// <summary>
         /// This dictionary for <see cref="GLFW.SetDropCallback"/>.
@@ -39,7 +60,7 @@ namespace STLib.OpenGL.GLFW
         /// Then I will convert the encoding in <see cref="GLFW.DropFunCallBack"/>, and then use those callback.
         /// </para>
         /// </summary>
-        private static Dictionary<IntPtr, FunDrop> m_dic_callback_drop = new Dictionary<IntPtr, FunDrop>();
+        private static Dictionary<IntPtr, CBDrop> m_dic_callback_drop = new Dictionary<IntPtr, CBDrop>();
 
         /// <summary>
         /// This callback for <see cref="GLFW.SetErrorCallback"/>.
@@ -58,7 +79,7 @@ namespace STLib.OpenGL.GLFW
         /// Then I will convert the encoding in <see cref="GLFW.ErrorFunCallback"/>, and then use this callback.
         /// </para>
         /// </summary>
-        private static FunError m_callback_errorfun;
+        private static CBError m_cb_error;
 
         /// <summary>
         /// This callback for <see cref="GLFWNative.glfwSetErrorCallback"/>.
@@ -78,8 +99,8 @@ namespace STLib.OpenGL.GLFW
         /// <seealso cref="SetErrorCallback"/>
         private static unsafe void ErrorFunCallback(int error_code, byte* description) {
             string str = MarshalExtend.PtrToString(description);
-            if (m_callback_errorfun != null) {
-                m_callback_errorfun(error_code, str);
+            if (m_cb_error != null) {
+                m_cb_error(error_code, str);
             }
         }
 
@@ -99,7 +120,7 @@ namespace STLib.OpenGL.GLFW
         /// <param name="paths">[in] The UTF-8 encoded file and/or directory path names.</param>
         /// <seealso cref="SetDropCallback"/>
         private static unsafe void DropFunCallBack(IntPtr window, int path_count, byte** paths) {
-            FunDrop fun = null;
+            CBDrop fun = null;
             lock (m_dic_callback_drop) {
                 if (m_dic_callback_drop.ContainsKey(window)) {
                     fun = m_dic_callback_drop[window];
@@ -117,70 +138,6 @@ namespace STLib.OpenGL.GLFW
 
         #endregion some callback process
 
-        /// <summary>
-        /// Terminates the GLFW library.
-        /// <para>
-        /// This function destroys all remaining windows and cursors, restores any
-        /// modified gamma ramps and frees any other allocated resources.  Once this
-        /// function is called, you must again call <see cref="Init"/> successfully before
-        /// you will be able to use most GLFW functions.
-        /// </para>
-        /// <para>
-        /// If GLFW has been successfully initialized, this function should be called
-        /// before the application exits.  If initialization fails, there is no need to
-        /// call this function, as it is called by <see cref="Init"/> before it returns
-        /// failure.
-        /// </para>
-        /// <para>This function has no effect if GLFW is not initialized.</para>
-        /// <para>errors: Possible errors include <see cref="PLATFORM_ERROR"/>.</para>
-        /// <para>
-        /// warning:
-        /// The contexts of any remaining windows must not be current on any
-        /// other thread when this function is called.
-        /// </para>
-        /// <para>reentrancy: This function must not be called from a callback.</para>
-        /// <para>thread_safety: This function must only be called from the main thread.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI void glfwTerminate(void);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <remarks>This function may be called before <see cref="Init"/>.</remarks>
-        /// <seealso cref="Init"/>
-        public static void Terminate() {
-            GLFWNative.glfwTerminate();
-        }
-        /// <summary>
-        /// Sets the specified init hint to the desired value.
-        /// <para>This function sets hints for the next initialization of GLFW.</para>
-        /// <para>
-        /// The values you set hints to are never reset by GLFW, but they only take
-        /// effect during initialization.  Once GLFW has been initialized, any values
-        /// you set will be ignored until the library is terminated and initialized
-        /// again.
-        /// </para>
-        /// <para>
-        /// Some hints are platform specific.  These may be set on any platform but they
-        /// will only affect their specific platform.  Other platforms will ignore them.
-        /// Setting these hints requires no platform specific headers or functions.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="INVALID_ENUM"/> and <see cref="INVALID_VALUE"/>.</para>
-        /// <para>thread_safety: This function must only be called from the main thread.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI void glfwInitHint(int hint, int value);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="hint">[in] The [init hint](@ref init_hints) to set.</param>
-        /// <param name="value">[in] The new value of the init hint.</param>
-        /// <remarks>This function may be called before <see cref="Init"/>.</remarks>
-        public static void InitHint(int hint, int value) {
-            GLFWNative.glfwInitHint(hint, value);
-        }
         /// <summary>
         /// Retrieves the version of the GLFW library.
         /// <para>
@@ -205,193 +162,6 @@ namespace STLib.OpenGL.GLFW
         /// <seealso cref="GetVersionString"/>
         [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetVersion", CallingConvention = CallingConvention.Cdecl)]
         public static extern void GetVersion(ref int major, ref int minor, ref int rev);
-        /// <summary>
-        /// Returns a string describing the compile-time configuration.
-        /// <para>
-        /// This function returns the compile-time generated
-        /// [version string](@ref intro_version_string) of the GLFW library binary.  It
-        /// describes the version, platform, compiler and any platform-specific
-        /// compile-time options.  It should not be confused with the OpenGL or OpenGL
-        /// ES version string, queried with <c>glGetString</c>.
-        /// </para>
-        /// <para>
-        /// __Do not use the version string__ to parse the GLFW library version.  The
-        /// <see cref="GetVersion"/> function provides the version of the running library
-        /// binary in numerical format.
-        /// </para>
-        /// <para>errors: None.</para>
-        /// <para>pointer_lifetime: The returned string is static and compile-time generated.</para>
-        /// <para>thread_safety: This function may be called from any thread.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI const char* glfwGetVersionString(void);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <returns>The ASCII encoded GLFW version string.</returns>
-        /// <remarks>This function may be called before <see cref="Init"/>.</remarks>
-        /// <seealso cref="GetVersion"/>
-        public unsafe static string GetVersionString() {
-            byte* ptr = GLFWNative.glfwGetVersionString();
-            if (ptr == null) return null;
-            return MarshalExtend.PtrToString(ptr,Encoding.ASCII);
-        }
-        /// <summary>
-        /// Returns and clears the last error for the calling thread.
-        /// <para>
-        /// This function returns and clears the [error code](@ref errors) of the last
-        /// error that occurred on the calling thread, and optionally a UTF-8 encoded
-        /// human-readable description of it.  If no error has occurred since the last
-        /// call, it returns <see cref="NO_ERROR"/> (zero) and the description pointer is
-        /// set to <c>NULL</c>.
-        /// </para>
-        /// <para>errors: None.</para>
-        /// <para>
-        /// pointer_lifetime:
-        /// The returned string is allocated and freed by GLFW.  You
-        /// should not free it yourself.  It is guaranteed to be valid only until the
-        /// next error occurs or the library is terminated.
-        /// </para>
-        /// <para>thread_safety: This function may be called from any thread.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI int glfwGetError(const char** description);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="description">[in] Where to store the error description pointer, or <c>NULL</c>.</param>
-        /// <returns>
-        /// The last error code for the calling thread, or <see cref="NO_ERROR"/>
-        /// (zero).
-        /// </returns>
-        /// <remarks>This function may be called before <see cref="Init"/>.</remarks>
-        /// <seealso cref="SetErrorCallback"/>
-        public unsafe static int GetError(out string description) {
-            byte* ptr;
-            description = null;
-            int nCode = GLFWNative.glfwGetError(&ptr);
-            if (ptr != null) {
-                description = MarshalExtend.PtrToString(ptr);
-            }
-            return nCode;
-        }
-        /// <summary>
-        /// Sets the error callback.
-        /// <para>
-        /// This function sets the error callback, which is called with an error code
-        /// and a human-readable description each time a GLFW error occurs.
-        /// </para>
-        /// <para>
-        /// The error code is set before the callback is called.  Calling <see cref="GetError"/> from the error callback will return the same value as the error
-        /// code argument.
-        /// </para>
-        /// <para>
-        /// The error callback is called on the thread where the error occurred.  If you
-        /// are using GLFW from multiple threads, your error callback needs to be
-        /// written accordingly.
-        /// </para>
-        /// <para>
-        /// Because the description string may have been generated specifically for that
-        /// error, it is not guaranteed to be valid after the callback has returned.  If
-        /// you wish to use it after the callback returns, you need to make a copy.
-        /// </para>
-        /// <para>
-        /// Once set, the error callback remains set even after the library has been
-        /// terminated.
-        /// </para>
-        /// <para>
-        /// callback_signature:
-        /// <code>
-        /// void callback_name(int error_code, const char* description)
-        /// </code>
-        /// For more information about the callback parameters, see the
-        /// [callback pointer type](@ref GLFWerrorfun).
-        /// </para>
-        /// <para>errors: None.</para>
-        /// <para>thread_safety: This function must only be called from the main thread.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun callback);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="callback">
-        /// [in] The new callback, or <c>NULL</c> to remove the currently set
-        /// callback.
-        /// </param>
-        /// <returns>The previously set callback, or <c>NULL</c> if no callback was set.</returns>
-        /// <remarks>This function may be called before <see cref="Init"/>.</remarks>
-        /// <seealso cref="GetError"/>
-        public unsafe static FunError SetErrorCallback(FunError callback) {
-            var old = m_callback_errorfun;
-            m_callback_errorfun = callback;
-            GLFWNative.glfwSetErrorCallback(GLFW.ErrorFunCallback);
-            return old;
-        }
-        /// <summary>
-        /// Returns the currently connected monitors.
-        /// <para>
-        /// This function returns an array of handles for all currently connected
-        /// monitors.  The primary monitor is always first in the returned array.  If no
-        /// monitors were found, this function returns <c>NULL</c>.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
-        /// <para>
-        /// pointer_lifetime:
-        /// The returned array is allocated and freed by GLFW.  You
-        /// should not free it yourself.  It is guaranteed to be valid only until the
-        /// monitor configuration changes or the library is terminated.
-        /// </para>
-        /// <para>thread_safety: This function must only be called from the main thread.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI GLFWmonitor** glfwGetMonitors(int* count);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <returns>
-        /// An array of monitor handles, or <c>NULL</c> if no monitors were found or
-        /// if an [error](@ref error_handling) occurred.
-        /// </returns>
-        /// <seealso cref="GetPrimaryMonitor"/>
-        public static unsafe IntPtr[] GetMonitors() {
-            int nCount = 0;
-            IntPtr* ptr = GLFWNative.glfwGetMonitors(&nCount);
-            if (ptr == null) return null;
-            IntPtr[] ret = new IntPtr[nCount];
-            for (int i = 0; i < nCount; i++) {
-                ret[i] = *(ptr + i);
-            }
-            return ret;
-        }
-        /// <summary>
-        /// Returns the primary monitor.
-        /// <para>
-        /// This function returns the primary monitor.  This is usually the monitor
-        /// where elements like the task bar or global menu bar are located.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
-        /// <para>thread_safety: This function must only be called from the main thread.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <returns>
-        /// The primary monitor, or <c>NULL</c> if no monitors were found or if an
-        /// [error](@ref error_handling) occurred.
-        /// </returns>
-        /// <remarks>The primary monitor is always first in the array returned by <see cref="GetMonitors"/>.</remarks>
-        /// <seealso cref="GetMonitors"/>
-        public static IntPtr GetPrimaryMonitor() {
-            return GLFWNative.glfwGetPrimaryMonitor();
-        }
         /// <summary>
         /// Returns the position of the monitor's viewport on the virtual screen.
         /// <para>
@@ -518,38 +288,6 @@ namespace STLib.OpenGL.GLFW
         [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetMonitorContentScale", CallingConvention = CallingConvention.Cdecl)]
         public static extern void GetMonitorContentScale(IntPtr monitor, ref float xscale, ref float yscale);
         /// <summary>
-        /// Returns the name of the specified monitor.
-        /// <para>
-        /// This function returns a human-readable name, encoded as UTF-8, of the
-        /// specified monitor.  The name typically reflects the make and model of the
-        /// monitor and is not guaranteed to be unique among the connected monitors.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
-        /// <para>
-        /// pointer_lifetime:
-        /// The returned string is allocated and freed by GLFW.  You
-        /// should not free it yourself.  It is valid until the specified monitor is
-        /// disconnected or the library is terminated.
-        /// </para>
-        /// <para>thread_safety: This function must only be called from the main thread.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="monitor">[in] The monitor to query.</param>
-        /// <returns>
-        /// The UTF-8 encoded name of the monitor, or <c>NULL</c> if an
-        /// [error](@ref error_handling) occurred.
-        /// </returns>
-        public unsafe static string GetMonitorName(IntPtr monitor) {
-            byte* ptr = GLFWNative.glfwGetMonitorName(monitor);
-            if (ptr == null) return null;
-            return MarshalExtend.PtrToString(ptr);
-        }
-        /// <summary>
         /// Sets the user pointer of the specified monitor.
         /// <para>
         /// This function sets the user-defined pointer of the specified monitor.  The
@@ -605,6 +343,668 @@ namespace STLib.OpenGL.GLFW
         /// <seealso cref="SetMonitorUserPointer"/>
         [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetMonitorUserPointer", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetMonitorUserPointer(IntPtr monitor);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetMonitorCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBMonitor glfwSetMonitorCallback(CBMonitor callback);
+        /// <summary>
+        /// Retrieves the position of the content area of the specified window.
+        /// <para>
+        /// This function retrieves the position, in screen coordinates, of the
+        /// upper-left corner of the content area of the specified window.
+        /// </para>
+        /// <para>
+        /// Any or all of the position arguments may be <c>NULL</c>.  If an error occurs, all
+        /// non-<c>NULL</c> position arguments will be set to zero.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/> and <see cref="PLATFORM_ERROR"/>.</para>
+        /// <para>thread_safety: This function must only be called from the main thread.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="window">[in] The window to query.</param>
+        /// <param name="nX">
+        /// [out] Where to store the x-coordinate of the upper-left corner of
+        /// the content area, or <c>NULL</c>.
+        /// </param>
+        /// <param name="nY">
+        /// [out] Where to store the y-coordinate of the upper-left corner of
+        /// the content area, or <c>NULL</c>.
+        /// </param>
+        /// <remarks>
+        /// [wayland] There is no way for an application to retrieve the global
+        /// position of its windows, this function will always emit <see cref="PLATFORM_ERROR"/>.
+        /// </remarks>
+        /// <seealso cref="SetWindowPos"/>
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetWindowPos", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetWindowPos(IntPtr window, ref int nX, ref int nY);
+        /// <summary>
+        /// Retrieves the size of the content area of the specified window.
+        /// <para>
+        /// This function retrieves the size, in screen coordinates, of the content area
+        /// of the specified window.  If you wish to retrieve the size of the
+        /// framebuffer of the window in pixels, see <see cref="GetFramebufferSize"/>.
+        /// </para>
+        /// <para>
+        /// Any or all of the size arguments may be <c>NULL</c>.  If an error occurs, all
+        /// non-<c>NULL</c> size arguments will be set to zero.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/> and <see cref="PLATFORM_ERROR"/>.</para>
+        /// <para>thread_safety: This function must only be called from the main thread.</para>
+        /// <para>glfw3: Added window handle parameter.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="window">[in] The window whose size to retrieve.</param>
+        /// <param name="nWidth">
+        /// [out] Where to store the width, in screen coordinates, of the
+        /// content area, or <c>NULL</c>.
+        /// </param>
+        /// <param name="nHeight">
+        /// [out] Where to store the height, in screen coordinates, of the
+        /// content area, or <c>NULL</c>.
+        /// </param>
+        /// <seealso cref="SetWindowSize"/>
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetWindowSize", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetWindowSize(IntPtr window, ref int nWidth, ref int nHeight);
+        /// <summary>
+        /// Retrieves the size of the framebuffer of the specified window.
+        /// <para>
+        /// This function retrieves the size, in pixels, of the framebuffer of the
+        /// specified window.  If you wish to retrieve the size of the window in screen
+        /// coordinates, see <see cref="GetWindowSize"/>.
+        /// </para>
+        /// <para>
+        /// Any or all of the size arguments may be <c>NULL</c>.  If an error occurs, all
+        /// non-<c>NULL</c> size arguments will be set to zero.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/> and <see cref="PLATFORM_ERROR"/>.</para>
+        /// <para>thread_safety: This function must only be called from the main thread.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="window">[in] The window whose framebuffer to query.</param>
+        /// <param name="width">
+        /// [out] Where to store the width, in pixels, of the framebuffer,
+        /// or <c>NULL</c>.
+        /// </param>
+        /// <param name="height">
+        /// [out] Where to store the height, in pixels, of the framebuffer,
+        /// or <c>NULL</c>.
+        /// </param>
+        /// <seealso cref="SetFramebufferSizeCallback"/>
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetFramebufferSize", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetFramebufferSize(IntPtr window, ref int width, ref int height);
+        /// <summary>
+        /// Retrieves the size of the frame of the window.
+        /// <para>
+        /// This function retrieves the size, in screen coordinates, of each edge of the
+        /// frame of the specified window.  This size includes the title bar, if the
+        /// window has one.  The size of the frame may vary depending on the
+        /// [window-related hints](@ref window_hints_wnd) used to create it.
+        /// </para>
+        /// <para>
+        /// Because this function retrieves the size of each window frame edge and not
+        /// the offset along a particular coordinate axis, the retrieved values will
+        /// always be zero or positive.
+        /// </para>
+        /// <para>
+        /// Any or all of the size arguments may be <c>NULL</c>.  If an error occurs, all
+        /// non-<c>NULL</c> size arguments will be set to zero.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/> and <see cref="PLATFORM_ERROR"/>.</para>
+        /// <para>thread_safety: This function must only be called from the main thread.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int* right, int* bottom);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="window">[in] The window whose frame size to query.</param>
+        /// <param name="left">
+        /// [out] Where to store the size, in screen coordinates, of the left
+        /// edge of the window frame, or <c>NULL</c>.
+        /// </param>
+        /// <param name="top">
+        /// [out] Where to store the size, in screen coordinates, of the top
+        /// edge of the window frame, or <c>NULL</c>.
+        /// </param>
+        /// <param name="right">
+        /// [out] Where to store the size, in screen coordinates, of the
+        /// right edge of the window frame, or <c>NULL</c>.
+        /// </param>
+        /// <param name="bottom">
+        /// [out] Where to store the size, in screen coordinates, of the
+        /// bottom edge of the window frame, or <c>NULL</c>.
+        /// </param>
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetWindowFrameSize", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetWindowFrameSize(IntPtr window, ref int left, ref int top, ref int right, ref int bottom);
+        /// <summary>
+        /// Retrieves the content scale for the specified window.
+        /// <para>
+        /// This function retrieves the content scale for the specified window.  The
+        /// content scale is the ratio between the current DPI and the platform's
+        /// default DPI.  This is especially important for text and any UI elements.  If
+        /// the pixel dimensions of your UI scaled by this look appropriate on your
+        /// machine then it should appear at a reasonable size on other machines
+        /// regardless of their DPI and scaling settings.  This relies on the system DPI
+        /// and scaling settings being somewhat correct.
+        /// </para>
+        /// <para>
+        /// On systems where each monitors can have its own content scale, the window
+        /// content scale will depend on which monitor the system considers the window
+        /// to be on.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/> and <see cref="PLATFORM_ERROR"/>.</para>
+        /// <para>thread_safety: This function must only be called from the main thread.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI void glfwGetWindowContentScale(GLFWwindow* window, float* xscale, float* yscale);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="window">[in] The window to query.</param>
+        /// <param name="xscale">[out] Where to store the x-axis content scale, or <c>NULL</c>.</param>
+        /// <param name="yscale">[out] Where to store the y-axis content scale, or <c>NULL</c>.</param>
+        /// <seealso cref="SetWindowContentScaleCallback"/>
+        /// <seealso cref="GetMonitorContentScale"/>
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetWindowContentScale", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetWindowContentScale(IntPtr window, ref float xscale, ref float yscale);
+        /// <summary>
+        /// Sets the user pointer of the specified window.
+        /// <para>
+        /// This function sets the user-defined pointer of the specified window.  The
+        /// current value is retained until the window is destroyed.  The initial value
+        /// is <c>NULL</c>.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
+        /// <para>
+        /// thread_safety:
+        /// This function may be called from any thread.  Access is not
+        /// synchronized.
+        /// </para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI void glfwSetWindowUserPointer(GLFWwindow* window, void* pointer);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="window">[in] The window whose pointer to set.</param>
+        /// <param name="pointer">[in] The new value.</param>
+        /// <seealso cref="GetWindowUserPointer"/>
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowUserPointer", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetWindowUserPointer(IntPtr window, IntPtr pointer);
+        /// <summary>
+        /// Returns the user pointer of the specified window.
+        /// <para>
+        /// This function returns the current value of the user-defined pointer of the
+        /// specified window.  The initial value is <c>NULL</c>.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
+        /// <para>
+        /// thread_safety:
+        /// This function may be called from any thread.  Access is not
+        /// synchronized.
+        /// </para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="window">[in] The window whose pointer to return.</param>
+        /// <seealso cref="SetWindowUserPointer"/>
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetWindowUserPointer", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr GetWindowUserPointer(IntPtr window);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowPosCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBWindowPos glfwSetWindowPosCallback(IntPtr window, CBWindowPos callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowSizeCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBWindowSize glfwSetWindowSizeCallback(IntPtr window, CBWindowSize callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowCloseCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBWindowClose glfwSetWindowCloseCallback(IntPtr window, CBWindowClose callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowRefreshCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBWindowRefresh glfwSetWindowRefreshCallback(IntPtr window, CBWindowRefresh callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowFocusCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBWindowFocus glfwSetWindowFocusCallback(IntPtr window, CBWindowFocus callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowIconifyCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBWindowIconify glfwSetWindowIconifyCallback(IntPtr window, CBWindowIconify callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowMaximizeCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBWindowMaximize glfwSetWindowMaximizeCallback(IntPtr window, CBWindowMaximize callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetFramebufferSizeCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBFrameBufferSize glfwSetFramebufferSizeCallback(IntPtr window, CBFrameBufferSize callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowContentScaleCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBWindowContentScale glfwSetWindowContentScaleCallback(IntPtr window, CBWindowContentScale callback);
+        /// <summary>
+        /// Retrieves the position of the cursor relative to the content area of
+        /// the window.
+        /// <para>
+        /// This function returns the position of the cursor, in screen coordinates,
+        /// relative to the upper-left corner of the content area of the specified
+        /// window.
+        /// </para>
+        /// <para>
+        /// If the cursor is disabled (with <c>GLFW_CURSOR_DISABLED</c>) then the cursor
+        /// position is unbounded and limited only by the minimum and maximum values of
+        /// a <c>double</c>.
+        /// </para>
+        /// <para>
+        /// The coordinate can be converted to their integer equivalents with the
+        /// <c>floor</c> function.  Casting directly to an integer type works for positive
+        /// coordinates, but fails for negative ones.
+        /// </para>
+        /// <para>
+        /// Any or all of the position arguments may be <c>NULL</c>.  If an error occurs, all
+        /// non-<c>NULL</c> position arguments will be set to zero.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/> and <see cref="PLATFORM_ERROR"/>.</para>
+        /// <para>thread_safety: This function must only be called from the main thread.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="window">[in] The desired window.</param>
+        /// <param name="xpos">
+        /// [out] Where to store the cursor x-coordinate, relative to the
+        /// left edge of the content area, or <c>NULL</c>.
+        /// </param>
+        /// <param name="ypos">
+        /// [out] Where to store the cursor y-coordinate, relative to the to
+        /// top edge of the content area, or <c>NULL</c>.
+        /// </param>
+        /// <seealso cref="SetCursorPos"/>
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetCursorPos", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetCursorPos(IntPtr window, ref double xpos, ref double ypos);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetKeyCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBKey glfwSetKeyCallback(IntPtr window, CBKey callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetCharCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBChar glfwSetCharCallback(IntPtr window, CBChar callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetCharModsCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBCharMods glfwSetCharModsCallback(IntPtr window, CBCharMods callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetMouseButtonCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBMouseButton glfwSetMouseButtonCallback(IntPtr window, CBMouseButton callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetCursorPosCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBCursorPos glfwSetCursorPosCallback(IntPtr window, CBCursorPos callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetCursorEnterCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBCursorEnter glfwSetCursorEnterCallback(IntPtr window, CBCursorEnter callback);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetScrollCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBScroll glfwSetScrollCallback(IntPtr window, CBScroll callback);
+        /// <summary>
+        /// Sets the user pointer of the specified joystick.
+        /// <para>
+        /// This function sets the user-defined pointer of the specified joystick.  The
+        /// current value is retained until the joystick is disconnected.  The initial
+        /// value is <c>NULL</c>.
+        /// </para>
+        /// <para>
+        /// This function may be called from the joystick callback, even for a joystick
+        /// that is being disconnected.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
+        /// <para>
+        /// thread_safety:
+        /// This function may be called from any thread.  Access is not
+        /// synchronized.
+        /// </para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI void glfwSetJoystickUserPointer(int jid, void* pointer);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="jid">[in] The joystick whose pointer to set.</param>
+        /// <param name="pointer">[in] The new value.</param>
+        /// <seealso cref="GetJoystickUserPointer"/>
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetJoystickUserPointer", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetJoystickUserPointer(int jid, IntPtr pointer);
+        /// <summary>
+        /// Returns the user pointer of the specified joystick.
+        /// <para>
+        /// This function returns the current value of the user-defined pointer of the
+        /// specified joystick.  The initial value is <c>NULL</c>.
+        /// </para>
+        /// <para>
+        /// This function may be called from the joystick callback, even for a joystick
+        /// that is being disconnected.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
+        /// <para>
+        /// thread_safety:
+        /// This function may be called from any thread.  Access is not
+        /// synchronized.
+        /// </para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI void* glfwGetJoystickUserPointer(int jid);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="jid">[in] The joystick whose pointer to return.</param>
+        /// <seealso cref="SetJoystickUserPointer"/>
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetJoystickUserPointer", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr GetJoystickUserPointer(int jid);
+
+        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetJoystickCallback", CallingConvention = CallingConvention.Cdecl)]
+        private static extern CBJoystick glfwSetJoystickCallback(CBJoystick callback);
+
+        /// <summary>
+        /// Terminates the GLFW library.
+        /// <para>
+        /// This function destroys all remaining windows and cursors, restores any
+        /// modified gamma ramps and frees any other allocated resources.  Once this
+        /// function is called, you must again call <see cref="Init"/> successfully before
+        /// you will be able to use most GLFW functions.
+        /// </para>
+        /// <para>
+        /// If GLFW has been successfully initialized, this function should be called
+        /// before the application exits.  If initialization fails, there is no need to
+        /// call this function, as it is called by <see cref="Init"/> before it returns
+        /// failure.
+        /// </para>
+        /// <para>This function has no effect if GLFW is not initialized.</para>
+        /// <para>errors: Possible errors include <see cref="PLATFORM_ERROR"/>.</para>
+        /// <para>
+        /// warning:
+        /// The contexts of any remaining windows must not be current on any
+        /// other thread when this function is called.
+        /// </para>
+        /// <para>reentrancy: This function must not be called from a callback.</para>
+        /// <para>thread_safety: This function must only be called from the main thread.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI void glfwTerminate(void);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <remarks>This function may be called before <see cref="Init"/>.</remarks>
+        /// <seealso cref="Init"/>
+        public static void Terminate() {
+            GLFWNative.glfwTerminate();
+        }
+        /// <summary>
+        /// Sets the specified init hint to the desired value.
+        /// <para>This function sets hints for the next initialization of GLFW.</para>
+        /// <para>
+        /// The values you set hints to are never reset by GLFW, but they only take
+        /// effect during initialization.  Once GLFW has been initialized, any values
+        /// you set will be ignored until the library is terminated and initialized
+        /// again.
+        /// </para>
+        /// <para>
+        /// Some hints are platform specific.  These may be set on any platform but they
+        /// will only affect their specific platform.  Other platforms will ignore them.
+        /// Setting these hints requires no platform specific headers or functions.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="INVALID_ENUM"/> and <see cref="INVALID_VALUE"/>.</para>
+        /// <para>thread_safety: This function must only be called from the main thread.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI void glfwInitHint(int hint, int value);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="hint">[in] The [init hint](@ref init_hints) to set.</param>
+        /// <param name="value">[in] The new value of the init hint.</param>
+        /// <remarks>This function may be called before <see cref="Init"/>.</remarks>
+        public static void InitHint(int hint, int value) {
+            GLFWNative.glfwInitHint(hint, value);
+        }
+        /// <summary>
+        /// Returns a string describing the compile-time configuration.
+        /// <para>
+        /// This function returns the compile-time generated
+        /// [version string](@ref intro_version_string) of the GLFW library binary.  It
+        /// describes the version, platform, compiler and any platform-specific
+        /// compile-time options.  It should not be confused with the OpenGL or OpenGL
+        /// ES version string, queried with <c>glGetString</c>.
+        /// </para>
+        /// <para>
+        /// __Do not use the version string__ to parse the GLFW library version.  The
+        /// <see cref="GetVersion"/> function provides the version of the running library
+        /// binary in numerical format.
+        /// </para>
+        /// <para>errors: None.</para>
+        /// <para>pointer_lifetime: The returned string is static and compile-time generated.</para>
+        /// <para>thread_safety: This function may be called from any thread.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI const char* glfwGetVersionString(void);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <returns>The ASCII encoded GLFW version string.</returns>
+        /// <remarks>This function may be called before <see cref="Init"/>.</remarks>
+        /// <seealso cref="GetVersion"/>
+        public unsafe static string GetVersionString() {
+            byte* ptr = GLFWNative.glfwGetVersionString();
+            if (ptr == null) return null;
+            return MarshalExtend.PtrToString(ptr, Encoding.ASCII);
+        }
+        /// <summary>
+        /// Returns and clears the last error for the calling thread.
+        /// <para>
+        /// This function returns and clears the [error code](@ref errors) of the last
+        /// error that occurred on the calling thread, and optionally a UTF-8 encoded
+        /// human-readable description of it.  If no error has occurred since the last
+        /// call, it returns <see cref="NO_ERROR"/> (zero) and the description pointer is
+        /// set to <c>NULL</c>.
+        /// </para>
+        /// <para>errors: None.</para>
+        /// <para>
+        /// pointer_lifetime:
+        /// The returned string is allocated and freed by GLFW.  You
+        /// should not free it yourself.  It is guaranteed to be valid only until the
+        /// next error occurs or the library is terminated.
+        /// </para>
+        /// <para>thread_safety: This function may be called from any thread.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI int glfwGetError(const char** description);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="description">[in] Where to store the error description pointer, or <c>NULL</c>.</param>
+        /// <returns>
+        /// The last error code for the calling thread, or <see cref="NO_ERROR"/>
+        /// (zero).
+        /// </returns>
+        /// <remarks>This function may be called before <see cref="Init"/>.</remarks>
+        /// <seealso cref="SetErrorCallback"/>
+        public unsafe static int GetError(out string description) {
+            byte* ptr;
+            description = null;
+            int nCode = GLFWNative.glfwGetError(&ptr);
+            if (ptr != null) {
+                description = MarshalExtend.PtrToString(ptr);
+            }
+            return nCode;
+        }
+        /// <summary>
+        /// Sets the error callback.
+        /// <para>
+        /// This function sets the error callback, which is called with an error code
+        /// and a human-readable description each time a GLFW error occurs.
+        /// </para>
+        /// <para>
+        /// The error code is set before the callback is called.  Calling <see cref="GetError"/> from the error callback will return the same value as the error
+        /// code argument.
+        /// </para>
+        /// <para>
+        /// The error callback is called on the thread where the error occurred.  If you
+        /// are using GLFW from multiple threads, your error callback needs to be
+        /// written accordingly.
+        /// </para>
+        /// <para>
+        /// Because the description string may have been generated specifically for that
+        /// error, it is not guaranteed to be valid after the callback has returned.  If
+        /// you wish to use it after the callback returns, you need to make a copy.
+        /// </para>
+        /// <para>
+        /// Once set, the error callback remains set even after the library has been
+        /// terminated.
+        /// </para>
+        /// <para>
+        /// callback_signature:
+        /// <code>
+        /// void callback_name(int error_code, const char* description)
+        /// </code>
+        /// For more information about the callback parameters, see the
+        /// [callback pointer type](@ref GLFWerrorfun).
+        /// </para>
+        /// <para>errors: None.</para>
+        /// <para>thread_safety: This function must only be called from the main thread.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun callback);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="callback">
+        /// [in] The new callback, or <c>NULL</c> to remove the currently set
+        /// callback.
+        /// </param>
+        /// <returns>The previously set callback, or <c>NULL</c> if no callback was set.</returns>
+        /// <remarks>This function may be called before <see cref="Init"/>.</remarks>
+        /// <seealso cref="GetError"/>
+        public unsafe static CBError SetErrorCallback(CBError callback) {
+            var old = m_cb_error;
+            m_cb_error = callback;
+            GLFWNative.glfwSetErrorCallback(GLFW.ErrorFunCallback);
+            return old;
+        }
+        /// <summary>
+        /// Returns the currently connected monitors.
+        /// <para>
+        /// This function returns an array of handles for all currently connected
+        /// monitors.  The primary monitor is always first in the returned array.  If no
+        /// monitors were found, this function returns <c>NULL</c>.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
+        /// <para>
+        /// pointer_lifetime:
+        /// The returned array is allocated and freed by GLFW.  You
+        /// should not free it yourself.  It is guaranteed to be valid only until the
+        /// monitor configuration changes or the library is terminated.
+        /// </para>
+        /// <para>thread_safety: This function must only be called from the main thread.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI GLFWmonitor** glfwGetMonitors(int* count);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <returns>
+        /// An array of monitor handles, or <c>NULL</c> if no monitors were found or
+        /// if an [error](@ref error_handling) occurred.
+        /// </returns>
+        /// <seealso cref="GetPrimaryMonitor"/>
+        public static unsafe IntPtr[] GetMonitors() {
+            int nCount = 0;
+            IntPtr* ptr = GLFWNative.glfwGetMonitors(&nCount);
+            if (ptr == null) return null;
+            IntPtr[] ret = new IntPtr[nCount];
+            for (int i = 0; i < nCount; i++) {
+                ret[i] = *(ptr + i);
+            }
+            return ret;
+        }
+        /// <summary>
+        /// Returns the primary monitor.
+        /// <para>
+        /// This function returns the primary monitor.  This is usually the monitor
+        /// where elements like the task bar or global menu bar are located.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
+        /// <para>thread_safety: This function must only be called from the main thread.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <returns>
+        /// The primary monitor, or <c>NULL</c> if no monitors were found or if an
+        /// [error](@ref error_handling) occurred.
+        /// </returns>
+        /// <remarks>The primary monitor is always first in the array returned by <see cref="GetMonitors"/>.</remarks>
+        /// <seealso cref="GetMonitors"/>
+        public static IntPtr GetPrimaryMonitor() {
+            return GLFWNative.glfwGetPrimaryMonitor();
+        }
+        /// <summary>
+        /// Returns the name of the specified monitor.
+        /// <para>
+        /// This function returns a human-readable name, encoded as UTF-8, of the
+        /// specified monitor.  The name typically reflects the make and model of the
+        /// monitor and is not guaranteed to be unique among the connected monitors.
+        /// </para>
+        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
+        /// <para>
+        /// pointer_lifetime:
+        /// The returned string is allocated and freed by GLFW.  You
+        /// should not free it yourself.  It is valid until the specified monitor is
+        /// disconnected or the library is terminated.
+        /// </para>
+        /// <para>thread_safety: This function must only be called from the main thread.</para>
+        /// <para>
+        /// original_signature:
+        /// <code>
+        /// GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* monitor);
+        /// </code>
+        /// </para>
+        /// </summary>
+        /// <param name="monitor">[in] The monitor to query.</param>
+        /// <returns>
+        /// The UTF-8 encoded name of the monitor, or <c>NULL</c> if an
+        /// [error](@ref error_handling) occurred.
+        /// </returns>
+        public unsafe static string GetMonitorName(IntPtr monitor) {
+            byte* ptr = GLFWNative.glfwGetMonitorName(monitor);
+            if (ptr == null) return null;
+            return MarshalExtend.PtrToString(ptr);
+        }
         /// <summary>
         /// Sets the monitor configuration callback.
         /// <para>
@@ -637,8 +1037,10 @@ namespace STLib.OpenGL.GLFW
         /// The previously set callback, or <c>NULL</c> if no callback was set or the
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetMonitorCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunMonitor SetMonitorCallback(FunMonitor callback);
+        public static CBMonitor SetMonitorCallback(CBMonitor callback) {
+            m_cb_monitor = callback;
+            return GLFW.glfwSetMonitorCallback(m_cb_monitor);
+        }
         /// <summary>
         /// Returns the available video modes for the specified monitor.
         /// <para>
@@ -1378,41 +1780,6 @@ namespace STLib.OpenGL.GLFW
             }
         }
         /// <summary>
-        /// Retrieves the position of the content area of the specified window.
-        /// <para>
-        /// This function retrieves the position, in screen coordinates, of the
-        /// upper-left corner of the content area of the specified window.
-        /// </para>
-        /// <para>
-        /// Any or all of the position arguments may be <c>NULL</c>.  If an error occurs, all
-        /// non-<c>NULL</c> position arguments will be set to zero.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/> and <see cref="PLATFORM_ERROR"/>.</para>
-        /// <para>thread_safety: This function must only be called from the main thread.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="window">[in] The window to query.</param>
-        /// <param name="nX">
-        /// [out] Where to store the x-coordinate of the upper-left corner of
-        /// the content area, or <c>NULL</c>.
-        /// </param>
-        /// <param name="nY">
-        /// [out] Where to store the y-coordinate of the upper-left corner of
-        /// the content area, or <c>NULL</c>.
-        /// </param>
-        /// <remarks>
-        /// [wayland] There is no way for an application to retrieve the global
-        /// position of its windows, this function will always emit <see cref="PLATFORM_ERROR"/>.
-        /// </remarks>
-        /// <seealso cref="SetWindowPos"/>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetWindowPos", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GetWindowPos(IntPtr window, ref int nX, ref int nY);
-        /// <summary>
         /// Sets the position of the content area of the specified window.
         /// <para>
         /// This function sets the position, in screen coordinates, of the upper-left
@@ -1448,39 +1815,6 @@ namespace STLib.OpenGL.GLFW
         public static void SetWindowPos(IntPtr window, int xpos, int ypos) {
             GLFWNative.glfwSetWindowPos(window, xpos, ypos);
         }
-        /// <summary>
-        /// Retrieves the size of the content area of the specified window.
-        /// <para>
-        /// This function retrieves the size, in screen coordinates, of the content area
-        /// of the specified window.  If you wish to retrieve the size of the
-        /// framebuffer of the window in pixels, see <see cref="GetFramebufferSize"/>.
-        /// </para>
-        /// <para>
-        /// Any or all of the size arguments may be <c>NULL</c>.  If an error occurs, all
-        /// non-<c>NULL</c> size arguments will be set to zero.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/> and <see cref="PLATFORM_ERROR"/>.</para>
-        /// <para>thread_safety: This function must only be called from the main thread.</para>
-        /// <para>glfw3: Added window handle parameter.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="window">[in] The window whose size to retrieve.</param>
-        /// <param name="nWidth">
-        /// [out] Where to store the width, in screen coordinates, of the
-        /// content area, or <c>NULL</c>.
-        /// </param>
-        /// <param name="nHeight">
-        /// [out] Where to store the height, in screen coordinates, of the
-        /// content area, or <c>NULL</c>.
-        /// </param>
-        /// <seealso cref="SetWindowSize"/>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetWindowSize", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GetWindowSize(IntPtr window, ref int nWidth, ref int nHeight);
         /// <summary>
         /// Sets the size limits of the specified window.
         /// <para>
@@ -1634,115 +1968,6 @@ namespace STLib.OpenGL.GLFW
         public static void SetWindowSize(IntPtr window, int width, int height) {
             GLFWNative.glfwSetWindowSize(window, width, height);
         }
-        /// <summary>
-        /// Retrieves the size of the framebuffer of the specified window.
-        /// <para>
-        /// This function retrieves the size, in pixels, of the framebuffer of the
-        /// specified window.  If you wish to retrieve the size of the window in screen
-        /// coordinates, see <see cref="GetWindowSize"/>.
-        /// </para>
-        /// <para>
-        /// Any or all of the size arguments may be <c>NULL</c>.  If an error occurs, all
-        /// non-<c>NULL</c> size arguments will be set to zero.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/> and <see cref="PLATFORM_ERROR"/>.</para>
-        /// <para>thread_safety: This function must only be called from the main thread.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="window">[in] The window whose framebuffer to query.</param>
-        /// <param name="width">
-        /// [out] Where to store the width, in pixels, of the framebuffer,
-        /// or <c>NULL</c>.
-        /// </param>
-        /// <param name="height">
-        /// [out] Where to store the height, in pixels, of the framebuffer,
-        /// or <c>NULL</c>.
-        /// </param>
-        /// <seealso cref="SetFramebufferSizeCallback"/>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetFramebufferSize", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GetFramebufferSize(IntPtr window, ref int width, ref int height);
-        /// <summary>
-        /// Retrieves the size of the frame of the window.
-        /// <para>
-        /// This function retrieves the size, in screen coordinates, of each edge of the
-        /// frame of the specified window.  This size includes the title bar, if the
-        /// window has one.  The size of the frame may vary depending on the
-        /// [window-related hints](@ref window_hints_wnd) used to create it.
-        /// </para>
-        /// <para>
-        /// Because this function retrieves the size of each window frame edge and not
-        /// the offset along a particular coordinate axis, the retrieved values will
-        /// always be zero or positive.
-        /// </para>
-        /// <para>
-        /// Any or all of the size arguments may be <c>NULL</c>.  If an error occurs, all
-        /// non-<c>NULL</c> size arguments will be set to zero.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/> and <see cref="PLATFORM_ERROR"/>.</para>
-        /// <para>thread_safety: This function must only be called from the main thread.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int* right, int* bottom);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="window">[in] The window whose frame size to query.</param>
-        /// <param name="left">
-        /// [out] Where to store the size, in screen coordinates, of the left
-        /// edge of the window frame, or <c>NULL</c>.
-        /// </param>
-        /// <param name="top">
-        /// [out] Where to store the size, in screen coordinates, of the top
-        /// edge of the window frame, or <c>NULL</c>.
-        /// </param>
-        /// <param name="right">
-        /// [out] Where to store the size, in screen coordinates, of the
-        /// right edge of the window frame, or <c>NULL</c>.
-        /// </param>
-        /// <param name="bottom">
-        /// [out] Where to store the size, in screen coordinates, of the
-        /// bottom edge of the window frame, or <c>NULL</c>.
-        /// </param>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetWindowFrameSize", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GetWindowFrameSize(IntPtr window, ref int left, ref int top, ref int right, ref int bottom);
-        /// <summary>
-        /// Retrieves the content scale for the specified window.
-        /// <para>
-        /// This function retrieves the content scale for the specified window.  The
-        /// content scale is the ratio between the current DPI and the platform's
-        /// default DPI.  This is especially important for text and any UI elements.  If
-        /// the pixel dimensions of your UI scaled by this look appropriate on your
-        /// machine then it should appear at a reasonable size on other machines
-        /// regardless of their DPI and scaling settings.  This relies on the system DPI
-        /// and scaling settings being somewhat correct.
-        /// </para>
-        /// <para>
-        /// On systems where each monitors can have its own content scale, the window
-        /// content scale will depend on which monitor the system considers the window
-        /// to be on.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/> and <see cref="PLATFORM_ERROR"/>.</para>
-        /// <para>thread_safety: This function must only be called from the main thread.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI void glfwGetWindowContentScale(GLFWwindow* window, float* xscale, float* yscale);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="window">[in] The window to query.</param>
-        /// <param name="xscale">[out] Where to store the x-axis content scale, or <c>NULL</c>.</param>
-        /// <param name="yscale">[out] Where to store the y-axis content scale, or <c>NULL</c>.</param>
-        /// <seealso cref="SetWindowContentScaleCallback"/>
-        /// <seealso cref="GetMonitorContentScale"/>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetWindowContentScale", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GetWindowContentScale(IntPtr window, ref float xscale, ref float yscale);
         /// <summary>
         /// Returns the opacity of the whole window.
         /// <para>This function returns the opacity of the window, including any decorations.</para>
@@ -2178,54 +2403,6 @@ namespace STLib.OpenGL.GLFW
             GLFWNative.glfwSetWindowAttrib(window, attrib, value);
         }
         /// <summary>
-        /// Sets the user pointer of the specified window.
-        /// <para>
-        /// This function sets the user-defined pointer of the specified window.  The
-        /// current value is retained until the window is destroyed.  The initial value
-        /// is <c>NULL</c>.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
-        /// <para>
-        /// thread_safety:
-        /// This function may be called from any thread.  Access is not
-        /// synchronized.
-        /// </para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI void glfwSetWindowUserPointer(GLFWwindow* window, void* pointer);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="window">[in] The window whose pointer to set.</param>
-        /// <param name="pointer">[in] The new value.</param>
-        /// <seealso cref="GetWindowUserPointer"/>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowUserPointer", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SetWindowUserPointer(IntPtr window, IntPtr pointer);
-        /// <summary>
-        /// Returns the user pointer of the specified window.
-        /// <para>
-        /// This function returns the current value of the user-defined pointer of the
-        /// specified window.  The initial value is <c>NULL</c>.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
-        /// <para>
-        /// thread_safety:
-        /// This function may be called from any thread.  Access is not
-        /// synchronized.
-        /// </para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="window">[in] The window whose pointer to return.</param>
-        /// <seealso cref="SetWindowUserPointer"/>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetWindowUserPointer", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr GetWindowUserPointer(IntPtr window);
-        /// <summary>
         /// Sets the position callback for the specified window.
         /// <para>
         /// This function sets the position callback of the specified window, which is
@@ -2263,8 +2440,10 @@ namespace STLib.OpenGL.GLFW
         /// [wayland] This callback will never be called, as there is no way for
         /// an application to know its global position.
         /// </remarks>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowPosCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunWindowPos SetWindowPosCallback(IntPtr window, FunWindowPos callback);
+        public static CBWindowPos SetWindowPosCallback(IntPtr window, CBWindowPos callback) {
+            m_cb_window_pos = callback;
+            return GLFW.glfwSetWindowPosCallback(window, m_cb_window_pos);
+        }
         /// <summary>
         /// Sets the size callback for the specified window.
         /// <para>
@@ -2299,8 +2478,10 @@ namespace STLib.OpenGL.GLFW
         /// The previously set callback, or <c>NULL</c> if no callback was set or the
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowSizeCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunWindowSize SetWindowSizeCallback(IntPtr window, FunWindowSize callback);
+        public static CBWindowSize SetWindowSizeCallback(IntPtr window, CBWindowSize callback) {
+            m_cb_window_size = callback;
+            return GLFW.glfwSetWindowSizeCallback(window, m_cb_window_size);
+        }
         /// <summary>
         /// Sets the close callback for the specified window.
         /// <para>
@@ -2344,8 +2525,10 @@ namespace STLib.OpenGL.GLFW
         /// [macos] Selecting Quit from the application menu will trigger the
         /// close callback for all windows.
         /// </remarks>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowCloseCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunWindowClose SetWindowCloseCallback(IntPtr window, FunWindowClose callback);
+        public static CBWindowClose SetWindowCloseCallback(IntPtr window, CBWindowClose callback) {
+            m_cb_window_close = callback;
+            return GLFW.glfwSetWindowCloseCallback(window, m_cb_window_close);
+        }
         /// <summary>
         /// Sets the refresh callback for the specified window.
         /// <para>
@@ -2385,8 +2568,10 @@ namespace STLib.OpenGL.GLFW
         /// The previously set callback, or <c>NULL</c> if no callback was set or the
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowRefreshCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunWindowRefresh SetWindowRefreshCallback(IntPtr window, FunWindowRefresh callback);
+        public static CBWindowRefresh SetWindowRefreshCallback(IntPtr window, CBWindowRefresh callback) {
+            m_cb_window_refresh = callback;
+            return GLFW.glfwSetWindowRefreshCallback(window, m_cb_window_refresh);
+        }
         /// <summary>
         /// Sets the focus callback for the specified window.
         /// <para>
@@ -2425,8 +2610,10 @@ namespace STLib.OpenGL.GLFW
         /// The previously set callback, or <c>NULL</c> if no callback was set or the
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowFocusCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunWindowFocus SetWindowFocusCallback(IntPtr window, FunWindowFocus callback);
+        public static CBWindowFocus SetWindowFocusCallback(IntPtr window, CBWindowFocus callback) {
+            m_cb_window_focus = callback;
+            return GLFW.glfwSetWindowFocusCallback(window, m_cb_window_focus);
+        }
         /// <summary>
         /// Sets the iconify callback for the specified window.
         /// <para>
@@ -2463,8 +2650,10 @@ namespace STLib.OpenGL.GLFW
         /// [wayland] The wl_shell protocol has no concept of iconification,
         /// this callback will never be called when using this deprecated protocol.
         /// </remarks>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowIconifyCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunWindowIconify SetWindowIconifyCallback(IntPtr window, FunWindowIconify callback);
+        public static CBWindowIconify SetWindowIconifyCallback(IntPtr window, CBWindowIconify callback) {
+            m_cb_window_iconify = callback;
+            return GLFW.glfwSetWindowIconifyCallback(window, m_cb_window_iconify);
+        }
         /// <summary>
         /// Sets the maximize callback for the specified window.
         /// <para>
@@ -2497,8 +2686,10 @@ namespace STLib.OpenGL.GLFW
         /// The previously set callback, or <c>NULL</c> if no callback was set or the
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowMaximizeCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunWindowMaximize SetWindowMaximizeCallback(IntPtr window, FunWindowMaximize callback);
+        public static CBWindowMaximize SetWindowMaximizeCallback(IntPtr window, CBWindowMaximize callback) {
+            m_cb_window_maximize = callback;
+            return GLFW.glfwSetWindowMaximizeCallback(window,m_cb_window_maximize);
+        }
         /// <summary>
         /// Sets the framebuffer resize callback for the specified window.
         /// <para>
@@ -2531,8 +2722,10 @@ namespace STLib.OpenGL.GLFW
         /// The previously set callback, or <c>NULL</c> if no callback was set or the
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetFramebufferSizeCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunFrameBufferSize SetFramebufferSizeCallback(IntPtr window, FunFrameBufferSize callback);
+        public static CBFrameBufferSize SetFramebufferSizeCallback(IntPtr window, CBFrameBufferSize callback) {
+            m_cb_frame_buffer_size = callback;
+            return GLFW.glfwSetFramebufferSizeCallback(window, m_cb_frame_buffer_size);
+        }
         /// <summary>
         /// Sets the window content scale callback for the specified window.
         /// <para>
@@ -2566,8 +2759,10 @@ namespace STLib.OpenGL.GLFW
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
         /// <seealso cref="GetWindowContentScale"/>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetWindowContentScaleCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunWindowContentScale SetWindowContentScaleCallback(IntPtr window, FunWindowContentScale callback);
+        public static CBWindowContentScale SetWindowContentScaleCallback(IntPtr window, CBWindowContentScale callback) {
+            m_cb_window_content_scale = callback;
+            return GLFW.glfwSetWindowContentScaleCallback(window, m_cb_window_content_scale);
+        }
         /// <summary>
         /// Processes all pending events.
         /// <para>
@@ -3019,49 +3214,6 @@ namespace STLib.OpenGL.GLFW
             return GLFWNative.glfwGetMouseButton(window, button);
         }
         /// <summary>
-        /// Retrieves the position of the cursor relative to the content area of
-        /// the window.
-        /// <para>
-        /// This function returns the position of the cursor, in screen coordinates,
-        /// relative to the upper-left corner of the content area of the specified
-        /// window.
-        /// </para>
-        /// <para>
-        /// If the cursor is disabled (with <c>GLFW_CURSOR_DISABLED</c>) then the cursor
-        /// position is unbounded and limited only by the minimum and maximum values of
-        /// a <c>double</c>.
-        /// </para>
-        /// <para>
-        /// The coordinate can be converted to their integer equivalents with the
-        /// <c>floor</c> function.  Casting directly to an integer type works for positive
-        /// coordinates, but fails for negative ones.
-        /// </para>
-        /// <para>
-        /// Any or all of the position arguments may be <c>NULL</c>.  If an error occurs, all
-        /// non-<c>NULL</c> position arguments will be set to zero.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/> and <see cref="PLATFORM_ERROR"/>.</para>
-        /// <para>thread_safety: This function must only be called from the main thread.</para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="window">[in] The desired window.</param>
-        /// <param name="xpos">
-        /// [out] Where to store the cursor x-coordinate, relative to the
-        /// left edge of the content area, or <c>NULL</c>.
-        /// </param>
-        /// <param name="ypos">
-        /// [out] Where to store the cursor y-coordinate, relative to the to
-        /// top edge of the content area, or <c>NULL</c>.
-        /// </param>
-        /// <seealso cref="SetCursorPos"/>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetCursorPos", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GetCursorPos(IntPtr window, ref double xpos, ref double ypos);
-        /// <summary>
         /// Sets the position of the cursor, relative to the content area of the
         /// window.
         /// <para>
@@ -3290,8 +3442,10 @@ namespace STLib.OpenGL.GLFW
         /// The previously set callback, or <c>NULL</c> if no callback was set or the
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetKeyCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunKey SetKeyCallback(IntPtr window, FunKey callback);
+        public static CBKey SetKeyCallback(IntPtr window, CBKey callback) {
+            m_cb_key = callback;
+            return GLFW.glfwSetKeyCallback(window, m_cb_key);
+        }
         /// <summary>
         /// Sets the Unicode character callback.
         /// <para>
@@ -3339,8 +3493,11 @@ namespace STLib.OpenGL.GLFW
         /// The previously set callback, or <c>NULL</c> if no callback was set or the
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetCharCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunChar SetCharCallback(IntPtr window, FunChar callback);
+        [Obsolete("Scheduled for removal in version 4.0.")]
+        public static CBChar SetCharCallback(IntPtr window, CBChar callback) {
+            m_cb_char = callback;
+            return GLFW.glfwSetCharCallback(window, m_cb_char);
+        }
         /// Sets the Unicode character with modifiers callback.
         /// <para>
         /// This function sets the character with modifiers callback of the specified
@@ -3385,8 +3542,10 @@ namespace STLib.OpenGL.GLFW
         /// [error](@ref error_handling) occurred.
         /// </returns>
         [Obsolete("Scheduled for removal in version 4.0.")]
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetCharModsCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunCharMods SetCharModsCallback(IntPtr window, FunCharMods callback);
+        public static CBCharMods SetCharModsCallback(IntPtr window, CBCharMods callback) {
+            m_cb_char_mods = callback;
+            return GLFW.glfwSetCharModsCallback(window, m_cb_char_mods);
+        }
         /// <summary>
         /// Sets the mouse button callback.
         /// <para>
@@ -3427,8 +3586,10 @@ namespace STLib.OpenGL.GLFW
         /// The previously set callback, or <c>NULL</c> if no callback was set or the
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetMouseButtonCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunMouseButton SetMouseButtonCallback(IntPtr window, FunMouseButton callback);
+        public static CBMouseButton SetMouseButtonCallback(IntPtr window, CBMouseButton callback) {
+            m_cb_mouse_button = callback;
+            return GLFW.glfwSetMouseButtonCallback(window, m_cb_mouse_button);
+        }
         /// <summary>
         /// Sets the cursor position callback.
         /// <para>
@@ -3463,8 +3624,10 @@ namespace STLib.OpenGL.GLFW
         /// The previously set callback, or <c>NULL</c> if no callback was set or the
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetCursorPosCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunCursorPos SetCursorPosCallback(IntPtr window, FunCursorPos callback);
+        public static CBCursorPos SetCursorPosCallback(IntPtr window, CBCursorPos callback) {
+            m_cb_cursor_pos = callback;
+            return GLFW.glfwSetCursorPosCallback(window, m_cb_cursor_pos);
+        }
         /// <summary>
         /// Sets the cursor enter/leave callback.
         /// <para>
@@ -3498,8 +3661,10 @@ namespace STLib.OpenGL.GLFW
         /// The previously set callback, or <c>NULL</c> if no callback was set or the
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetCursorEnterCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunCursorEnter SetCursorEnterCallback(IntPtr window, FunCursorEnter callback);
+        public static CBCursorEnter SetCursorEnterCallback(IntPtr window, CBCursorEnter callback) {
+            m_cb_cursor_enter = callback;
+            return GLFW.glfwSetCursorEnterCallback(window, m_cb_cursor_enter);
+        }
         /// <summary>
         /// Sets the scroll callback.
         /// <para>
@@ -3537,8 +3702,10 @@ namespace STLib.OpenGL.GLFW
         /// The previously set callback, or <c>NULL</c> if no callback was set or the
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetScrollCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunScroll SetScrollCallback(IntPtr window, FunScroll callback);
+        public static CBScroll SetScrollCallback(IntPtr window, CBScroll callback) {
+            m_cb_scroll = callback;
+            return GLFW.glfwSetScrollCallback(window, m_cb_scroll);
+        }
         /// <summary>
         /// Sets the path drop callback.
         /// <para>
@@ -3578,9 +3745,9 @@ namespace STLib.OpenGL.GLFW
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
         /// <remarks>[wayland] File drop is currently unimplemented.</remarks>
-        public static unsafe FunDrop SetDropCallback(IntPtr window, FunDrop callback) {
+        public static unsafe CBDrop SetDropCallback(IntPtr window, CBDrop callback) {
             // TODO: test;
-            FunDrop fun_old = null;
+            CBDrop fun_old = null;
             if (callback == null) {
                 GLFWNative.glfwSetDropCallback(window, null);
             } else {
@@ -3880,62 +4047,6 @@ namespace STLib.OpenGL.GLFW
             return MarshalExtend.PtrToString(ptr);
         }
         /// <summary>
-        /// Sets the user pointer of the specified joystick.
-        /// <para>
-        /// This function sets the user-defined pointer of the specified joystick.  The
-        /// current value is retained until the joystick is disconnected.  The initial
-        /// value is <c>NULL</c>.
-        /// </para>
-        /// <para>
-        /// This function may be called from the joystick callback, even for a joystick
-        /// that is being disconnected.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
-        /// <para>
-        /// thread_safety:
-        /// This function may be called from any thread.  Access is not
-        /// synchronized.
-        /// </para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI void glfwSetJoystickUserPointer(int jid, void* pointer);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="jid">[in] The joystick whose pointer to set.</param>
-        /// <param name="pointer">[in] The new value.</param>
-        /// <seealso cref="GetJoystickUserPointer"/>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetJoystickUserPointer", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SetJoystickUserPointer(int jid, IntPtr pointer);
-        /// <summary>
-        /// Returns the user pointer of the specified joystick.
-        /// <para>
-        /// This function returns the current value of the user-defined pointer of the
-        /// specified joystick.  The initial value is <c>NULL</c>.
-        /// </para>
-        /// <para>
-        /// This function may be called from the joystick callback, even for a joystick
-        /// that is being disconnected.
-        /// </para>
-        /// <para>errors: Possible errors include <see cref="NOT_INITIALIZED"/>.</para>
-        /// <para>
-        /// thread_safety:
-        /// This function may be called from any thread.  Access is not
-        /// synchronized.
-        /// </para>
-        /// <para>
-        /// original_signature:
-        /// <code>
-        /// GLFWAPI void* glfwGetJoystickUserPointer(int jid);
-        /// </code>
-        /// </para>
-        /// </summary>
-        /// <param name="jid">[in] The joystick whose pointer to return.</param>
-        /// <seealso cref="SetJoystickUserPointer"/>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwGetJoystickUserPointer", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr GetJoystickUserPointer(int jid);
-        /// <summary>
         /// Returns whether the specified joystick has a gamepad mapping.
         /// <para>
         /// This function returns whether the specified joystick is both present and has
@@ -4004,8 +4115,10 @@ namespace STLib.OpenGL.GLFW
         /// The previously set callback, or <c>NULL</c> if no callback was set or the
         /// library had not been [initialized](@ref intro_init).
         /// </returns>
-        [DllImport(GLFWNative.STR_LIB_FILE, EntryPoint = "glfwSetJoystickCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern FunJoystick SetJoystickCallback(FunJoystick callback);
+        public static CBJoystick SetJoystickCallback(CBJoystick callback) {
+            m_cb_joystick = callback;
+            return GLFW.glfwSetJoystickCallback(m_cb_joystick);
+        }
         /// <summary>
         /// Adds the specified SDL_GameControllerDB gamepad mappings.
         /// <para>
