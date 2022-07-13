@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 
 using STLib.OpenGL;
-using STLib.OpenGL.GL;
 using STLib.OpenGL.GLFW;
+using STLib.OpenGL.GL;
+using STLib.OpenGL.GL.Mathematics;
 
 namespace STGL.Demo
 {
@@ -23,9 +24,11 @@ namespace STGL.Demo
             "out vec3 ourColor;\n" +
             "out vec2 TexCoord;\n" +
 
+            "uniform mat4 transform;\n" +
+
             "void main()\n" +
             "{\n" +
-            "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n" +
+            "   gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n" +
             "   ourColor = aClr;\n" +
             "   TexCoord = texCoord;\n" +
             "}\0";
@@ -48,6 +51,12 @@ namespace STGL.Demo
             "}\n\0";
 
         public unsafe static int Start() {
+            //var adf = Math.Sin(MathHelper.DegressToRadians(90));
+            //var vec = new Vector4F(1, 2, 3, 1);
+            //var mat = Matrix4F.Identity;
+            //mat.Translation(1, 1, 1);
+            //mat.Scale(2, 2, 2);
+            //var result = mat * vec;
             GLFW.Init();
             GLFW.WindowHint(GLFW.CONTEXT_VERSION_MAJOR, 3);
             GLFW.WindowHint(GLFW.CONTEXT_VERSION_MINOR, 3);
@@ -148,6 +157,14 @@ namespace STGL.Demo
             texture2.BindUnit(GLTexture2D.Unit.Texture01);
             program.SetUniform("ourTexture1", 0);
             program.SetUniform("ourTexture2", 1);
+
+            // create a mat for move Let the X + 0.5;
+            var vec = new Vector4F(1, 0, 0, 1);
+            Matrix4F mat = Matrix4F.Identity;
+            mat.Translation(new Vector3F(.5f, 0f, 0));
+            var result_vec = mat * vec;
+            Console.WriteLine(result_vec);
+            program.SetUniform("transform", mat);
 
             // render loop
             // -----------

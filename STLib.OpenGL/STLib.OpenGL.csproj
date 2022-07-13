@@ -55,6 +55,10 @@
     <Compile Include="GL\Exception\GLInvalidEnumException.cs" />
     <Compile Include="GL\Exception\GLProgramLinkException.cs" />
     <Compile Include="GL\Exception\GLShaderCompileException.cs" />
+    <Compile Include="GL\Mathematics\MathHelper.cs" />
+    <Compile Include="GL\Mathematics\Matrix\Matrix4F.cs" />
+    <Compile Include="GL\Mathematics\Vector\Vector3F.cs" />
+    <Compile Include="GL\Mathematics\Vector\Vector4F.cs" />
     <Compile Include="GL\Utils\GLObject.cs" />
     <Compile Include="GL\Utils\GLShader.cs" />
     <Compile Include="GL\Utils\GLProgram.cs" />

@@ -166,6 +166,16 @@ namespace STLib.OpenGL.GL
             }
             GL.Uniform1i(loc, v0);
         }
+        /// <summary>
+        /// Note:<para>OpenGL uses column major matrix order,So this function will auto call mat.SwapRowCol()</para>
+        /// </summary>
+        /// <param name="strName">variable name</param>
+        /// <param name="mat">matrix</param>
+        public void SetUniform(string strName, Mathematics.Matrix4F mat) {
+            mat = mat.SwapRowCol();
+            var loc = GL.GetUniformLocation(this.UID, strName);
+            GL.UniformMatrix4fv(loc, 1, false, ref mat.Row0.X);
+        }
 
         #endregion
 
