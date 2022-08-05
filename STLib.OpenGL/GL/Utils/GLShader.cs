@@ -8,12 +8,12 @@ namespace STLib.OpenGL.GL
     public enum GLShaderType : uint
     {
         Vertex = GL.GL_VERTEX_SHADER,
-        Fragment = GL.GL_FRAGMENT_SHADER
+        Fragment = GL.GL_FRAGMENT_SHADER,
+        Geometry = GL.GL_GEOMETRY_SHADER
     }
 
-    public class GLShader : IDisposable
+    public class GLShader :GLObject, IDisposable
     {
-        public uint UID { get; private set; }
         public GLShaderType Type { get; private set; }
 
         private GLShader(uint uid, GLShaderType type) {
@@ -21,7 +21,7 @@ namespace STLib.OpenGL.GL
             this.Type = type;
         }
 
-        public static GLShader CreateShader(string strCode, GLShaderType type) {
+        public static GLShader Create(string strCode, GLShaderType type) {
             uint uid = 0;
             uid = GL.CreateShader((uint)type);
             GL.ShaderSource(uid, strCode);

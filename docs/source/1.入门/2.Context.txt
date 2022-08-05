@@ -1,0 +1,127 @@
+#T Context
+
+#HS goldenrod|black
+这一章是原版教程没有的部分，纯属作者个人瞎YY，毫无权威性可言。
+#HE
+
+前几章节已经多次提到`Context`了，所以`Context`到底是什么？从来没有在代码里面看到过啊？在原版的教程中，一开始就简单介绍了`Context`但是作者认为过早的介绍意义不是很大，因为作者认为读者可能连一个`Hello World`都还没有看到就先开始给读者介绍`面向对象`并不是很合适。
+作者认为大部分的人应该更愿意看到效果后再去了解其中的原理，而不是先了解原理后再去想象效果。其实到这里介绍`Context`作者也认为有点过早，因为目前为止我们只用到了3个`OpenGL`的函数，仅仅通过3个函数去理解`OpenGL`的工作机制是还不够的。但是又不得不提前去理解它，从下一章开始就会正式进入到`OpenGL`的世界了，大脑会显得一团糟。
+
+#O 代码之间的交互
+
+如果有两个人要共同写一个程序的话，在`.Net`之间他们是很容易的，编写一个`DLL`给另一个人用，然后另一个人添加引用然后在`using`就可以使用里面的`class`进行功能的调用。这是`面向对象`的思维方式。
+但事实上这仅仅是在`.Net`之间而已，很明显一个`java`开发者也想使用同样的功能，这个`DLL`瞬间就不灵了。不同语言之间的代码几乎不兼容，那么那个`DLL`是不是要使用不同的语言开发一遍才能被不同的语言调用？也不是不可以。
+但是。。。几乎所有的高级编程语言都具备调用`C/C++`函数的能力。比如在`.Net`中要调用一个`C/C++`的函数是很容易的。
+
+#CS cs
+[DllImport("user32.dll",EntryPoint="GetWindowText")]
+public static extern int GetWindowText(IntPtr hWnd, byte[] byBuffer, int nMaxCount);
+// 将GetWindowText声明为外部函数 并且这个函数指向在user32.dll中GetWindowText函数
+// 这样我们仅仅申明和DLL中的函数一样的签名就可以了，而不需要实体。
+#CE
+
+那我用`.Net`写一个`DLL`给别人，他是不是也可以通过这种方式调用？如果你可以把一个`函数`写在`class`之外且编译通过的话，作者认为你倒是可以试一下。
+
+所以为了通用，`OpenGL`采用的`C`编写的，而且他只能给我们提供`函数`而不是`class`，先不说`class`在不同语言之间兼容与否，`C`本身就是一个`面向过程`的编程语言，也是最接近汇编的编程语言。
+那么现在用你智商高达250的大脑疯狂的思考一下，在只能给别人提供函数调用的情况下，要如何维护一个庞大的系统？
+
+#O 状态机
+
+什么是状态机？简单来说就一个记录状态的东西，比如作者现在的姿势是躺着的，`躺着`就是一个状态，并且是对`姿势`的一个`状态`。
+而`OpenGL`内部就维护着一个超大的状态机，而`Context`就是其中一部分，里面记录着各种渲染需要的状态（参数）。而我们调用的大部分`glXXX`都是去设置`Context`里面的各种状态，状态被设置后是一直生效的，直到再次被设置才会改变。渲染的时候`OpenGL`会取出所有的状态进行渲染。
+#HS skyblue|black
+`OpenGL`自身是一个巨大的状态机(`State Machine`)：一系列的变量描述`OpenGL`此刻应当如何运行。`OpenGL`的状态通常被称为`OpenGL`上下文(`Context`)。我们通常使用如下途径去更改`OpenGL`状态：设置选项，操作缓冲。最后，我们使用当前`OpenGL`上下文来渲染。
+
+假设当我们想告诉`OpenGL`去画线段而不是三角形的时候，我们通过改变一些上下文变量来改变`OpenGL`状态，从而告诉`OpenGL`如何去绘图。一旦我们改变了`OpenGL`的状态为绘制线段，下一个绘制命令就会画出线段而不是三角形。
+
+当使用`OpenGL`的时候，我们会遇到一些状态设置函数(`State-changing Function`)，这类函数将会改变上下文。以及状态使用函数(`State-using Function`)，这类函数会根据当前`OpenGL`的状态执行一些操作。只要你记住`OpenGL`本质上是个大状态机，就能更容易理解它的大部分特性。
+#HE
+
+#O Context
+
+`OpenGL`是一个公共资源大家都可以调用的，通过`Context`来区分不同的渲染，所以`OpenGL`内部有很多`Context`，每个`Context`都是相互独立的，而`Context`又是和线程绑定的，一个线程只能拥有一个`Context`。
+当我们调用`GLFW.MakeContextCurrent(window);`的时候`Context`就已经和当前线程绑定好。所以当前线程中所有的`glXXX`函数都是对这个`Context`做的操作。
+#HS skyblue|black
+这就是为什么在教程中多次提到`Context`却又从来没有在代码中看到过`Context`的出现。比如`glXXX(context,...)`。因为`glXXX`会直接去找对应的`Context`，这样就不用把`Context`暴露出来当做参数调用了。
+#HE
+#HS pink|black
+这也是之前提到的为什么`glXXX`一定要在创建`Context`之后才能调用。不然`glXXX`内部无法定位一个正确的`Context`对象。
+#HE
+
+我们用一段非常不靠谱的代码来模拟一下`OpenGL`的内部，可能大概是这样子的。
+#CS cs
+public sealed class OpenGL{ // 假设这是OpenGL的接口 大家都可以调用且只有函数提供
+    private static Dictionary<int,GLContext> m_dic; // 保存Context
+    
+    public static void wglMakeContext(...){
+        // ...
+        GLContext context = new GLContext();
+        m_dic.Add(getCurrentThreadID,context);
+    }
+    
+    public static void glViewport(int x,int y,int width,int height){
+        var context = _GetContext();
+        context.DisplayBuffer = _CreateDisplayBuffer(x,y,widht,height);
+    }
+    
+    public static void glClearColor(float r,float g,float b,float a){
+        var context = _GetContext();
+        context.ClearColor = Color.FromArgb((int)(255 * a),...);
+    }
+    
+    public static void Clear(uint nFlag){
+        var context = _GetContext();
+        if((nFlag & GL_COLOR_BUFFER_BIT) == GL_COLOR_BUFFER_BIT){
+            // 清空背景并填充成指定颜色
+            _SetBackgroundColor(context.Buffer,context.ClearColor);
+        }else if(nFlag & GL_DEPTH_BUFFER_BIT) == GL_DEPTH_BUFFER_BIT){
+            // ...
+        }else if(...){...}
+    }
+    
+    private static GLContext _GetContext(){
+        int tid = getCurrentThreadID();
+        if(m_dic.ContainKey(tid)){
+            return m_dic[tid];
+        }
+        throw new Exception();
+    }
+    
+    private static void _SetBackgroundColor(DisplayBufferAddress buffer,Color clr){...}
+    private static void* _CreateDisplayBuffer(int x,int y,int width,int height);
+}
+// Context可以想象成是保存渲染数据的全局变量集合 保存着各种状态
+private struct GLContext{
+    public Color ClearColor;
+    // ...
+    public void* DisplayBuffer;
+}
+#CE
+
+所以`glClearColor`并没有做真正的清除，仅仅是在设置一个状态，等真正需要去清除的时候就会取出这个状态的值去填充背景。
+
+#O 一个不靠谱的比喻
+
+`OpenGL`其实可以看做一个是绘图工作室，而我们的程序就是客户。当我们需要进行一些绘图需求的时候就会给工作室下一个订单，工作室接到我们的订单后就会创建一个画架也就是`Context`。
+
+#I ../images/1.3.paint.png
+[pink|图片是网上偷来的，我也不知道有没有版权问题。]
+
+`Viewport`就是上面的画板，而下面的各种工具，颜色，就是`Context`中的各种状态。但是由于下面的那个小桌板空间有限，并不一定能把我们所有需要用到的东西都放在上面，所以有时候我们还会`bind`一些东西上去操作。
+所以以后这样的代码可能会经常见：
+#CS cs
+uint obj_id_1 = GL.GenXXX;            // 创建一个对象
+GL.BindXXX(object_type, obj_id_1);    // 将对象绑定到Context中
+GL.XXX(object_type, ...);             // 操作对象
+//GL.BindXXXX(object_type, 0);        // 操作完毕解绑 以免被 GL.XXX() 误操作
+
+
+uint obj_id_2 = GL.GenXXX;            // 创建一个对象
+GL.BindXXX(object_type, obj_id_2);    // 将对象绑定到Context中
+GL.XXX(object_type, ...);             // 操作对象
+
+GL.BindXXX(object_type, obj_id_1);    // 以上操作并没有产生渲染 如果最终渲染的时候想要使用obj_id_1
+#CE
+#HS skyblue|black
+解绑操作并不是必须的，上面有提到过，一旦`Context`中的某些东西被设定会一直生效，直到再次被设定。
+#HE

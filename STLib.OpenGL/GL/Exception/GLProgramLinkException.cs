@@ -8,6 +8,6 @@ namespace STLib.OpenGL.GL
     public class GLProgramLinkException : GLException
     {
         public GLProgramLinkException() { }
-        public GLProgramLinkException(string message) : base(message) { }
+        public GLProgramLinkException(string strMessage) : base(strMessage) { }
     }
 }

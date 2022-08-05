@@ -1,0 +1,283 @@
+#T 你好 三角形
+
+欢迎来到`OpenGL`的世界，在进入之前作者不知道读者是否在`.Net`中有使用`Graphics`的经验。那就假设有吧。在`Graphics`中有大量的`DrawXXX`函数。
+#CS cs
+Graphics.DrawLine(Pen,x1,y1,x2,y2);
+Graphics.DrawLines(Pen,Point[]);
+Graphics.DrawRectangle(Brush,x,y,width,height);
+Graphics.DrawPath(Pen,GraphicsPath);
+// ...
+#CE
+可以看到我们需要一些坐标参数，通常我们只需要`X``Y`坐标，就基本可以满足了。毕竟`GDI`只是平面绘图。但是到了`OpenGL`中就不一样了，`OpenGL`是一个`3D`世界。
+
+#O 3D世界
+
+在`OpenGL`的世界中，任何事物都是`3D`的。所以当我们需要渲染一些东西的时候，`X``Y`坐标是无法满足需求的，在`OpenGL`中还会增加一个`Z`坐标。这个作者应该不用解释`Z`坐标是什么意思了。
+在`Graphics`中我们要绘制一个矩形是很容易的，使用`DrawRectangle`就可以了。那么现在使用你智商高达250的大脑思考一下，现在需要绘制一个立方体应该怎么办？
+聪明的你：这还不简单？直接再设计一个`DrawBox`函数并且接收`8`个顶点`坐标`，然后内部实现立方体的绘制。
+哇喔。。。好厉害的样子。。可是这个函数要`8`个坐标参数耶，会不会好长啊好难用啊？
+聪明的你：哦？好像是哦。。要不参数用数组的方式传递？
+啊对对对。。你说的都对。可是现在还想再画个`球`不不不。。。不只是`球`。还想要`圆柱体``三角锥``圆环`。。。
+聪明的你：那就把所有的几何物体都设计一个函数去绘制。这样问题就解决了。完美。发现自己简直就是个天才。
+哇喔。。。所有的几何物体耶。。。那可不可以画一只喵星人啊？
+
+#I2 ../images/1.4.mb.png
+
+实际上`OpenGL`并没有提供上面说的那些函数，因为根本就无法通用。但是有一点是一样的，它们都需要一系列的坐标点。`OpenGL`可以接受一系列的坐标点，然后再告诉`OpenGL`那些坐标点构成一个平面，这样就显得很通用了。
+那既然这样说的话要画一个喵星人要怎么办？很遗憾`OpenGL`并没有生产喵星人的能力，你应当使用其他建模软件生产一个喵星人，然后让`OpenGL`帮你渲染。要知道`OpenGL`是一个3D`渲染接口`，并不是一个3D`建模软件`。
+一些简单的东西还可以通过自己构造坐标点，但是一些`3D模型`动辄上万个顶点，难道还可以通过手动构造吗？显然并不现实。
+
+#O 3D到2D
+
+`OpenGL`虽然是一个`3D`的世界，但是最终渲染的结果却是一个平面的，毕竟渲染结果只是一张画面，所以我们需要了解一下`OpenGL`从`顶点`到`渲染结果`中间的过程，而这个过程是我们需要告诉`OpenGL`如何做，它才能正确的帮我们渲染。
+
+#I ../images/1.4.pipeline.png
+
+上面的步骤被称之为`图形渲染管线`（Graphics Pipeline），一个从顶点到最终显示器上画面的过程。其中蓝色部分是需要我们自己写代码去告诉`OpenGL`如何处理的。不过这个代码采用的是`GLSL`语言（OpenGL Shading Language），所以它与`C/C++`,`.Net`无关，它是一种运行在`GPU`上面的语言。通常我们将它称之为`Shader`（着色器）。而我们用的最多的就是`顶点着色器``片段着色器`。
+
+假设我们需要渲染一个模型，首先我们要准备一个数组`Vertex Data`，这个数组里面存放着这个模型所需要的数据，比如`坐标`。然后再将这个数组送入`显存`。
+[pink|顶点着色器（Vertex Shader）] - 接下来`OpenGL`开始调用`顶点着色器`进行预处理，在`顶点着色器`中需要返回出模型中每个顶点应该显示的位置（虽然`Vertex Data`已经传入了坐标，万一想做一些改变呢？），然后将返回结果继续往下传递。
+[pink|图元装配（Primitive Assembly）] - 这个过程告诉`OpenGL`以什么样子去绘制那些顶点，比如只绘制顶点或者绘制成线框，又或者绘制成面。
+[pink|几何着色器（Geometry Shader）] - 几何着色器把图元形式的一系列顶点的集合作为输入，它可以通过产生新顶点构造出新的（或是其它的）图元来生成其他形状。
+[pink|光栅化（Rasterization Stage）] - 这个过程将我们的模型像素化，也就是生成模型的每一个像素，因为最终渲染结果是以像素的形式呈现在显示器上的。然后将像素信息传递给`片段着色器`，不过在那之前会进行裁剪，把那些在`Viewport`之外的顶点抛弃掉。
+[pink|片段着色器（Fragment Shader）] - 这个过程是能决定渲染质量的一个环节，也是最复杂的一个环节，也就是为什么`光栅化`会先进行裁剪的原因。`光栅化`为我们生成了每一个像素，而`片段着色器`就是再为每一个像素上色的过程。就好比要生产一个玩具模型，`光栅化`只是输出了一个白模，没有任何色彩，而最终这个模型好看与否，就看画的好不好了。在显示器是对应的像素应该是显示什么颜色还需要其他很多数据，比如`光照``阴影`等。这些都是需要在`片段着色器`中计算的。
+[pink|混合与测试（Tests and Blending）] - 这里就在对最终的渲染进行合并，比如模型中哪些像素是有`Alpha`的，以及哪些像素应该在前那些在后。
+
+#HS goldenrod|black
+在`OpenGL`中我们至少需要一个`顶点着色器`和`片段着色器`。
+#HE
+
+#O 开始三角形
+
+现在开始，一步一步的为绘制一个三角形做准备，而我们首先要做的肯定是构造一个三角形的数据。先从坐标点开始。
+#CS cs
+float[] vertices = {
+    -0.5f, -0.5f, 0.0f, // 第一个顶点
+     0.5f, -0.5f, 0.0f, // 第二个顶点
+     0.0f,  0.5f, 0.0f  // 第三个顶点
+};
+#CE
+
+#HS skyblue|black
+上面的坐标看上去似乎没啥问题，但是仔细一看，好像这些坐标都在`-1`-`1`之间，是不是和你想象中的坐标不太一样？这个叫做`标准化设备坐标`（Normalized Device Coordinates, NDC）
+#HE
+
+#I ../images/1.4.ndc.png
+
+想象一下，假设从别的软件导出了一个`3D`模型，然后我们在`OpenGL`中渲染并显示，那么我们应该用一个什么样的比例去显示呢？`3D`的世界里面虽然有坐标，但是它并不是`像素`坐标。而且它还可以任意的缩放。如果没有一个参照很难知道这个模型有多大。而标准化设备坐标就相当于给了一个大小为`2 * 2 * 2`的立方体作为参考，立方体的中心就是原点坐标，这样就可以知道应该渲染多大了。
+
+现在就开始处理这些顶点数据了吗？不不不。在那之前我们需要创建一个`模型`也就是`VAO`。
+
+#CS cs
+uint vao = GL.GenVertexArrays();
+GL.BindVertexArray(vao);        // 绑定到Context中 接下来的所有操作都是在设定这个vao对象
+#CE
+
+#HS pink|black
+`VAO`是必须的，而且一定要在处理`VBO`的数据之前创建并绑定，在原版教程中是先介绍的`VBO`，因为原版教程的逻辑是先介绍数据的处理。我们可能有多个`模型`需要绘制，所以也会有很多顶点数据，为了区分这些数据就需要将这些数据"分组"，而这个"组"就是`VAO`，在核心模式下`OpenGL`绘制是以`VAO`作为绘图单元，没有正确的绑定`VAO``OpenGL`不会产生任何绘制。
+#HE
+
+当有了顶点数据后，我们还需要把这个数据送给`显存`，因为上面的`vertices`是保存在`内存`中的，所以我们需要创建一个`顶点缓冲对象`（Vertex Buffer Objects, VBO），来保存这些数据。
+
+#CS cs
+uint vbo = GL.GenBuffers(); // 创建一个buffer对象并得到id STGL对此函数进行了多个重载
+GL.BindBuffer(GL.GL_ARRAY_BUFFER, vbo); // 将对象绑定到当前Context中
+GL.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW); // 拷贝数据到显存
+#CE
+其中第三个参数告诉显卡如何管理数据，可以是以下值：
+#US
+`GL_STATIC_DRAW` ：数据不会或几乎不会改变。
+`GL_DYNAMIC_DRAW`：数据会被改变很多。
+`GL_STREAM_DRAW` ：数据每次绘制时都会改变。
+#UE
+现在我们只是把数据拷贝到了`显存`中去，其实`OpenGL`根本不知道如何处理这些数据，所以我们需要告诉`OpenGL`如何处理这些数据。
+#I ../images/1.4.vap.png
+#CS cs
+GL.VertexAttribPointer(         // 指定一个数据处理的规则（针对当前绑定的vbo对象）
+    0,                          // 设定一个通道编号 用于在Shader中进行关联
+    3,                          // 每一次从vbo中获取3个数据
+    GL.GL_FLOAT,                // 数据类型是float
+    false,                      // 是否希望数据被标准化(Normalize) 现在我们使用的已经是标准化坐标
+    3 * sizeof(float),          // 下一次获取数据的时候偏移多少数据
+    IntPtr.Zero                 // 第一次获取数据时候偏移多少 很奇怪这个为什么是IntPtr类型？作者也不知道，原版教程说后面再说。
+    );
+GL.EnableVertexAttribArray(0);  // 启用0号通道 下面会做说明
+#CE
+
+#O 着色器
+
+接下来头疼的事情就开始了，`VAO`创建了，`VBO`也有了，并且也指定了数据处理的规则了。那么接下应该怎么办？接下来就是要进入`OpenGL`的`图形渲染管线`（Graphics Pipeline）。
+上面已经提到了，第一步是进入`顶点着色器`，而它需要一串代码，一串使用`GLSL`语言编写的代码。
+#CS cs
+private static string m_str_vertex_shader = @"
+#version 330 core                       // 3.3 版本 使用核心模式
+
+layout (location = 0) in vec3 dotPos;   // 还记得上面的0号通道吗？就是和这里做关联的。
+                                        // dotPos就是从0号通道中获取出来的一个3维向量。
+void main(){
+    gl_Position = vec4(dotPos, 1.0);    // 我们先将3维坐标变成4维。
+}";
+#CE
+按照上面的解释`dotPos`只是获取到了一个点？是的，每获取一个点就会执行一次这段代码。但是由于这段代码是执行在`GPU`上的所以它的效率非常高。
+#HS skyblue|black
+在图形编程中我们经常会使用向量这个数学概念，因为它简明地表达了任意空间中的位置和方向，并且它有非常有用的数学属性。在`GLSL`中一个向量有最多4个分量，每个分量值都代表空间中的一个坐标，它们可以通过`vec.x`、`vec.y`、`vec.z`和`vec.w`来获取。注意`vec.w`分量不是用作表达空间中的位置的（我们处理的是3D不是4D），而是用在所谓透视除法(Perspective Division)上。我们会在后面的教程中更详细地讨论向量。
+#HE
+
+着色器代码有了，现在我们需要编译它，下面的代码看起来可真是繁琐啊。
+#CS cs
+var vertexShader = GL.CreateShader(GL.GL_VERTEX_SHADER);    // 创建一个顶点着色器
+GL.ShaderSource(vertexShader, m_str_vertex_shader);         // 绑定源代码
+GL.CompileShader(vertexShader);                             // 编译源代码
+int nFlag = GL.GetShaderiv(vertexShader, GL.GL_COMPILE_STATUS); // 检测是否编译错误
+if (nFlag == 0) {   // 获取错误信息
+    int nLen = 0;
+    byte[] byBuffer = new byte[1024];
+    GL.GetShaderInfoLog(vertexShader, byBuffer.Length, ref nLen, ref byBuffer[0]);
+    GL.DeleteShader(vertexShader);
+    string strError = Encoding.UTF8.GetString(byBuffer, 0, nLen);
+    throw new GLShaderCompileException(strError);
+}
+#CE
+
+我们还需要一个`片段着色器`
+
+#CS cs
+private static string m_str_fragment_shader = @"
+#version 330 core
+
+out vec4 fragColor; // 最终需要输出的像素颜色
+
+void main(){
+    fragColor = vec4(1.0, 0.5, 0.2, 1.0);
+}";
+
+var fragmentShader = GL.CreateShader(GL.GL_FRAGMENT_SHADER);
+GL.ShaderSource(fragmentShader, m_str_fragment_shader);
+GL.CompileShader(fragmentShader);
+nFlag = GL.GetShaderiv(fragmentShader, GL.GL_COMPILE_STATUS);
+if (nFlag == 0) {
+    int nLen = 0;
+    byte[] byBuffer = new byte[1024];
+    GL.GetShaderInfoLog(fragmentShader, byBuffer.Length, ref nLen, ref byBuffer[0]);
+    GL.DeleteShader(fragmentShader);
+    string strError = Encoding.UTF8.GetString(byBuffer, 0, nLen);
+    throw new GLShaderCompileException(strError);
+}
+#CE
+
+是不是感觉差不多的代码又要写一遍？不不不。。还并没有结束。我们有了两个`着色器`后还需要一个程序去执行它们。
+
+#CS cs
+var program = GL.CreateProgram();           // 创建一个程序
+GL.AttachShader(program, vertexShader);     // 将着色器连接进去
+GL.AttachShader(program, fragmentShader);
+GL.LinkProgram(program);
+nFlag = GL.GetProgramiv(program, GL.GL_LINK_STATUS);
+if (nFlag == 0) {
+    int nLen = 0;
+    byte[] byBuffer = new byte[1024];
+    GL.GetProgramInfoLog(program, byBuffer.Length, ref nLen, ref byBuffer[0]);
+    GL.DeleteProgram(program);
+    string strError = Encoding.UTF8.GetString(byBuffer, 0, nLen);
+    throw new GLProgramLinkException(strError);
+}
+GL.UseProgram(program);             // 使用程序
+GL.DeleteShader(vertexShader);      // 两个临时工不需要了
+GL.DeleteShader(fragmentShader);
+#CE
+累了。。。麻木了。。。感觉自己就是在不停的`Copy`代码。。。不过这一切都是值得的。因为接下来就开始真正的绘制了。
+#HS skyblue|black
+事实上在`STGL`中已经提供了`GLShader`和`GLProgram`对象，在后面的章节中使用，因为现在我们是为了学习，所以需要了解更多的细节。
+#HE
+#HS skyblue|black
+着色器程序对象(Shader Program Object)是多个着色器合并之后并最终链接完成的版本。如果要使用刚才编译的着色器我们必须把它们链接(Link)为一个着色器程序对象，然后在渲染对象的时候激活这个着色器程序。已激活着色器程序的着色器将在我们发送渲染调用的时候被使用。
+当链接着色器至一个程序的时候，它会把每个着色器的输出链接到下个着色器的输入。当输出和输入不匹配的时候，你会得到一个连接错误。
+#HE
+
+#O 千呼万唤始出来
+
+开始渲染把。
+#CS cs
+while (!GLFW.WindowShouldClose(window)) {
+    processInput(window);
+
+    GL.ClearColor(.5f, .5f, .5f, 1f);   // 这一句其实可以放在外面，因为一旦设定值就会一直保存在Context中。
+    GL.Clear(GL.GL_COLOR_BUFFER_BIT);
+    // GL.BindVertexArray(vao); 其实这一句可以不用，因为我们只有一个VAO而且一开始就绑定到了Context中没变过。
+    GL.DrawArrays(              // 前面做了那么多工作，为的就是这一句代码。
+        GL.GL_TRIANGLES,        // 以三角形方式绘制平面
+        0,                      // 开始位子
+        3                       // 一共有三个顶点
+        );
+
+    GLFW.SwapBuffers(window);
+}
+#CE
+#I ../images/1.4.triangle.png
+全部代码：[点击此链接](./1.4.triangle.txt)
+
+#O 回顾
+
+上面提到了`VAO``VBO`，其实还有一个`EBO`（稍后再说）。因为上面为了快速的让读者看到效果，所以很多描述很浅显。
+#I ../images/1.4.vao.png
+上图是`VAO`和`VBO`之间的关系。可以看到一个`VAO`有16个`attribute pointer`，还记得这句代码吗？
+#CS cs
+GL.VertexAttribPointer(0, 3, GL.GL_FLOAT, false, 3 * sizeof(float), IntPtr.Zero);
+GL.EnableVertexAttribArray(0);
+#CE
+那个`0`其实是有范围限制的，并不是说我们想写多少就写多少，它在`0-15`之间。其实这个值对于不同硬件来说并不是固定的，只是`OpenGL`保证至少`0-15`是可用的。如果你想知道在你的硬件上有多少个可用，可以使用下面的代码。
+#CS cs
+var num = GL.GetIntegerv(GL.GL_MAX_VERTEX_ATTRIBS);
+#CE
+#HS skyblue|black
+这也是为什么上面说在处理`VBO`数据之前一定要创建并绑定`VAO`，因为上面两句代码是在对当前`Context`中的`VAO`的`attribute pointer`绑定数据，如果当前`Context`中并不存在`VAO`那么就会出现错误。
+#HE
+一个`VAO`对象是可以绑定多个`VBO`对象的，大概代码如下：
+#CS cs
+uint vao_1 = GL.GenVertexArrays();  // 第一个VAO
+GL.BindVertexArray(vao_1);
+
+uint[] vbo_1 = GL.GenBuffers(2);
+
+GL.BindBuffer(GL.GL_ARRAY_BUFFER, vbo_1[0]);
+GL.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
+GL.VertexAttribPointer(0,...);
+GL.EnableVertexAttribArray(0);
+
+GL.BindBuffer(GL.GL_ARRAY_BUFFER, vbo_1[1]);
+GL.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
+GL.VertexAttribPointer(1,...);
+GL.EnableVertexAttribArray(1);
+
+uint vao_2 = GL.GenVertexArrays();  // 第二个VAO
+GL.BindVertexArray(vao_2);
+
+uint[] vbo_2 = GL.GenBuffers(2);
+
+GL.BindBuffer(GL.GL_ARRAY_BUFFER, vbo_2[0]);
+GL.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
+GL.VertexAttribPointer(0,...);
+GL.EnableVertexAttribArray(0);
+
+GL.BindBuffer(GL.GL_ARRAY_BUFFER, vbo_2[1]);
+GL.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
+GL.VertexAttribPointer(1,...);
+GL.EnableVertexAttribArray(1);
+// ...
+while (!GLFW.WindowShouldClose(window)) {
+    // ...
+    GL.ClearColor(.5f, .5f, .5f, 1f);
+    GL.Clear(GL.GL_COLOR_BUFFER_BIT);
+    GL.BindVertexArray(vao_1);          // 绘制第一个VAO
+    GL.DrawArrays(GL.GL_TRIANGLES,...);
+    GL.BindVertexArray(vao_2);          // 绘制第二个VAO
+    GL.DrawArrays(GL.GL_TRIANGLES,...);
+    // ...
+}
+#CE
+虽然上面的代码很多，但是逻辑应该还是很清晰，很容易理解。其实可能你已经看到了很多重复的代码？那么是否可以对它们进行封装呢？作者认为是可以的，起码教程写到这里的时候作者已经构思过了一些方案，只是还没有开始行动。
+
+#HS skyblue|black
+虽然上面的代码已经可以让我们进行已经绘制了，但是似乎存在一个问题。在下一个章节介绍。
+#HE
+

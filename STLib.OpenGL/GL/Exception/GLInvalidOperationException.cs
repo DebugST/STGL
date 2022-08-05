@@ -12,6 +12,6 @@ namespace STLib.OpenGL.GL
             "The offending command is ignored and has no other side effect than to set the error flag.";
 
         public GLInvalidOperationException() : base(m_str_error) { }
-        public GLInvalidOperationException(string message) : base(message) { }
+        public GLInvalidOperationException(string strMessage) : base(strMessage) { }
     }
 }

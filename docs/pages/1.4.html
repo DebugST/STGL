@@ -1,0 +1,296 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<title>STGL</title>
+<link rel="stylesheet" type="text/css" href="..//css/stdoc.css"/>
+<script type="text/javascript" src="..//js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="..//js/stdoc.js"></script>
+</head>
+<body>
+<div id="div_model" style="display:none">BOOK</div>
+<div id="div_body">
+<div id="div_logo"></div>
+<div id="div_left">
+<div id="div_left_list">
+<ul class='ul_group_root'>
+<li>
+    <a class='a_node_root anchor_btn' name='a_a' href='#a_a'>你好 三角形</a>
+    <ul>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_b' href='#a_b'>3D世界</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_c' href='#a_c'>3D到2D</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_d' href='#a_d'>开始三角形</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_e' href='#a_e'>着色器</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_f' href='#a_f'>千呼万唤始出来</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_g' href='#a_g'>回顾</a></li>
+    </ul>
+</li>
+</ul><div class='div_left_space_space'></div>
+</div>
+<span id="span_time">2022-08-06 -> by:<span>DebugST</span></span>
+</div>
+<div id="div_right">
+<span class='span_location'>1.入门 &gt; 4.你好 三角形<span style='float:right'>2022-08-03</span></span><h1 class='h_title anchor_point' name='a_a'>你好 三角形</h1>
+<p>欢迎来到<span class='mark'>OpenGL</span>的世界，在进入之前作者不知道读者是否在<span class='mark'>.Net</span>中有使用<span class='mark'>Graphics</span>的经验。那就假设有吧。在<span class='mark'>Graphics</span>中有大量的<span class='mark'>DrawXXX</span>函数。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>Graphics</span><span style='color:rgba(219,112,147,1)'>.DrawLine</span><span style='color:rgba(255,255,255,1)'>(</span>Pen<span style='color:rgba(255,255,255,1)'>,</span>x1<span style='color:rgba(255,255,255,1)'>,</span>y1<span style='color:rgba(255,255,255,1)'>,</span>x2<span style='color:rgba(255,255,255,1)'>,</span>y2<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>Graphics</span><span style='color:rgba(219,112,147,1)'>.DrawLines</span><span style='color:rgba(255,255,255,1)'>(</span>Pen<span style='color:rgba(255,255,255,1)'>,</span>Point<span style='color:rgba(255,255,255,1)'>[]);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>Graphics</span><span style='color:rgba(219,112,147,1)'>.DrawRectangle</span><span style='color:rgba(255,255,255,1)'>(</span>Brush<span style='color:rgba(255,255,255,1)'>,</span>x<span style='color:rgba(255,255,255,1)'>,</span>y<span style='color:rgba(255,255,255,1)'>,</span>width<span style='color:rgba(255,255,255,1)'>,</span>height<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>Graphics</span><span style='color:rgba(219,112,147,1)'>.DrawPath</span><span style='color:rgba(255,255,255,1)'>(</span>Pen<span style='color:rgba(255,255,255,1)'>,</span>GraphicsPath<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,0,1)'>// ...</span></pre>
+</div>
+<p>可以看到我们需要一些坐标参数，通常我们只需要<span class='mark'>X</span><span class='mark'>Y</span>坐标，就基本可以满足了。毕竟<span class='mark'>GDI</span>只是平面绘图。但是到了<span class='mark'>OpenGL</span>中就不一样了，<span class='mark'>OpenGL</span>是一个<span class='mark'>3D</span>世界。</p>
+<div><h2 class='h_option anchor_point' name='a_b'>3D世界</h2></div>
+<p>在<span class='mark'>OpenGL</span>的世界中，任何事物都是<span class='mark'>3D</span>的。所以当我们需要渲染一些东西的时候，<span class='mark'>X</span><span class='mark'>Y</span>坐标是无法满足需求的，在<span class='mark'>OpenGL</span>中还会增加一个<span class='mark'>Z</span>坐标。这个作者应该不用解释<span class='mark'>Z</span>坐标是什么意思了。</p>
+<p>在<span class='mark'>Graphics</span>中我们要绘制一个矩形是很容易的，使用<span class='mark'>DrawRectangle</span>就可以了。那么现在使用你智商高达250的大脑思考一下，现在需要绘制一个立方体应该怎么办？</p>
+<p>聪明的你：这还不简单？直接再设计一个<span class='mark'>DrawBox</span>函数并且接收<span class='mark'>8</span>个顶点<span class='mark'>坐标</span>，然后内部实现立方体的绘制。</p>
+<p>哇喔。。。好厉害的样子。。可是这个函数要<span class='mark'>8</span>个坐标参数耶，会不会好长啊好难用啊？</p>
+<p>聪明的你：哦？好像是哦。。要不参数用数组的方式传递？</p>
+<p>啊对对对。。你说的都对。可是现在还想再画个<span class='mark'>球</span>不不不。。。不只是<span class='mark'>球</span>。还想要<span class='mark'>圆柱体</span><span class='mark'>三角锥</span><span class='mark'>圆环</span>。。。</p>
+<p>聪明的你：那就把所有的几何物体都设计一个函数去绘制。这样问题就解决了。完美。发现自己简直就是个天才。</p>
+<p>哇喔。。。所有的几何物体耶。。。那可不可以画一只喵星人啊？</p>
+<img width=167 src='../images/1.4.mb.png'/>
+<p>实际上<span class='mark'>OpenGL</span>并没有提供上面说的那些函数，因为根本就无法通用。但是有一点是一样的，它们都需要一系列的坐标点。<span class='mark'>OpenGL</span>可以接受一系列的坐标点，然后再告诉<span class='mark'>OpenGL</span>那些坐标点构成一个平面，这样就显得很通用了。</p>
+<p>那既然这样说的话要画一个喵星人要怎么办？很遗憾<span class='mark'>OpenGL</span>并没有生产喵星人的能力，你应当使用其他建模软件生产一个喵星人，然后让<span class='mark'>OpenGL</span>帮你渲染。要知道<span class='mark'>OpenGL</span>是一个3D<span class='mark'>渲染接口</span>，并不是一个3D<span class='mark'>建模软件</span>。</p>
+<p>一些简单的东西还可以通过自己构造坐标点，但是一些<span class='mark'>3D模型</span>动辄上万个顶点，难道还可以通过手动构造吗？显然并不现实。</p>
+<div><h2 class='h_option anchor_point' name='a_c'>3D到2D</h2></div>
+<p><span class='mark'>OpenGL</span>虽然是一个<span class='mark'>3D</span>的世界，但是最终渲染的结果却是一个平面的，毕竟渲染结果只是一张画面，所以我们需要了解一下<span class='mark'>OpenGL</span>从<span class='mark'>顶点</span>到<span class='mark'>渲染结果</span>中间的过程，而这个过程是我们需要告诉<span class='mark'>OpenGL</span>如何做，它才能正确的帮我们渲染。</p>
+<img src='../images/1.4.pipeline.png'/>
+<p>上面的步骤被称之为<span class='mark'>图形渲染管线</span>（Graphics Pipeline），一个从顶点到最终显示器上画面的过程。其中蓝色部分是需要我们自己写代码去告诉<span class='mark'>OpenGL</span>如何处理的。不过这个代码采用的是<span class='mark'>GLSL</span>语言（OpenGL Shading Language），所以它与<span class='mark'>C/C++</span>,<span class='mark'>.Net</span>无关，它是一种运行在<span class='mark'>GPU</span>上面的语言。通常我们将它称之为<span class='mark'>Shader</span>（着色器）。而我们用的最多的就是<span class='mark'>顶点着色器</span><span class='mark'>片段着色器</span>。</p>
+<p>假设我们需要渲染一个模型，首先我们要准备一个数组<span class='mark'>Vertex Data</span>，这个数组里面存放着这个模型所需要的数据，比如<span class='mark'>坐标</span>。然后再将这个数组送入<span class='mark'>显存</span>。</p>
+<p><span style='color:pink'>顶点着色器（Vertex Shader）</span> - 接下来<span class='mark'>OpenGL</span>开始调用<span class='mark'>顶点着色器</span>进行预处理，在<span class='mark'>顶点着色器</span>中需要返回出模型中每个顶点应该显示的位置（虽然<span class='mark'>Vertex Data</span>已经传入了坐标，万一想做一些改变呢？），然后将返回结果继续往下传递。</p>
+<p><span style='color:pink'>图元装配（Primitive Assembly）</span> - 这个过程告诉<span class='mark'>OpenGL</span>以什么样子去绘制那些顶点，比如只绘制顶点或者绘制成线框，又或者绘制成面。</p>
+<p><span style='color:pink'>几何着色器（Geometry Shader）</span> - 几何着色器把图元形式的一系列顶点的集合作为输入，它可以通过产生新顶点构造出新的（或是其它的）图元来生成其他形状。</p>
+<p><span style='color:pink'>光栅化（Rasterization Stage）</span> - 这个过程将我们的模型像素化，也就是生成模型的每一个像素，因为最终渲染结果是以像素的形式呈现在显示器上的。然后将像素信息传递给<span class='mark'>片段着色器</span>，不过在那之前会进行裁剪，把那些在<span class='mark'>Viewport</span>之外的顶点抛弃掉。</p>
+<p><span style='color:pink'>片段着色器（Fragment Shader）</span> - 这个过程是能决定渲染质量的一个环节，也是最复杂的一个环节，也就是为什么<span class='mark'>光栅化</span>会先进行裁剪的原因。<span class='mark'>光栅化</span>为我们生成了每一个像素，而<span class='mark'>片段着色器</span>就是再为每一个像素上色的过程。就好比要生产一个玩具模型，<span class='mark'>光栅化</span>只是输出了一个白模，没有任何色彩，而最终这个模型好看与否，就看画的好不好了。在显示器是对应的像素应该是显示什么颜色还需要其他很多数据，比如<span class='mark'>光照</span><span class='mark'>阴影</span>等。这些都是需要在<span class='mark'>片段着色器</span>中计算的。</p>
+<p><span style='color:pink'>混合与测试（Tests and Blending）</span> - 这里就在对最终的渲染进行合并，比如模型中哪些像素是有<span class='mark'>Alpha</span>的，以及哪些像素应该在前那些在后。</p>
+<div class='div_hightlight' style='background-color:goldenrod;color:black'>
+<p>在<span class='mark'>OpenGL</span>中我们至少需要一个<span class='mark'>顶点着色器</span>和<span class='mark'>片段着色器</span>。</p>
+</div>
+<div><h2 class='h_option anchor_point' name='a_d'>开始三角形</h2></div>
+<p>现在开始，一步一步的为绘制一个三角形做准备，而我们首先要做的肯定是构造一个三角形的数据。先从坐标点开始。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>float</span><span style='color:rgba(255,255,255,1)'>[]</span> vertices <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(255,255,255,1)'>{</span>
+<span class='span_code_line'></span>    <span style='color:rgba(255,255,255,1)'>-</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,255,255,1)'>-</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,0,1)'>// 第一个顶点</span>
+<span class='span_code_line'></span>     <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,255,255,1)'>-</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,0,1)'>// 第二个顶点</span>
+<span class='span_code_line'></span>     <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span>  <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span>  <span style='color:rgba(0,255,0,1)'>// 第三个顶点</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>};</span></pre>
+</div>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>上面的坐标看上去似乎没啥问题，但是仔细一看，好像这些坐标都在<span class='mark'>-1</span>-<span class='mark'>1</span>之间，是不是和你想象中的坐标不太一样？这个叫做<span class='mark'>标准化设备坐标</span>（Normalized Device Coordinates, NDC）</p>
+</div>
+<img src='../images/1.4.ndc.png'/>
+<p>想象一下，假设从别的软件导出了一个<span class='mark'>3D</span>模型，然后我们在<span class='mark'>OpenGL</span>中渲染并显示，那么我们应该用一个什么样的比例去显示呢？<span class='mark'>3D</span>的世界里面虽然有坐标，但是它并不是<span class='mark'>像素</span>坐标。而且它还可以任意的缩放。如果没有一个参照很难知道这个模型有多大。而标准化设备坐标就相当于给了一个大小为<span class='mark'>2 * 2 * 2</span>的立方体作为参考，立方体的中心就是原点坐标，这样就可以知道应该渲染多大了。</p>
+<p>现在就开始处理这些顶点数据了吗？不不不。在那之前我们需要创建一个<span class='mark'>模型</span>也就是<span class='mark'>VAO</span>。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>uint</span> vao <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GenVertexArrays</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BindVertexArray</span><span style='color:rgba(255,255,255,1)'>(</span>vao<span style='color:rgba(255,255,255,1)'>);</span>        <span style='color:rgba(0,255,0,1)'>// 绑定到Context中 接下来的所有操作都是在设定这个vao对象</span></pre>
+</div>
+<div class='div_hightlight' style='background-color:pink;color:black'>
+<p><span class='mark'>VAO</span>是必须的，而且一定要在处理<span class='mark'>VBO</span>的数据之前创建并绑定，在原版教程中是先介绍的<span class='mark'>VBO</span>，因为原版教程的逻辑是先介绍数据的处理。我们可能有多个<span class='mark'>模型</span>需要绘制，所以也会有很多顶点数据，为了区分这些数据就需要将这些数据"分组"，而这个"组"就是<span class='mark'>VAO</span>，在核心模式下<span class='mark'>OpenGL</span>绘制是以<span class='mark'>VAO</span>作为绘图单元，没有正确的绑定<span class='mark'>VAO</span><span class='mark'>OpenGL</span>不会产生任何绘制。</p>
+</div>
+<p>当有了顶点数据后，我们还需要把这个数据送给<span class='mark'>显存</span>，因为上面的<span class='mark'>vertices</span>是保存在<span class='mark'>内存</span>中的，所以我们需要创建一个<span class='mark'>顶点缓冲对象</span>（Vertex Buffer Objects, VBO），来保存这些数据。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>uint</span> vbo <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GenBuffers</span><span style='color:rgba(255,255,255,1)'>();</span> <span style='color:rgba(0,255,0,1)'>// 创建一个buffer对象并得到id STGL对此函数进行了多个重载</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BindBuffer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vbo<span style='color:rgba(255,255,255,1)'>);</span> <span style='color:rgba(0,255,0,1)'>// 将对象绑定到当前Context中</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BufferData</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vertices<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_STATIC_DRAW</span><span style='color:rgba(255,255,255,1)'>);</span> <span style='color:rgba(0,255,0,1)'>// 拷贝数据到显存</span></pre>
+</div>
+<p>其中第三个参数告诉显卡如何管理数据，可以是以下值：</p>
+<ul>
+<li><span class='mark'>GL_STATIC_DRAW</span> ：数据不会或几乎不会改变。</li>
+<li><span class='mark'>GL_DYNAMIC_DRAW</span>：数据会被改变很多。</li>
+<li><span class='mark'>GL_STREAM_DRAW</span> ：数据每次绘制时都会改变。</li>
+</ul>
+<p>现在我们只是把数据拷贝到了<span class='mark'>显存</span>中去，其实<span class='mark'>OpenGL</span>根本不知道如何处理这些数据，所以我们需要告诉<span class='mark'>OpenGL</span>如何处理这些数据。</p>
+<img src='../images/1.4.vap.png'/>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.VertexAttribPointer</span><span style='color:rgba(255,255,255,1)'>(</span>         <span style='color:rgba(0,255,0,1)'>// 指定一个数据处理的规则（针对当前绑定的vbo对象）</span>
+<span class='span_code_line'></span>    <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span>                          <span style='color:rgba(0,255,0,1)'>// 设定一个通道编号 用于在Shader中进行关联</span>
+<span class='span_code_line'></span>    <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>,</span>                          <span style='color:rgba(0,255,0,1)'>// 每一次从vbo中获取3个数据</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_FLOAT</span><span style='color:rgba(255,255,255,1)'>,</span>                <span style='color:rgba(0,255,0,1)'>// 数据类型是float</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>false</span><span style='color:rgba(255,255,255,1)'>,</span>                      <span style='color:rgba(0,255,0,1)'>// 是否希望数据被标准化(Normalize) 现在我们使用的已经是标准化坐标</span>
+<span class='span_code_line'></span>    <span style='color:rgba(144,238,144,1)'>3</span> <span style='color:rgba(255,255,255,1)'>*</span> <span style='color:rgba(100,149,237,1)'>sizeof</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(100,149,237,1)'>float</span><span style='color:rgba(255,255,255,1)'>),</span>          <span style='color:rgba(0,255,0,1)'>// 下一次获取数据的时候偏移多少数据</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span>                 <span style='color:rgba(0,255,0,1)'>// 第一次获取数据时候偏移多少 很奇怪这个为什么是IntPtr类型？作者也不知道，原版教程说后面再说。</span>
+<span class='span_code_line'></span>    <span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.EnableVertexAttribArray</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);</span>  <span style='color:rgba(0,255,0,1)'>// 启用0号通道 下面会做说明</span></pre>
+</div>
+<div><h2 class='h_option anchor_point' name='a_e'>着色器</h2></div>
+<p>接下来头疼的事情就开始了，<span class='mark'>VAO</span>创建了，<span class='mark'>VBO</span>也有了，并且也指定了数据处理的规则了。那么接下应该怎么办？接下来就是要进入<span class='mark'>OpenGL</span>的<span class='mark'>图形渲染管线</span>（Graphics Pipeline）。</p>
+<p>上面已经提到了，第一步是进入<span class='mark'>顶点着色器</span>，而它需要一串代码，一串使用<span class='mark'>GLSL</span>语言编写的代码。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>private static</span> <span style='color:rgba(100,149,237,1)'>string</span> m_str_vertex_shader <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(255,165,0,1)'>@"
+<span class='span_code_line'></span>#version 330 core                       // 3.3 版本 使用核心模式
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>layout (location = 0) in vec3 dotPos;   // 还记得上面的0号通道吗？就是和这里做关联的。
+<span class='span_code_line'></span>                                        // dotPos就是从0号通道中获取出来的一个3维向量。
+<span class='span_code_line'></span>void main(){
+<span class='span_code_line'></span>    gl_Position = vec4(dotPos, 1.0);    // 我们先将3维坐标变成4维。
+<span class='span_code_line'></span>}"</span><span style='color:rgba(255,255,255,1)'>;</span></pre>
+</div>
+<p>按照上面的解释<span class='mark'>dotPos</span>只是获取到了一个点？是的，每获取一个点就会执行一次这段代码。但是由于这段代码是执行在<span class='mark'>GPU</span>上的所以它的效率非常高。</p>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>在图形编程中我们经常会使用向量这个数学概念，因为它简明地表达了任意空间中的位置和方向，并且它有非常有用的数学属性。在<span class='mark'>GLSL</span>中一个向量有最多4个分量，每个分量值都代表空间中的一个坐标，它们可以通过<span class='mark'>vec.x</span>、<span class='mark'>vec.y</span>、<span class='mark'>vec.z</span>和<span class='mark'>vec.w</span>来获取。注意<span class='mark'>vec.w</span>分量不是用作表达空间中的位置的（我们处理的是3D不是4D），而是用在所谓透视除法(Perspective Division)上。我们会在后面的教程中更详细地讨论向量。</p>
+</div>
+<p>着色器代码有了，现在我们需要编译它，下面的代码看起来可真是繁琐啊。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>var</span> vertexShader <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.CreateShader</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_VERTEX_SHADER</span><span style='color:rgba(255,255,255,1)'>);</span>    <span style='color:rgba(0,255,0,1)'>// 创建一个顶点着色器</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.ShaderSource</span><span style='color:rgba(255,255,255,1)'>(</span>vertexShader<span style='color:rgba(255,255,255,1)'>,</span> m_str_vertex_shader<span style='color:rgba(255,255,255,1)'>);</span>         <span style='color:rgba(0,255,0,1)'>// 绑定源代码</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.CompileShader</span><span style='color:rgba(255,255,255,1)'>(</span>vertexShader<span style='color:rgba(255,255,255,1)'>);</span>                             <span style='color:rgba(0,255,0,1)'>// 编译源代码</span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>int</span> nFlag <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GetShaderiv</span><span style='color:rgba(255,255,255,1)'>(</span>vertexShader<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_COMPILE_STATUS</span><span style='color:rgba(255,255,255,1)'>);</span> <span style='color:rgba(0,255,0,1)'>// 检测是否编译错误</span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span>nFlag <span style='color:rgba(255,255,255,1)'>==</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>) {</span>   <span style='color:rgba(0,255,0,1)'>// 获取错误信息</span>
+<span class='span_code_line'></span>    <span style='color:rgba(100,149,237,1)'>int</span> nLen <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>    <span style='color:rgba(100,149,237,1)'>byte</span><span style='color:rgba(255,255,255,1)'>[]</span> byBuffer <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(30,144,255,1)'>new</span> <span style='color:rgba(100,149,237,1)'>byte</span><span style='color:rgba(255,255,255,1)'>[</span><span style='color:rgba(144,238,144,1)'>1024</span><span style='color:rgba(255,255,255,1)'>];</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GetShaderInfoLog</span><span style='color:rgba(255,255,255,1)'>(</span>vertexShader<span style='color:rgba(255,255,255,1)'>,</span> byBuffer<span style='color:rgba(112,128,144,1)'>.Length</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>ref</span> nLen<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>ref</span> byBuffer<span style='color:rgba(255,255,255,1)'>[</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>]);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.DeleteShader</span><span style='color:rgba(255,255,255,1)'>(</span>vertexShader<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(100,149,237,1)'>string</span> strError <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>Encoding</span><span style='color:rgba(112,128,144,1)'>.UTF8</span><span style='color:rgba(219,112,147,1)'>.GetString</span><span style='color:rgba(255,255,255,1)'>(</span>byBuffer<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> nLen<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>throw new</span> <span style='color:rgba(0,255,255,1)'>GLShaderCompileException</span><span style='color:rgba(255,255,255,1)'>(</span>strError<span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p>我们还需要一个<span class='mark'>片段着色器</span></p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>private static</span> <span style='color:rgba(100,149,237,1)'>string</span> m_str_fragment_shader <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(255,165,0,1)'>@"
+<span class='span_code_line'></span>#version 330 core
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>out vec4 fragColor; // 最终需要输出的像素颜色
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>void main(){
+<span class='span_code_line'></span>    fragColor = vec4(1.0, 0.5, 0.2, 1.0);
+<span class='span_code_line'></span>}"</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>var</span> fragmentShader <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.CreateShader</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_FRAGMENT_SHADER</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.ShaderSource</span><span style='color:rgba(255,255,255,1)'>(</span>fragmentShader<span style='color:rgba(255,255,255,1)'>,</span> m_str_fragment_shader<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.CompileShader</span><span style='color:rgba(255,255,255,1)'>(</span>fragmentShader<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>nFlag <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GetShaderiv</span><span style='color:rgba(255,255,255,1)'>(</span>fragmentShader<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_COMPILE_STATUS</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span>nFlag <span style='color:rgba(255,255,255,1)'>==</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(100,149,237,1)'>int</span> nLen <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>    <span style='color:rgba(100,149,237,1)'>byte</span><span style='color:rgba(255,255,255,1)'>[]</span> byBuffer <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(30,144,255,1)'>new</span> <span style='color:rgba(100,149,237,1)'>byte</span><span style='color:rgba(255,255,255,1)'>[</span><span style='color:rgba(144,238,144,1)'>1024</span><span style='color:rgba(255,255,255,1)'>];</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GetShaderInfoLog</span><span style='color:rgba(255,255,255,1)'>(</span>fragmentShader<span style='color:rgba(255,255,255,1)'>,</span> byBuffer<span style='color:rgba(112,128,144,1)'>.Length</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>ref</span> nLen<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>ref</span> byBuffer<span style='color:rgba(255,255,255,1)'>[</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>]);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.DeleteShader</span><span style='color:rgba(255,255,255,1)'>(</span>fragmentShader<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(100,149,237,1)'>string</span> strError <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>Encoding</span><span style='color:rgba(112,128,144,1)'>.UTF8</span><span style='color:rgba(219,112,147,1)'>.GetString</span><span style='color:rgba(255,255,255,1)'>(</span>byBuffer<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> nLen<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>throw new</span> <span style='color:rgba(0,255,255,1)'>GLShaderCompileException</span><span style='color:rgba(255,255,255,1)'>(</span>strError<span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p>是不是感觉差不多的代码又要写一遍？不不不。。还并没有结束。我们有了两个<span class='mark'>着色器</span>后还需要一个程序去执行它们。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>var</span> program <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.CreateProgram</span><span style='color:rgba(255,255,255,1)'>();</span>           <span style='color:rgba(0,255,0,1)'>// 创建一个程序</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.AttachShader</span><span style='color:rgba(255,255,255,1)'>(</span>program<span style='color:rgba(255,255,255,1)'>,</span> vertexShader<span style='color:rgba(255,255,255,1)'>);</span>     <span style='color:rgba(0,255,0,1)'>// 将着色器连接进去</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.AttachShader</span><span style='color:rgba(255,255,255,1)'>(</span>program<span style='color:rgba(255,255,255,1)'>,</span> fragmentShader<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.LinkProgram</span><span style='color:rgba(255,255,255,1)'>(</span>program<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>nFlag <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GetProgramiv</span><span style='color:rgba(255,255,255,1)'>(</span>program<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_LINK_STATUS</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span>nFlag <span style='color:rgba(255,255,255,1)'>==</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(100,149,237,1)'>int</span> nLen <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>    <span style='color:rgba(100,149,237,1)'>byte</span><span style='color:rgba(255,255,255,1)'>[]</span> byBuffer <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(30,144,255,1)'>new</span> <span style='color:rgba(100,149,237,1)'>byte</span><span style='color:rgba(255,255,255,1)'>[</span><span style='color:rgba(144,238,144,1)'>1024</span><span style='color:rgba(255,255,255,1)'>];</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GetProgramInfoLog</span><span style='color:rgba(255,255,255,1)'>(</span>program<span style='color:rgba(255,255,255,1)'>,</span> byBuffer<span style='color:rgba(112,128,144,1)'>.Length</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>ref</span> nLen<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>ref</span> byBuffer<span style='color:rgba(255,255,255,1)'>[</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>]);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.DeleteProgram</span><span style='color:rgba(255,255,255,1)'>(</span>program<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(100,149,237,1)'>string</span> strError <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>Encoding</span><span style='color:rgba(112,128,144,1)'>.UTF8</span><span style='color:rgba(219,112,147,1)'>.GetString</span><span style='color:rgba(255,255,255,1)'>(</span>byBuffer<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> nLen<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>throw new</span> <span style='color:rgba(0,255,255,1)'>GLProgramLinkException</span><span style='color:rgba(255,255,255,1)'>(</span>strError<span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>}</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.UseProgram</span><span style='color:rgba(255,255,255,1)'>(</span>program<span style='color:rgba(255,255,255,1)'>);</span>             <span style='color:rgba(0,255,0,1)'>// 使用程序</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.DeleteShader</span><span style='color:rgba(255,255,255,1)'>(</span>vertexShader<span style='color:rgba(255,255,255,1)'>);</span>      <span style='color:rgba(0,255,0,1)'>// 两个临时工不需要了</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.DeleteShader</span><span style='color:rgba(255,255,255,1)'>(</span>fragmentShader<span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<p>累了。。。麻木了。。。感觉自己就是在不停的<span class='mark'>Copy</span>代码。。。不过这一切都是值得的。因为接下来就开始真正的绘制了。</p>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>事实上在<span class='mark'>STGL</span>中已经提供了<span class='mark'>GLShader</span>和<span class='mark'>GLProgram</span>对象，在后面的章节中使用，因为现在我们是为了学习，所以需要了解更多的细节。</p>
+</div>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>着色器程序对象(Shader Program Object)是多个着色器合并之后并最终链接完成的版本。如果要使用刚才编译的着色器我们必须把它们链接(Link)为一个着色器程序对象，然后在渲染对象的时候激活这个着色器程序。已激活着色器程序的着色器将在我们发送渲染调用的时候被使用。</p>
+<p>当链接着色器至一个程序的时候，它会把每个着色器的输出链接到下个着色器的输入。当输出和输入不匹配的时候，你会得到一个连接错误。</p>
+</div>
+<div><h2 class='h_option anchor_point' name='a_f'>千呼万唤始出来</h2></div>
+<p>开始渲染把。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>while</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,255,255,1)'>!</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowShouldClose</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>)) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(219,112,147,1)'>processInput</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.ClearColor</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1f</span><span style='color:rgba(255,255,255,1)'>);</span>   <span style='color:rgba(0,255,0,1)'>// 这一句其实可以放在外面，因为一旦设定值就会一直保存在Context中。</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Clear</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_COLOR_BUFFER_BIT</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>// GL.BindVertexArray(vao); 其实这一句可以不用，因为我们只有一个VAO而且一开始就绑定到了Context中没变过。</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.DrawArrays</span><span style='color:rgba(255,255,255,1)'>(</span>              <span style='color:rgba(0,255,0,1)'>// 前面做了那么多工作，为的就是这一句代码。</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_TRIANGLES</span><span style='color:rgba(255,255,255,1)'>,</span>        <span style='color:rgba(0,255,0,1)'>// 以三角形方式绘制平面</span>
+<span class='span_code_line'></span>        <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span>                      <span style='color:rgba(0,255,0,1)'>// 开始位子</span>
+<span class='span_code_line'></span>        <span style='color:rgba(144,238,144,1)'>3</span>                       <span style='color:rgba(0,255,0,1)'>// 一共有三个顶点</span>
+<span class='span_code_line'></span>        <span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SwapBuffers</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<img src='../images/1.4.triangle.png'/>
+<p>全部代码：<a class='mark' target='_blank' href='./1.4.triangle.txt'>点击此链接</a></p>
+<div><h2 class='h_option anchor_point' name='a_g'>回顾</h2></div>
+<p>上面提到了<span class='mark'>VAO</span><span class='mark'>VBO</span>，其实还有一个<span class='mark'>EBO</span>（稍后再说）。因为上面为了快速的让读者看到效果，所以很多描述很浅显。</p>
+<img src='../images/1.4.vao.png'/>
+<p>上图是<span class='mark'>VAO</span>和<span class='mark'>VBO</span>之间的关系。可以看到一个<span class='mark'>VAO</span>有16个<span class='mark'>attribute pointer</span>，还记得这句代码吗？</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.VertexAttribPointer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_FLOAT</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>false</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span> <span style='color:rgba(255,255,255,1)'>*</span> <span style='color:rgba(100,149,237,1)'>sizeof</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(100,149,237,1)'>float</span><span style='color:rgba(255,255,255,1)'>),</span> <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.EnableVertexAttribArray</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<p>那个<span class='mark'>0</span>其实是有范围限制的，并不是说我们想写多少就写多少，它在<span class='mark'>0-15</span>之间。其实这个值对于不同硬件来说并不是固定的，只是<span class='mark'>OpenGL</span>保证至少<span class='mark'>0-15</span>是可用的。如果你想知道在你的硬件上有多少个可用，可以使用下面的代码。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>var</span> num <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GetIntegerv</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_MAX_VERTEX_ATTRIBS</span><span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>这也是为什么上面说在处理<span class='mark'>VBO</span>数据之前一定要创建并绑定<span class='mark'>VAO</span>，因为上面两句代码是在对当前<span class='mark'>Context</span>中的<span class='mark'>VAO</span>的<span class='mark'>attribute pointer</span>绑定数据，如果当前<span class='mark'>Context</span>中并不存在<span class='mark'>VAO</span>那么就会出现错误。</p>
+</div>
+<p>一个<span class='mark'>VAO</span>对象是可以绑定多个<span class='mark'>VBO</span>对象的，大概代码如下：</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>uint</span> vao_1 <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GenVertexArrays</span><span style='color:rgba(255,255,255,1)'>();</span>  <span style='color:rgba(0,255,0,1)'>// 第一个VAO</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BindVertexArray</span><span style='color:rgba(255,255,255,1)'>(</span>vao_1<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>uint</span><span style='color:rgba(255,255,255,1)'>[]</span> vbo_1 <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GenBuffers</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>2</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BindBuffer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vbo_1<span style='color:rgba(255,255,255,1)'>[</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>]);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BufferData</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vertices<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_STATIC_DRAW</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.VertexAttribPointer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span>...<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.EnableVertexAttribArray</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BindBuffer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vbo_1<span style='color:rgba(255,255,255,1)'>[</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>]);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BufferData</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vertices<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_STATIC_DRAW</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.VertexAttribPointer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>,</span>...<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.EnableVertexAttribArray</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>uint</span> vao_2 <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GenVertexArrays</span><span style='color:rgba(255,255,255,1)'>();</span>  <span style='color:rgba(0,255,0,1)'>// 第二个VAO</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BindVertexArray</span><span style='color:rgba(255,255,255,1)'>(</span>vao_2<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>uint</span><span style='color:rgba(255,255,255,1)'>[]</span> vbo_2 <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GenBuffers</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>2</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BindBuffer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vbo_2<span style='color:rgba(255,255,255,1)'>[</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>]);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BufferData</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vertices<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_STATIC_DRAW</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.VertexAttribPointer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span>...<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.EnableVertexAttribArray</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BindBuffer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vbo_2<span style='color:rgba(255,255,255,1)'>[</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>]);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BufferData</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vertices<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_STATIC_DRAW</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.VertexAttribPointer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>,</span>...<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.EnableVertexAttribArray</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,0,1)'>// ...</span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>while</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,255,255,1)'>!</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowShouldClose</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>)) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>// ...</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.ClearColor</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1f</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Clear</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_COLOR_BUFFER_BIT</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BindVertexArray</span><span style='color:rgba(255,255,255,1)'>(</span>vao_1<span style='color:rgba(255,255,255,1)'>);</span>          <span style='color:rgba(0,255,0,1)'>// 绘制第一个VAO</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.DrawArrays</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_TRIANGLES</span><span style='color:rgba(255,255,255,1)'>,</span>...<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BindVertexArray</span><span style='color:rgba(255,255,255,1)'>(</span>vao_2<span style='color:rgba(255,255,255,1)'>);</span>          <span style='color:rgba(0,255,0,1)'>// 绘制第二个VAO</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.DrawArrays</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_TRIANGLES</span><span style='color:rgba(255,255,255,1)'>,</span>...<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>// ...</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>}</span></pre>
+</div>
+<p>虽然上面的代码很多，但是逻辑应该还是很清晰，很容易理解。其实可能你已经看到了很多重复的代码？那么是否可以对它们进行封装呢？作者认为是可以的，起码教程写到这里的时候作者已经构思过了一些方案，只是还没有开始行动。</p>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>虽然上面的代码已经可以让我们进行已经绘制了，但是似乎存在一个问题。在下一个章节介绍。</p>
+</div>
+
+</div>
+<div id="div_right_list">
+<a name='a_a' href='#a_a'>你好 三角形</a>
+<a name='a_b' href='#a_b'>3D世界</a>
+<a name='a_c' href='#a_c'>3D到2D</a>
+<a name='a_d' href='#a_d'>开始三角形</a>
+<a name='a_e' href='#a_e'>着色器</a>
+<a name='a_f' href='#a_f'>千呼万唤始出来</a>
+<a name='a_g' href='#a_g'>回顾</a>
+</div>
+</div>
+</body>
+</html>

@@ -47,6 +47,15 @@
     <Compile Include="GLFW\GLFW.Init.cs" />
     <Compile Include="GLFW\GLFW.Method.cs" />
     <Compile Include="GLFW\GLFWNative.cs" />
+    <Compile Include="GLM\GLM.TransformD.cs" />
+    <Compile Include="GLM\GLM.cs" />
+    <Compile Include="GLM\GLM.TransformF.cs" />
+    <Compile Include="GLM\Matrices\Matrix2F.cs" />
+    <Compile Include="GLM\Matrices\Matrix3F.cs" />
+    <Compile Include="GLM\Matrices\Matrix4F.cs" />
+    <Compile Include="GLM\Vectors\Vector2F.cs" />
+    <Compile Include="GLM\Vectors\Vector3F.cs" />
+    <Compile Include="GLM\Vectors\Vector4F.cs" />
     <Compile Include="GL\Exception\GLException.cs" />
     <Compile Include="GL\Exception\GLOutOfMemoryException.cs" />
     <Compile Include="GL\Exception\GLInvalidFrameBufferOperationException.cs" />
@@ -54,11 +63,8 @@
     <Compile Include="GL\Exception\GLInvalidValueException.cs" />
     <Compile Include="GL\Exception\GLInvalidEnumException.cs" />
     <Compile Include="GL\Exception\GLProgramLinkException.cs" />
+    <Compile Include="GL\Exception\GLProgramUniformException.cs" />
     <Compile Include="GL\Exception\GLShaderCompileException.cs" />
-    <Compile Include="GL\Mathematics\MathHelper.cs" />
-    <Compile Include="GL\Mathematics\Matrix\Matrix4F.cs" />
-    <Compile Include="GL\Mathematics\Vector\Vector3F.cs" />
-    <Compile Include="GL\Mathematics\Vector\Vector4F.cs" />
     <Compile Include="GL\Utils\GLObject.cs" />
     <Compile Include="GL\Utils\GLShader.cs" />
     <Compile Include="GL\Utils\GLProgram.cs" />
@@ -100,6 +106,7 @@
   <ItemGroup>
     <None Include="Resource\resources" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

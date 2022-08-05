@@ -1,0 +1,385 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<title>STGL</title>
+<link rel="stylesheet" type="text/css" href="..//css/stdoc.css"/>
+<script type="text/javascript" src="..//js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="..//js/stdoc.js"></script>
+</head>
+<body>
+<div id="div_model" style="display:none">BOOK</div>
+<div id="div_body">
+<div id="div_logo"></div>
+<div id="div_left">
+<div id="div_left_list">
+<ul class='ul_group_root'>
+<li>
+    <a class='a_node_root anchor_btn' name='a_a' href='#a_a'>着色器</a>
+    <ul>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_b' href='#a_b'>GLSL</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_c' href='#a_c'>数据类型</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_d' href='#a_d'>输入与输出</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_e' href='#a_e'>uniform</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_f' href='#a_f'>更多的属性</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_g' href='#a_g'>编写自己的着色器类</a></li>
+    </ul>
+</li>
+</ul><div class='div_left_space_space'></div>
+</div>
+<span id="span_time">2022-08-06 -> by:<span>DebugST</span></span>
+</div>
+<div id="div_right">
+<span class='span_location'>1.入门 &gt; 6.着色器<span style='float:right'>2022-08-04</span></span><h1 class='h_title anchor_point' name='a_a'>着色器</h1>
+<p>在前面的章节中已经看到过着色器的代码，但是我们几乎没做任何的介绍。着色器是运行在<span class='mark'>GPU</span>上的小程序。这些小程序为<span class='mark'>图形渲染管线</span>的某个特定部分而运行。从基本意义上来说，着色器只是一种把输入转化为输出的程序。着色器也是一种非常独立的程序，因为它们之间不能相互通信，<span style='color:pink'>它们之间唯一的沟通只有通过输入和输出。</span></p>
+<div><h2 class='h_option anchor_point' name='a_b'>GLSL</h2></div>
+<p><span class='mark'>GLSL</span>（OpenGL Shader Language）是一种类C语言。一个着色器的代码结构大致如下：</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span>#version version_number
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>in</span> type in_variable_name<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>in</span> type in_variable_name<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>out</span> type out_variable_name<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>uniform type uniform_name<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>int</span> <span style='color:rgba(255,0,255,1)'>main</span><span style='color:rgba(255,255,255,1)'>()
+<span class='span_code_line'></span>{</span>
+<span class='span_code_line'></span>  <span style='color:rgba(0,255,0,1)'>// 处理输入并进行一些图形操作
+<span class='span_code_line'></span>  // ...
+<span class='span_code_line'></span>  // 输出处理过的结果到输出变量</span>
+<span class='span_code_line'></span>  out_variable_name <span style='color:rgba(255,255,255,1)'>=</span> weird_stuff_we_processed<span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p>和类C语言一样<span class='mark'>main</span>是程序的入口，而一个变量的声明方式为<span class='mark'>type variable_name</span>，但是你看到前面好像还多了一个关键字。它的作用是什么？</p>
+<ul>
+<li><span class='mark'>in</span>      - 表示此变量来自于之前的步骤。</li>
+<li><span class='mark'>out</span>     - 表示导出此变量给之后的步骤使用。</li>
+<li><span class='mark'>uniform</span> - 表示此变量的值来之<span class='mark'>CPU</span>，通过外部代码赋值。也就是通过我们<span class='mark'>.Net</span>的代码给他赋值。</li>
+</ul>
+<p>上面已经提到过，每个着色器是独立的，它们之间唯一的沟通只有通过输入和输出。也就是通过<span class='mark'>in</span>和<span class='mark'>out</span>在不同的着色器中传值，<span class='mark'>in</span>和<span class='mark'>out</span>负责着色器之间的交互，而<span class='mark'>uniform</span>负责<span class='mark'>CPU</span>和<span class='mark'>GPU</span>之间的交互。我们已经知道着色器是运行在<span class='mark'>GPU</span>之上的，但是可能有些数据需要通过<span class='mark'>.Net</span>代码传递给着色器。</p>
+<p>当然在前面的代码中我们还看到过这样的代码<span class='mark'>layout (location = 0) in vec3 dotPos</span>，通常出现在顶点着色器中，因为顶点着色器是<span class='mark'>图形渲染管线</span>中的第一个着色器，而它的数据往往来自顶点属性，也就是<span class='mark'>VAO</span>中的<span class='mark'>attribute pointer</span>。</p>
+<p>回顾之前的着色器代码。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,0,1)'>// [vertex shader]</span>
+<span class='span_code_line'></span>#version <span style='color:rgba(144,238,144,1)'>330</span> <span style='color:rgba(0,255,255,1)'>core</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(255,0,255,1)'>layout</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>location</span> <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(30,144,255,1)'>in</span> vec3 dotPos<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>main</span><span style='color:rgba(255,255,255,1)'>(){</span>
+<span class='span_code_line'></span>    gl_Position <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(219,112,147,1)'>vec4</span><span style='color:rgba(255,255,255,1)'>(</span>dotPos<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>}</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,0,1)'>// [fragment shader]</span>
+<span class='span_code_line'></span>#version <span style='color:rgba(144,238,144,1)'>330</span> core
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>out</span> vec4 fragColor<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>main</span><span style='color:rgba(255,255,255,1)'>(){</span>
+<span class='span_code_line'></span>    fragColor <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(219,112,147,1)'>vec4</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>2</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p>可以看到在顶点着色器中出现了一个<span class='mark'>gl_Position</span>变量，它并没有被声明。是的它是<span class='mark'>GLSL</span>的内置变量，我们可以直接使用。<span class='mark'>GLSL</span>还有很多其他内置变量<span class='mark'>gl_FragColor</span><span class='mark'>gl_PointSize</span>等。它们都有着特殊的用途。</p>
+<p>而我们在顶点着色器中必须使用<span class='mark'>gl_Position</span>作为结果输出，因为在之后的图元装配中会使用这个变量。</p>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>好累。。。不想写了。。。接下来直接抄袭吧。</p>
+</div>
+<div><h2 class='h_option anchor_point' name='a_c'>数据类型</h2></div>
+<p>和其他编程语言一样，GLSL有数据类型可以来指定变量的种类。GLSL中包含C等其它语言大部分的默认基础数据类型：<span class='mark'>int</span><span class='mark'>float</span><span class='mark'>double</span><span class='mark'>uint</span><span class='mark'>bool</span>。<span class='mark'>GLSL</span>也有两种容器类型，它们会在这个教程中使用很多，分别是<span class='mark'>向量</span>(Vector)和<span class='mark'>矩阵</span>(Matrix)，其中<span class='mark'>矩阵</span>我们会在之后的教程里再讨论。</p>
+<p><span class='mark'>GLSL</span>中的向量是一个可以包含有2、3或者4个分量的容器，分量的类型可以是前面默认基础类型的任意一个。它们可以是下面的形式（<span class='mark'>n</span>代表分量的数量）：</p>
+<div class='div_table'>
+<table>
+<tr><th>类型</th><th>说明</th></tr>
+<tr><td>vecn</td><td>包含<span class='mark'>n</span>个<span class='mark'>float</span>分量的默认向量</td></tr>
+<tr class='tr_hight'><td>bvecn</td><td>包含<span class='mark'>n</span>个<span class='mark'>bool</span>分量的向量</td></tr>
+<tr><td>ivecn</td><td>包含<span class='mark'>n</span>个<span class='mark'>int</span>分量的向量</td></tr>
+<tr class='tr_hight'><td>uvecn</td><td>包含<span class='mark'>n</span>个<span class='mark'>uint</span>分量的向量</td></tr>
+<tr><td>dvecn</td><td>包含<span class='mark'>n</span>个<span class='mark'>double</span>分量的向量</td></tr>
+</table>
+</div>
+<p>大多数时候我们使用<span class='mark'>vecn</span>，因为<span class='mark'>float</span>足够满足大多数要求了。</p>
+<p>一个向量的分量可以通过<span class='mark'>vec.x</span>这种方式获取，这里<span class='mark'>x</span>是指这个向量的第一个分量。你可以分别使用<span class='mark'>.x</span><span class='mark'>.y</span><span class='mark'>.z</span>和<span class='mark'>.w</span>来获取它们的第1、2、3、4个分量。<span class='mark'>GLSL</span>也允许你对颜色使用<span class='mark'>rgba</span>，或是对纹理坐标使用<span class='mark'>stpq</span>访问相同的分量。</p>
+<p>向量这一数据类型也允许一些有趣而灵活的分量选择方式，叫做<span class='mark'>重组</span>(Swizzling)。重组允许这样的语法：</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span>vec2 someVec;
+<span class='span_code_line'></span>vec4 differentVec = someVec.xyxx;
+<span class='span_code_line'></span>vec3 anotherVec = differentVec.zyw;
+<span class='span_code_line'></span>vec4 otherVec = someVec.xxxx + anotherVec.yxzy;</span></pre>
+</div>
+<p>可以使用上面4个字母任意组合来创建一个和原来向量一样长的（同类型）新向量，只要原来向量有那些分量即可；然而，你不允许在一个<span class='mark'>vec2</span>向量中去获取<span class='mark'>.z</span>元素。我们也可以把一个向量作为一个参数传给不同的向量构造函数，以减少需求参数的数量：</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span>vec2 vect = vec2(0.5, 0.7);
+<span class='span_code_line'></span>vec4 result = vec4(vect, 0.0, 0.0);
+<span class='span_code_line'></span>vec4 otherResult = vec4(result.xyz, 1.0);</span></pre>
+</div>
+<p>向量是一种灵活的数据类型，我们可以把它用在各种输入和输出上。学完教程你会看到很多新颖的管理向量的例子。</p>
+<div><h2 class='h_option anchor_point' name='a_d'>输入与输出</h2></div>
+<p>虽然着色器是各自独立的小程序，但是它们都是一个整体的一部分，出于这样的原因，我们希望每个着色器都有输入和输出，这样才能进行数据交流和传递。<span class='mark'>GLSL</span>定义了<span class='mark'>in</span>和<span class='mark'>out</span>关键字专门来实现这个目的。每个着色器使用这两个关键字设定输入和输出，只要一个输出变量与下一个着色器阶段的输入匹配，它就会传递下去。但在顶点和片段着色器中会有点不同。</p>
+<p>顶点着色器应该接收的是一种特殊形式的输入，否则就会效率低下。顶点着色器的输入特殊在，它从顶点数据中直接接收输入。为了定义顶点数据该如何管理，我们使用<span class='mark'>location</span>这一元数据指定输入变量，这样我们才可以在<span class='mark'>CPU</span>上配置顶点属性。我们已经在前面的教程看过这个了<span class='mark'>layout (location = 0)</span>。顶点着色器需要为它的输入提供一个额外的<span class='mark'>layout</span>标识，这样我们才能把它链接到顶点数据。</p>
+<div class='div_hightlight' style='background-color:yellowgreen;color:black'>
+<p>你也可以忽略<span class='mark'>layout (location = 0)</span>标识符，通过在<span class='mark'>OpenGL</span>代码中使用<span class='mark'>glGetAttribLocation</span>查询属性位置值(<span class='mark'>Location</span>)，但是我们更喜欢在着色器中设置它们，这样会更容易理解而且节省你（和<span class='mark'>OpenGL</span>）的工作量。</p>
+</div>
+<p>另一个例外是片段着色器，它需要一个<span class='mark'>vec4</span>颜色输出变量，因为片段着色器需要生成一个最终输出的颜色。如果你在片段着色器没有定义输出颜色，<span class='mark'>OpenGL</span>会把你的物体渲染为黑色（或白色）。</p>
+<p>所以，如果我们打算从一个着色器向另一个着色器发送数据，我们必须在发送方着色器中声明一个输出，在接收方着色器中声明一个类似的输入。当类型和名字都一样的时候，<span class='mark'>OpenGL</span>就会把两个变量链接到一起，它们之间就能发送数据了（这是在链接程序对象时完成的）。为了展示这是如何工作的，我们会稍微改动一下之前教程里的那个着色器，让顶点着色器为片段着色器决定颜色。</p>
+<p>顶点着色器</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span>#version <span style='color:rgba(144,238,144,1)'>330</span> <span style='color:rgba(0,255,255,1)'>core</span>
+<span class='span_code_line'></span><span style='color:rgba(255,0,255,1)'>layout</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>location</span> <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(30,144,255,1)'>in</span> vec3 aPos<span style='color:rgba(255,255,255,1)'>;</span> <span style='color:rgba(0,255,0,1)'>// 位置变量的属性位置值为0</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>out</span> vec4 vertexColor<span style='color:rgba(255,255,255,1)'>;</span> <span style='color:rgba(0,255,0,1)'>// 为片段着色器指定一个颜色输出</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>main</span><span style='color:rgba(255,255,255,1)'>()
+<span class='span_code_line'></span>{</span>
+<span class='span_code_line'></span>    gl_Position <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(219,112,147,1)'>vec4</span><span style='color:rgba(255,255,255,1)'>(</span>aPos<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);</span> <span style='color:rgba(0,255,0,1)'>// 注意我们如何把一个vec3作为vec4的构造器的参数</span>
+<span class='span_code_line'></span>    vertexColor <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(219,112,147,1)'>vec4</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);</span> <span style='color:rgba(0,255,0,1)'>// 把输出变量设置为暗红色</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>}</span></pre>
+</div>
+<p>片段着色器</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span>#version <span style='color:rgba(144,238,144,1)'>330</span> core
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>out</span> vec4 FragColor<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>in</span> vec4 vertexColor<span style='color:rgba(255,255,255,1)'>;</span> <span style='color:rgba(0,255,0,1)'>// 从顶点着色器传来的输入变量（名称相同、类型相同）</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>main</span><span style='color:rgba(255,255,255,1)'>()
+<span class='span_code_line'></span>{</span>
+<span class='span_code_line'></span>    FragColor <span style='color:rgba(255,255,255,1)'>=</span> vertexColor<span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p>你可以看到我们在顶点着色器中声明了一个<span class='mark'>vertexColor</span>变量作为<span class='mark'>vec4</span>输出，并在片段着色器中声明了一个类似的<span class='mark'>vertexColor</span>。由于它们名字相同且类型相同，片段着色器中的<span class='mark'>vertexColor</span>就和顶点着色器中的<span class='mark'>vertexColor</span>链接了。由于我们在顶点着色器中将颜色设置为深红色，最终的片段也是深红色的。下面的图片展示了输出结果：</p>
+<img src='../images/1.6.red.png'/>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>好了。。抄袭完了。。继续写吧。</p>
+</div>
+<div><h2 class='h_option anchor_point' name='a_e'>uniform</h2></div>
+<p>前面的代码我们都是通过在着色器中编码指定的颜色，当然问题也是显而易见的，当我们想换一个颜色的时候就必须得去修改着色器代码并且重新编译着色器。这显然是很不明智的。这个时候我们就需要使用<span class='mark'>uniform</span>了，<span class='mark'>uniform</span>允许我们从外部对着色器中的变量赋值。</p>
+<p><span class='mark'>Uniform</span>是一种从<span class='mark'>CPU</span>中的应用向<span class='mark'>GPU</span>中的着色器发送数据的方式，但<span class='mark'>uniform</span>和顶点属性有些不同。首先，<span class='mark'>uniform</span>是全局的(Global)。全局意味着<span class='mark'>uniform</span>变量必须在每个着色器程序对象中都是独一无二的，而且它可以被着色器程序的任意着色器在任意阶段访问。第二，无论你把<span class='mark'>uniform</span>值设置成什么，<span class='mark'>uniform</span>会一直保存它们的数据，直到它们被重置或更新。</p>
+<p>我们用之前的<span class='mark'>你好 三角形</span>的案例进行修改，先把片段着色器的代码换成下面的。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span>#version <span style='color:rgba(144,238,144,1)'>330</span> core
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>out</span> vec4 FragColor<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>uniform vec4 ourColor<span style='color:rgba(255,255,255,1)'>;</span> <span style='color:rgba(0,255,0,1)'>// 在.Net代码中设定这个变量</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>main</span><span style='color:rgba(255,255,255,1)'>()
+<span class='span_code_line'></span>{</span>
+<span class='span_code_line'></span>    FragColor <span style='color:rgba(255,255,255,1)'>=</span> ourColor<span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<div class='div_hightlight' style='background-color:pink;color:black'>
+<p>如果你声明了一个<span class='mark'>uniform</span>却在<span class='mark'>GLSL</span>代码中没用过，编译器会静默移除这个变量，导致最后编译出的版本中并不会包含它，这可能导致几个非常麻烦的错误，记住这点！</p>
+</div>
+<p>但是如果你直接这样就运行程序你会发现会绘制一个黑色的三角形，因为我们并没有对<span class='mark'>ourColor</span>进行赋值操作。我们需要通过下面的代码来对它进行赋值操作。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>var</span> loc <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GetUniformLocation</span><span style='color:rgba(255,255,255,1)'>(</span>program<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,165,0,1)'>"ourColor"</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Uniform4f</span><span style='color:rgba(255,255,255,1)'>(</span>loc<span style='color:rgba(255,255,255,1)'>,</span> r<span style='color:rgba(255,255,255,1)'>,</span> g<span style='color:rgba(255,255,255,1)'>,</span> b<span style='color:rgba(255,255,255,1)'>,</span> a<span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<p>接下来我们修改一下渲染循环中的代码。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>while</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,255,255,1)'>!</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowShouldClose</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>)) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(219,112,147,1)'>processInput</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.ClearColor</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1f</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Clear</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_COLOR_BUFFER_BIT</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>// GL.BindVertexArray(vao);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(100,149,237,1)'>float</span> greenValue <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(100,149,237,1)'>float</span><span style='color:rgba(255,255,255,1)'>)(</span><span style='color:rgba(0,255,255,1)'>Math</span><span style='color:rgba(219,112,147,1)'>.Sin</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.GetTime</span><span style='color:rgba(255,255,255,1)'>())</span> <span style='color:rgba(255,255,255,1)'>/</span> <span style='color:rgba(144,238,144,1)'>2</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(255,255,255,1)'>+</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>    <span style='color:rgba(100,149,237,1)'>var</span> loc <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GetUniformLocation</span><span style='color:rgba(255,255,255,1)'>(</span>program<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,165,0,1)'>"ourColor"</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Uniform4f</span><span style='color:rgba(255,255,255,1)'>(</span>loc<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> greenValue<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>);</span> <span style='color:rgba(0,255,0,1)'>// 每渲染一帧修改一下颜色</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.DrawArrays</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_TRIANGLES</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SwapBuffers</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.PollEvents</span><span style='color:rgba(255,255,255,1)'>();</span> <span style='color:rgba(0,255,0,1)'>// 之前是 GLFW.WaitEvents() 因为现在需要不停的渲染所以要换成 PollEvents()</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>}</span></pre>
+</div>
+<p>上面的代码你会看到下面的效果，颜色不断地变化。</p>
+<img src='../images/1.6.green.gif'/>
+<p>首先我们通过<span class='mark'>glfwGetTime</span>获取运行的秒数。然后我们使用<span class='mark'>sin</span>函数让颜色在0.0到1.0之间改变，最后将结果储存到<span class='mark'>greenValue</span>里。</p>
+<p>接着，我们用<span class='mark'>glGetUniformLocation</span>查询<span class='mark'>uniform ourColor</span>的位置值。我们为查询函数提供着色器程序和<span class='mark'>uniform</span>的名字（这是我们希望获得的位置值的来源）。如果<span class='mark'>glGetUniformLocation</span>返回-1就代表没有找到这个位置值。最后，我们可以通过<span class='mark'>glUniform4f</span>函数设置<span class='mark'>uniform</span>值。注意，查询<span class='mark'>uniform</span>地址不要求你之前使用过着色器程序，但是更新一个<span class='mark'>uniform</span>之前你必须先使用程序（调用<span class='mark'>glUseProgram</span>)，因为它是在当前激活的着色器程序中设置<span class='mark'>uniform</span>的。</p>
+<div class='div_hightlight' style='background-color:yellowgreen;color:black'>
+<p>因为<span class='mark'>OpenGL</span>在其核心是一个<span class='mark'>C</span>库，所以它不支持类型重载，在函数参数不同的时候就要为其定义新的函数；<span class='mark'>glUniform</span>是一个典型例子。这个函数有一个特定的后缀，标识设定的<span class='mark'>uniform</span>的类型。可能的后缀有：</p>
+</div>
+<div class='div_table'>
+<table>
+<tr><th>后缀</th><th>说明</th></tr>
+<tr><td>f</td><td>函数需要1个<span class='mark'>float</span>作为它的值</td></tr>
+<tr class='tr_hight'><td>i</td><td>函数需要1个<span class='mark'>int</span>作为它的值</td></tr>
+<tr><td>ui</td><td>函数需要1个<span class='mark'>uint</span>作为它的值</td></tr>
+<tr class='tr_hight'><td>3f</td><td>函数需要3个<span class='mark'>float</span>作为它的值</td></tr>
+<tr><td>fv</td><td>函数需要1个<span class='mark'>float</span>向量/数组作为它的值</td></tr>
+</table>
+</div>
+<div><h2 class='h_option anchor_point' name='a_f'>更多的属性</h2></div>
+<p>但是还是有一个问题。从教程的一开始到现在，我们绘制的所有图像都是纯色的。有没有可能我们可以为每一个顶点指定一个颜色？当然可以。</p>
+<p>我们依旧使用<span class='mark'>你好 三角形</span>做修改，我们可以这样构造数据。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>float</span><span style='color:rgba(255,255,255,1)'>[]</span> vertices <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(255,255,255,1)'>{</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>// 顶点                  // 颜色</span>
+<span class='span_code_line'></span>    <span style='color:rgba(255,255,255,1)'>-</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,255,255,1)'>-</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span>     <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span>
+<span class='span_code_line'></span>     <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,255,255,1)'>-</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span>     <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span>
+<span class='span_code_line'></span>     <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span>  <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span>     <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>};</span></pre>
+</div>
+<p>顶点着色器</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span>#version <span style='color:rgba(144,238,144,1)'>330</span> <span style='color:rgba(0,255,255,1)'>core</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(255,0,255,1)'>layout</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>location</span> <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(30,144,255,1)'>in</span> vec3 dotPos<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span><span style='color:rgba(219,112,147,1)'>layout</span> <span style='color:rgba(255,255,255,1)'>(</span>location <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(30,144,255,1)'>in</span> vec3 dotClr<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>out</span> vec3 ourColor<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>main</span><span style='color:rgba(255,255,255,1)'>(){</span>
+<span class='span_code_line'></span>    gl_Position <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(219,112,147,1)'>vec4</span><span style='color:rgba(255,255,255,1)'>(</span>dotPos<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    ourColor <span style='color:rgba(255,255,255,1)'>=</span> dotClr<span style='color:rgba(255,255,255,1)'>;</span>  <span style='color:rgba(0,255,0,1)'>// 用ourColor变量向下传递。</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>}</span></pre>
+</div>
+<p>片段着色器</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span>#version <span style='color:rgba(144,238,144,1)'>330</span> core
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>out</span> vec4 fragColor<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>in</span> vec3 ourColor<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>main</span><span style='color:rgba(255,255,255,1)'>(){</span>
+<span class='span_code_line'></span>    fragColor <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(219,112,147,1)'>vec4</span><span style='color:rgba(255,255,255,1)'>(</span>ourColor<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);</span> <span style='color:rgba(0,255,0,1)'>// 因为我们传入的只有RGB，所以补上A。</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>}</span></pre>
+</div>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>可能你从刚才就注意到教程页面中的着色器代码高亮似乎不太对劲。作者是一个<span class='mark'>CSharp</span>开发者，编写的很多文档几乎都采用<span class='mark'>CSharp</span>语言，所以生成文档的工具只做了<span class='mark'>CSharp</span>的语法解析。<span class='mark'>GLSL</span>的语法肯定是无法被<span class='mark'>CSharp</span>的语法正常解析的。</p>
+</div>
+<p>可以看到我们在构造的数据中混入了<span class='mark'>颜色</span>，并且希望在<span class='mark'>1</span>号<span class='mark'>attribute pointer</span>上获得颜色的数据。所以我们在处理<span class='mark'>VBO</span>和顶点属性的时候需要这样处理。</p>
+<img src='../images/1.6.vertex_attribute.png'/>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>uint</span> vbo <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GenBuffers</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BindBuffer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vbo<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BufferData</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vertices<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_STATIC_DRAW</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.VertexAttribPointer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_FLOAT</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>false</span><span style='color:rgba(255,255,255,1)'>,</span>
+<span class='span_code_line'></span>    <span style='color:rgba(144,238,144,1)'>6</span> <span style='color:rgba(255,255,255,1)'>*</span> <span style='color:rgba(100,149,237,1)'>sizeof</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(100,149,237,1)'>float</span><span style='color:rgba(255,255,255,1)'>),</span>              <span style='color:rgba(0,255,0,1)'>// 每次获取数据时偏移6个数据</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span>                     <span style='color:rgba(0,255,0,1)'>// 第一次获取数据时不偏移</span>
+<span class='span_code_line'></span>    <span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.EnableVertexAttribArray</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.VertexAttribPointer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_FLOAT</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>false</span><span style='color:rgba(255,255,255,1)'>,</span>
+<span class='span_code_line'></span>    <span style='color:rgba(144,238,144,1)'>6</span> <span style='color:rgba(255,255,255,1)'>*</span> <span style='color:rgba(100,149,237,1)'>sizeof</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(100,149,237,1)'>float</span><span style='color:rgba(255,255,255,1)'>),</span>              <span style='color:rgba(0,255,0,1)'>// 每次获取数据时偏移6个数据</span>
+<span class='span_code_line'></span>    <span style='color:rgba(255,255,255,1)'>(</span>IntPtr<span style='color:rgba(255,255,255,1)'>)(</span><span style='color:rgba(100,149,237,1)'>sizeof</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(100,149,237,1)'>float</span><span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(255,255,255,1)'>*</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>)</span>     <span style='color:rgba(0,255,0,1)'>// 第一次获取数据时偏移3个数据</span>
+<span class='span_code_line'></span>    <span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.EnableVertexAttribArray</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<p>运行效果如下。</p>
+<img src='../images/1.6.color.png'/>
+<p>可以看到，我们分别为3个顶点指定了3个颜色，但是三角形的面积远远不止3个像素，所以片段着色器会自动为我们进行了插值运算。</p>
+<div><h2 class='h_option anchor_point' name='a_g'>编写自己的着色器类</h2></div>
+<p>原版教程里面有如何自己封装一个着色器类，有兴趣的读者可以使用<span class='mark'>GTGL</span>封装的<span class='mark'>OpenGL</span>函数尝试自己编写。但是在<span class='mark'>STGL</span>中已经提供好了代码读者可以直接使用它们。</p>
+<p>原版教程将着色器和程序编写成了一个类，在<span class='mark'>STGL</span>中作者将着色器和程序分开成了两个类，<span class='mark'>GLShader</span>和<span class='mark'>GLProgram</span>。使用这两个类，可以很简单的编写代码。</p>
+<p>比如以上面渐变三角形的案例，使用<span class='mark'>GLShader</span>和<span class='mark'>GLProgram</span>的效果如下。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>class</span> <span style='color:rgba(0,255,255,1)'>_1_6_Uniform_STGL</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>{</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>private static</span> <span style='color:rgba(100,149,237,1)'>string</span> m_str_vertex_shader <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(255,165,0,1)'>@"
+<span class='span_code_line'></span>        #version 330 core
+<span class='span_code_line'></span>        layout (location = 0) in vec3 dotPos;
+<span class='span_code_line'></span>        void main(){
+<span class='span_code_line'></span>            gl_Position = vec4(dotPos, 1.0);
+<span class='span_code_line'></span>        }"</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>private static</span> <span style='color:rgba(100,149,237,1)'>string</span> m_str_fragment_shader <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(255,165,0,1)'>@"
+<span class='span_code_line'></span>        #version 330 core
+<span class='span_code_line'></span>        out vec4 fragColor;
+<span class='span_code_line'></span>        uniform vec4 ourColor;
+<span class='span_code_line'></span>        void main(){
+<span class='span_code_line'></span>            fragColor = ourColor;
+<span class='span_code_line'></span>        }"</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>public static</span> <span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>Run</span><span style='color:rgba(255,255,255,1)'>() {</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.Init</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowHint</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.CONTEXT_VERSION_MAJOR</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowHint</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.CONTEXT_VERSION_MINOR</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowHint</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.OPENGL_PROFILE</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.OPENGL_CORE_PROFILE</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>RuntimeInfo</span><span style='color:rgba(112,128,144,1)'>.System</span> <span style='color:rgba(255,255,255,1)'>==</span> <span style='color:rgba(0,255,255,1)'>RuntimeInfo</span><span style='color:rgba(112,128,144,1)'>.SystemType.Mac</span><span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowHint</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.OPENGL_FORWARD_COMPAT</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_TRUE</span><span style='color:rgba(255,255,255,1)'>);</span> <span style='color:rgba(0,255,0,1)'>// For Mac system</span>
+<span class='span_code_line'></span>        <span style='color:rgba(255,255,255,1)'>}</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>IntPtr</span> window <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.CreateWindow</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>400</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>300</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,165,0,1)'>"LearnOpenGL"</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span>window <span style='color:rgba(255,255,255,1)'>==</span> <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span><span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>Console</span><span style='color:rgba(219,112,147,1)'>.WriteLine</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,165,0,1)'>"Failed to create GLFW window"</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.Terminate</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>            <span style='color:rgba(30,144,255,1)'>return</span><span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>        }</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.MakeContextCurrent</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SetFramebufferSizeCallback</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>,</span> framebuffer_size_callback<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>try</span> <span style='color:rgba(255,255,255,1)'>{</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Init</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.GetProcAddress</span><span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>        }</span> <span style='color:rgba(30,144,255,1)'>catch</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>Exception</span> ex<span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>Console</span><span style='color:rgba(219,112,147,1)'>.WriteLine</span><span style='color:rgba(255,255,255,1)'>(</span>ex<span style='color:rgba(112,128,144,1)'>.Message</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.Terminate</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>            <span style='color:rgba(30,144,255,1)'>return</span><span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>        }</span>
+<span class='span_code_line'></span>        <span style='color:rgba(100,149,237,1)'>int</span> nWidth <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> nHeight <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.GetFramebufferSize</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>ref</span> nWidth<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>ref</span> nHeight<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Viewport</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> nWidth<span style='color:rgba(255,255,255,1)'>,</span> nHeight<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,0,1)'>//====================================</span>
+<span class='span_code_line'></span>        <span style='color:rgba(100,149,237,1)'>float</span><span style='color:rgba(255,255,255,1)'>[]</span> vertices <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(255,255,255,1)'>{</span>
+<span class='span_code_line'></span>            <span style='color:rgba(255,255,255,1)'>-</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,255,255,1)'>-</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span>
+<span class='span_code_line'></span>             <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,255,255,1)'>-</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span>
+<span class='span_code_line'></span>             <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>,</span>  <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span>
+<span class='span_code_line'></span>        <span style='color:rgba(255,255,255,1)'>};</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>        <span style='color:rgba(100,149,237,1)'>uint</span> vao <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GenVertexArrays</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BindVertexArray</span><span style='color:rgba(255,255,255,1)'>(</span>vao<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>        <span style='color:rgba(100,149,237,1)'>uint</span> vbo <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GenBuffers</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BindBuffer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vbo<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.BufferData</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_ARRAY_BUFFER</span><span style='color:rgba(255,255,255,1)'>,</span> vertices<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_STATIC_DRAW</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.VertexAttribPointer</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_FLOAT</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>false</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span> <span style='color:rgba(255,255,255,1)'>*</span> <span style='color:rgba(100,149,237,1)'>sizeof</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(100,149,237,1)'>float</span><span style='color:rgba(255,255,255,1)'>),</span> <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.EnableVertexAttribArray</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLProgram</span> program <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GLProgram</span><span style='color:rgba(219,112,147,1)'>.Create</span><span style='color:rgba(255,255,255,1)'>(</span>m_str_vertex_shader<span style='color:rgba(255,255,255,1)'>,</span> m_str_fragment_shader<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        program<span style='color:rgba(219,112,147,1)'>.Use</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,0,1)'>//var vertShader = GLShader.Create(m_str_vertex_shader, GLShaderType.Vertex);
+<span class='span_code_line'></span>        //var fragShader = GLShader.Create(m_str_fragment_shader, GLShaderType.Fragment);
+<span class='span_code_line'></span>        //GLProgram program = GLProgram.Create(vertShader, fragShader);
+<span class='span_code_line'></span>        //vertShader.Dispose();
+<span class='span_code_line'></span>        //fragShader.Dispose();
+<span class='span_code_line'></span>        //program.Use();
+<span class='span_code_line'></span>        //====================================</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>while</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,255,255,1)'>!</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowShouldClose</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>)) {</span>
+<span class='span_code_line'></span>            <span style='color:rgba(219,112,147,1)'>processInput</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.ClearColor</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1f</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Clear</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_COLOR_BUFFER_BIT</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(100,149,237,1)'>float</span> greenValue <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(100,149,237,1)'>float</span><span style='color:rgba(255,255,255,1)'>)(</span><span style='color:rgba(0,255,255,1)'>Math</span><span style='color:rgba(219,112,147,1)'>.Sin</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.GetTime</span><span style='color:rgba(255,255,255,1)'>())</span> <span style='color:rgba(255,255,255,1)'>/</span> <span style='color:rgba(144,238,144,1)'>2</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0f</span><span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(255,255,255,1)'>+</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>            program<span style='color:rgba(219,112,147,1)'>.SetUniform</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,165,0,1)'>"ourColor"</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> greenValue<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.DrawArrays</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_TRIANGLES</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SwapBuffers</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.PollEvents</span><span style='color:rgba(255,255,255,1)'>();
+<span class='span_code_line'></span>        }</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.Terminate</span><span style='color:rgba(255,255,255,1)'>();
+<span class='span_code_line'></span>    }</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>static</span> <span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>processInput</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>IntPtr</span> window<span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.GetKey</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.KEY_ESCAPE</span><span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(255,255,255,1)'>==</span> <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.PRESS</span><span style='color:rgba(255,255,255,1)'>)</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SetWindowShouldClose</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>true</span><span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>    }</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>static</span> <span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>framebuffer_size_callback</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>IntPtr</span> window<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(100,149,237,1)'>int</span> width<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(100,149,237,1)'>int</span> height<span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Viewport</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> width<span style='color:rgba(255,255,255,1)'>,</span> height<span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>    }
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p>是不是瞬间代码减少了很多？仅仅两句代码就完成了着色器的创建于使用。有关更多着色器的教程读者可以参考其他的教程。毕竟<span class='mark'>GLSL</span>也是一个独立的编程语言，不可能仅仅一个章节就把它介绍完的。</p>
+
+</div>
+<div id="div_right_list">
+<a name='a_a' href='#a_a'>着色器</a>
+<a name='a_b' href='#a_b'>GLSL</a>
+<a name='a_c' href='#a_c'>数据类型</a>
+<a name='a_d' href='#a_d'>输入与输出</a>
+<a name='a_e' href='#a_e'>uniform</a>
+<a name='a_f' href='#a_f'>更多的属性</a>
+<a name='a_g' href='#a_g'>编写自己的着色器类</a>
+</div>
+</div>
+</body>
+</html>

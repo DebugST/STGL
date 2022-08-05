@@ -13,6 +13,6 @@ namespace STLib.OpenGL.GL
             "The offending command is ignored and has no other side effect than to set the error flag.";
 
         public GLInvalidFrameBufferOperationException() : base(m_str_error) { }
-        public GLInvalidFrameBufferOperationException(string message) : base(message) { }
+        public GLInvalidFrameBufferOperationException(string strMessage) : base(strMessage) { }
     }
 }

@@ -12,6 +12,6 @@ namespace STLib.OpenGL.GL
             "except for the state of the error flags, after this error is recorded.";
 
         public GLOutOfMemoryException() : base(m_str_error) { }
-        public GLOutOfMemoryException(string message) : base(message) { }
+        public GLOutOfMemoryException(string strMessage) : base(strMessage) { }
     }
 }

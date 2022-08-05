@@ -1,0 +1,301 @@
+#T 你好 四边形
+
+在上一个章节我们已经可以绘制三角形，并且使用的是下面的代码。
+
+#CS cs
+GL.DrawArrays(              
+    GL.GL_TRIANGLES,        // 以三角形方式绘制平面
+    0,                      // 开始位子
+    3                       // 一共有3个顶点
+    );
+#CE
+
+那么问题来了，要绘制一个四边形怎么办？使用下面的代码？
+#CS cs
+GL.DrawArrays(GL.GL_QUADRILATERALS, 0, 4);
+#CE
+你简直就是一个大聪明，那么五边形六边形N边形怎么办？而且并没有`GL_QUADRILATERALS`这个常量，仅有一个`GL_QUADS`，并且在`OpenGL`的文档中这样描述的：[pink|Compatibility-only GL 1.1 features removed from GL 3.2]
+
+#O 三角形与四边形
+
+不知道你是否听说过一句话：[pink|建模四边面，渲染三角形]
+
+#I2 ../images/1.5.blender.png
+
+上图是在`Blender`中一个自带的猴子模型。可以看到它几乎由四边形组成。在3D建模过程中应当尽可能的使用四边形构建模型，如果你有3D建模的经验，那你应该很清楚为什么。
+但是四边形其实并不利于渲染的，而三角形才是最符合渲染的结构。为什么？因为三角形是构成平面的最低要求，三个顶点一定是在一个平面上的，而四个或以上的顶点数据则不一定是在平面上，渲染时候会带来一些额外的运算，并且一些渲染引擎直接只采用三角形渲染。也就是为什么有些游戏开发，在建模软件中的模型到了游戏中会有一些不一致的原因。
+这就是为什么我们总是使用`GL_TRIANGLES`的原因，而不是其它的。
+
+#O 构建四边形
+
+那么现在回到如何绘制一个四边形的问题上。现在你已经知道了我们是以三角形绘制的，绘制一个四边形则需要两个三角形组成。
+
+#CS cs
+float[] vertices = {
+    -0.5f, -0.5f, 0.0f, // 第一个顶点
+     0.5f, -0.5f, 0.0f, // 第二个顶点
+    -0.5f,  0.5f, 0.0f, // 第三个顶点
+
+    -0.5f,  0.5f, 0.0f, // 第一个顶点
+     0.5f, -0.5f, 0.0f, // 第二个顶点
+     0.5f,  0.5f, 0.0f  // 第三个顶点
+};
+//======================
+GL.DrawArrays(
+    GL.GL_TRIANGLES,
+    0,
+    6                       // 一共有6个顶点
+    );
+#CE
+
+上面的代码的确也可以帮我们绘制出一个四边形，但是仔细想想，四边形明明只有4个顶点，我们却需要构造6个顶点数据，而且其中两个还是重复的。这是不是有点浪费？如果是一个很大的模型这还得了？能否值构造4个顶点数据？
+
+#O EBO
+
+没错还记得上一章提到的`EBO`（Element Buffer Object）吗？`EBO`是一个缓冲区，就像一个顶点缓冲区对象一样，它存储`OpenGL`用来决定要绘制哪些顶点的索引。这种所谓的索引绘制(Indexed Drawing)正是我们问题的解决方案。首先，我们先要定义（不重复的）顶点，和绘制出矩形所需的索引：
+
+#CS cs
+float[] vertices = {
+    -0.5f,  0.5f, 0.0f, // 左上角
+     0.5f,  0.5f, 0.0f, // 右上角
+     0.5f, -0.5f, 0.0f, // 右下角
+    -0.5f, -0.5f, 0.0f, // 左下角
+};
+
+uint[] indices = {
+    0, 3, 2,            // 第一个三角形
+    0, 2, 1             // 第二个三角形
+};
+#CE
+
+#HS skyblue|black
+`indices`中保存的是在`vertices`中的索引数据。
+默认情况下逆时针表示正面，顺时针表示反面。`OpenGL`是一个三维的世界，平面是有正面和反面的。
+#HE
+
+`EBO`和`VBO`的创建非常相似。
+
+#CS cs
+uint ebo = GL.GenBuffers();
+GL.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
+GL.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, indices, GL.GL_STATIC_DRAW);
+#CE
+
+我们可以在创建`VBO`之后创建`EBO`，接下来需要做一下改变，将`glDrawArrays`换成`glDrawElements`。
+#CS cs
+GL.DrawElements(
+    GL.GL_TRIANGLES, 
+    6,                  // 6个顶点
+    GL.GL_UNSIGNED_INT, // 索引是uint类型
+    IntPtr.Zero         // 没有偏移
+    );
+#CE
+
+#I ../images/1.5.quad.png
+
+当我们绑定`EBO`后的`VAO`是这个样子的。
+
+#I ../images/1.5.ebo.png
+
+#HS pink|black
+一个`VAO`只能有一个`EBO`。`glDrawElements`会去检测当前`VAO`的`EBO`并获取数据。
+#HE
+
+#O 线框模式
+
+当然上面的看上去是一个四边形其实是两个三角形组合而成的。如果我们使用线框模式绘制就能看到两个三角形。
+
+#I ../images/1.5.line.png
+
+我们可以在一开始就修改`OpenGL`的状态，让绘制的模式变成线框模式（Wireframe Mode）。
+
+#CS cs
+GL.PolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE);
+#CE
+
+#HS skyblue|black
+要想用线框模式绘制你的三角形，你可以通过`glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)`函数配置`OpenGL`如何绘制图元。第一个参数表示我们打算将其应用到所有的三角形的正面和背面，第二个参数告诉我们用线来绘制。之后的绘制调用会一直以线框模式绘制三角形，直到我们用`glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)`将其设置回默认模式。
+#HE
+
+#O 正面与反面
+
+在上面提到过，平面是有正面和反面的。而你也看到了`GL_FRONT_AND_BACK`这个值。`OpenGL`在默认情况下以逆时针向的点构成的平面为正面。我们可以使用`glEnable(GL_CULL_FACE)`来开启剔除平面。然后告诉`OpenGL`我们需要剔除正面还是背面，被剔除的平面不会参与绘制。
+加入以下代码后运行程序你会发现什么都没有绘制。
+#CS cs
+GL.Enable(GL.GL_CULL_FACE); // 开启平面剔除功能
+GL.CullFace(GL.GL_FRONT);   // 剔除正面
+#CE
+因为上面我们`indices`指定的点的顺序全部都是逆时针的，所以全部都是正面，所以全部被剔除了。当然我们也可以告诉`OpenGL`顺时针才是正面。
+#CS cs
+GL.FrontFace(GL.GL_CW);     // 顺时针是正面
+GL.FrontFace(GL.GL_CCW);    // 逆时针是正面
+#CE
+
+#O 总结
+
+在原版的教程中是并没有`你好 四边形`的，而是将此章节的内容合并在了`你好 三角形`中，因为原版教程希望在一个章节中介绍`VAO``VBO``EBO`，而介绍`EBO`需要四边形的案例，作者个人认为这样会很混乱，所以分开了，并在这里做总结。
+
+一个绘制过程我们需要做如下准备：
+#HS black|black
+#US
+`VAO`（Vertex Array Object）
+    #US
+    `VAO`是`OpenGL`绘制的基本单元，是必须的。在数据处理之前我们应当优先创建`VAO`并绑定到当前的`Context`中，因为之后的操作都将在此`VAO`上进行，没有正确的设置`VAO``OpenGL`是不会产生任何绘制的。
+    #UE
+`VBO`（Vertex Buffer Objec）
+    #US
+    `VBO`用于保存数据，并且需要通过`glVertexAttribPointer`指定数据的获取规则绑定到`VAO`的`attribute pointer`上与`Shader`做关联。
+    #UE
+`EBO`（Element Buffer Object）
+    #US
+    `EBO`并不是必须的，在没有使用`EBO`的情况下，我们需要通过`glDrawArrays`去绘制，但是如果平面有大量重复顶点的时候我们应当使用`EBO`，并且使用`glDrawElements`进行绘制。
+    #UE
+#UE
+#HE
+
+#CS cs
+class _1_5_Hello_Quadrilateral
+{
+    private static string m_str_vertex_shader = @"
+        #version 330 core
+
+        layout (location = 0) in vec3 dotPos;
+
+        void main(){
+            gl_Position = vec4(dotPos, 1.0);
+        }";
+    private static string m_str_fragment_shader = @"
+        #version 330 core
+
+        out vec4 fragColor;
+
+        void main(){
+            fragColor = vec4(1.0, 0.5, 0.2, 1.0);
+        }";
+    public static void Run() {
+        GLFW.Init();
+        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MAJOR, 3);
+        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MINOR, 3);
+        GLFW.WindowHint(GLFW.OPENGL_PROFILE, GLFW.OPENGL_CORE_PROFILE);
+        if (RuntimeInfo.System == RuntimeInfo.SystemType.Mac) {
+            GLFW.WindowHint(GLFW.OPENGL_FORWARD_COMPAT, GL.GL_TRUE); // For Mac system
+        }
+        IntPtr window = GLFW.CreateWindow(400, 300, "LearnOpenGL", IntPtr.Zero, IntPtr.Zero);
+        if (window == IntPtr.Zero) {
+            Console.WriteLine("Failed to create GLFW window");
+            GLFW.Terminate();
+            return;
+        }
+        GLFW.MakeContextCurrent(window);
+        GLFW.SetFramebufferSizeCallback(window, framebuffer_size_callback);
+        try {
+            GL.Init(GLFW.GetProcAddress);
+        } catch (Exception ex) {
+            Console.WriteLine(ex.Message);
+            GLFW.Terminate();
+            return;
+        }
+        int nWidth = 0, nHeight = 0;
+        GLFW.GetFramebufferSize(window, ref nWidth, ref nHeight);
+        GL.Viewport(0, 0, nWidth, nHeight);
+
+        //====================================
+        //GL.Enable(GL.GL_CULL_FACE);
+        //GL.CullFace(GL.GL_FRONT);
+        //GL.FrontFace(GL.GL_CW);
+        //GL.PolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE);
+        float[] vertices = {
+            -0.5f,  0.5f, 0.0f, // 左上角
+             0.5f,  0.5f, 0.0f, // 右上角
+             0.5f, -0.5f, 0.0f, // 右下角
+            -0.5f, -0.5f, 0.0f, // 左下角
+        };
+
+        uint[] indices = {
+            0, 3, 2,            // 第一个三角形
+            0, 2, 1             // 第二个三角形
+        };
+
+        uint vao = GL.GenVertexArrays();
+        GL.BindVertexArray(vao);
+
+        uint vbo = GL.GenBuffers(); 
+        GL.BindBuffer(GL.GL_ARRAY_BUFFER, vbo); 
+        GL.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
+        GL.VertexAttribPointer(0, 3, GL.GL_FLOAT, false, 3 * sizeof(float), IntPtr.Zero);
+        GL.EnableVertexAttribArray(0);
+
+        uint ebo = GL.GenBuffers();
+        GL.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
+        GL.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, indices, GL.GL_STATIC_DRAW);
+
+        var vertexShader = GL.CreateShader(GL.GL_VERTEX_SHADER);
+        GL.ShaderSource(vertexShader, m_str_vertex_shader);
+        GL.CompileShader(vertexShader);
+        int nFlag = GL.GetShaderiv(vertexShader, GL.GL_COMPILE_STATUS);
+        if (nFlag == 0) {
+            int nLen = 0;
+            byte[] byBuffer = new byte[1024];
+            GL.GetShaderInfoLog(vertexShader, byBuffer.Length, ref nLen, ref byBuffer[0]);
+            GL.DeleteShader(vertexShader);
+            string strError = Encoding.UTF8.GetString(byBuffer, 0, nLen);
+            throw new GLShaderCompileException(strError);
+        }
+
+        var fragmentShader = GL.CreateShader(GL.GL_FRAGMENT_SHADER);
+        GL.ShaderSource(fragmentShader, m_str_fragment_shader);
+        GL.CompileShader(fragmentShader);
+        nFlag = GL.GetShaderiv(fragmentShader, GL.GL_COMPILE_STATUS);
+        if (nFlag == 0) {
+            int nLen = 0;
+            byte[] byBuffer = new byte[1024];
+            GL.GetShaderInfoLog(fragmentShader, byBuffer.Length, ref nLen, ref byBuffer[0]);
+            GL.DeleteShader(fragmentShader);
+            string strError = Encoding.UTF8.GetString(byBuffer, 0, nLen);
+            throw new GLShaderCompileException(strError);
+        }
+
+        var program = GL.CreateProgram();
+        GL.AttachShader(program, vertexShader);
+        GL.AttachShader(program, fragmentShader);
+        GL.LinkProgram(program);
+        nFlag = GL.GetProgramiv(program, GL.GL_LINK_STATUS);
+        if (nFlag == 0) {
+            int nLen = 0;
+            byte[] byBuffer = new byte[1024];
+            GL.GetProgramInfoLog(program, byBuffer.Length, ref nLen, ref byBuffer[0]);
+            GL.DeleteProgram(program);
+            string strError = Encoding.UTF8.GetString(byBuffer, 0, nLen);
+            throw new GLProgramLinkException(strError);
+        }
+        GL.UseProgram(program);
+        GL.DeleteShader(vertexShader);
+        GL.DeleteShader(fragmentShader);
+        //====================================
+
+        while (!GLFW.WindowShouldClose(window)) {
+            processInput(window);
+
+            GL.ClearColor(.5f, .5f, .5f, 1f);
+            GL.Clear(GL.GL_COLOR_BUFFER_BIT);
+            // GL.BindVertexArray(vao);
+            GL.DrawElements(GL.GL_TRIANGLES, 6, GL.GL_UNSIGNED_INT, IntPtr.Zero);
+
+            GLFW.SwapBuffers(window);
+            GLFW.WaitEvents();
+        }
+        GLFW.Terminate();
+    }
+
+    static void processInput(IntPtr window) {
+        if (GLFW.GetKey(window, GLFW.KEY_ESCAPE) == GLFW.PRESS)
+            GLFW.SetWindowShouldClose(window, true);
+    }
+
+    static void framebuffer_size_callback(IntPtr window, int width, int height) {
+        GL.Viewport(0, 0, width, height);
+    }
+}
+#CE
+
+

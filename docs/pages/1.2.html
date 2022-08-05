@@ -1,0 +1,328 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<title>STGL</title>
+<link rel="stylesheet" type="text/css" href="..//css/stdoc.css"/>
+<script type="text/javascript" src="..//js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="..//js/stdoc.js"></script>
+</head>
+<body>
+<div id="div_model" style="display:none">BOOK</div>
+<div id="div_body">
+<div id="div_logo"></div>
+<div id="div_left">
+<div id="div_left_list">
+<ul class='ul_group_root'>
+<li>
+    <a class='a_node_root anchor_btn' name='a_a' href='#a_a'>你好 窗口</a>
+    <ul>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_b' href='#a_b'>初始化GLFW</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_c' href='#a_c'>创建窗口</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_d' href='#a_d'>初始化OpenGL</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_e' href='#a_e'>绑定视窗</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_f' href='#a_f'>渲染循环</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_g' href='#a_g'>渲染窗口</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_h' href='#a_h'>总结</a></li>
+    </ul>
+</li>
+</ul><div class='div_left_space_space'></div>
+</div>
+<span id="span_time">2022-08-06 -> by:<span>DebugST</span></span>
+</div>
+<div id="div_right">
+<span class='span_location'>1.入门 &gt; 2.你好 窗口<span style='float:right'>2022-07-20</span></span><h1 class='h_title anchor_point' name='a_a'>你好 窗口</h1>
+<p>教程源地址<a class='mark' target='_blank' href='https://learnopengl.com/Getting-started/Hello-Window'>learnopengl</a><a class='mark' target='_blank' href='https://learnopengl-cn.github.io/01%20Getting%20started/03%20Hello%20Window/'>learnopengl-cn</a></p>
+<p>首先我们需要一个窗口来展示<span class='mark'>OpenGL</span>的渲染结果，在<span class='mark'>.Net</span>中我们可以直接<span class='mark'>new Form()</span>得到一个窗体。但是很遗憾<span class='mark'>.Net</span>虽然已经跨平台，但是<span class='mark'>GUI</span>并没有夸平台，所以<span class='mark'>Form</span>目前只有<span class='mark'>Window</span>平台中支持。</p>
+<p>而作者的目的是跨平台，所以使用了<span class='mark'>GLFW</span>项目来创建窗口，但是遗憾的是<span class='mark'>GLFW</span>仅仅只有创建窗口以及一些鼠标键盘游戏手柄等事件的管理，并不包含控件等元素，所以他是非常轻量级的。</p>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>由于目前<span class='mark'>STGL</span>使用的<span class='mark'>GLFW</span>并没有控件支持，但是你可能确实需要一些控件做交互，在后期作者会单独对<span class='mark'>WinForm</span>提供支持，类似于<span class='mark'>SharpGL</span><span class='mark'>OpenTK</span>那样提供类似<span class='mark'>GLControl</span>的控件。</p>
+<p>并且作者和他的朋友目前正在构思基于<span class='mark'>OpenGL</span>构建<span class='mark'>.Net</span>的跨平台<span class='mark'>UI Library</span>。当然仅仅还在构思阶段。得先把<span class='mark'>OpenGL</span>学会了再说吧？</p>
+<p>所以现在暂时只是学习如何使用<span class='mark'>OpenGL</span>。哦不。。是学习如何使用<span class='mark'>STGL</span>。暂且先把<span class='mark'>GUI</span>相关的一些东西放在一边。</p>
+</div>
+<div><h2 class='h_option anchor_point' name='a_b'>初始化GLFW</h2></div>
+<p>在使用<span class='mark'>GLFW</span>前你需要先对它进行初始化工作，在原版的教程中你可能会看到如下代码：</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>int</span> <span style='color:rgba(255,0,255,1)'>main</span><span style='color:rgba(255,255,255,1)'>()
+<span class='span_code_line'></span>{</span>
+<span class='span_code_line'></span>    <span style='color:rgba(219,112,147,1)'>glfwInit</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>    <span style='color:rgba(219,112,147,1)'>glfwWindowHint</span><span style='color:rgba(255,255,255,1)'>(</span>GLFW_CONTEXT_VERSION_MAJOR<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(219,112,147,1)'>glfwWindowHint</span><span style='color:rgba(255,255,255,1)'>(</span>GLFW_CONTEXT_VERSION_MINOR<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(219,112,147,1)'>glfwWindowHint</span><span style='color:rgba(255,255,255,1)'>(</span>GLFW_OPENGL_PROFILE<span style='color:rgba(255,255,255,1)'>,</span> GLFW_OPENGL_CORE_PROFILE<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>return</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p>上面的代码调用了<span class='mark'>glfwInit</span>和<span class='mark'>glfwWindowHint</span>进行一些初始化，以及窗口属性的一些设置。</p>
+<p>第<span class='mark'>4</span><span class='mark'>5</span>行分别在设置<span class='mark'>OpenGL</span>使用的版本，这里我们采用<span class='mark'>3.3</span>的版本，并且使用<span class='mark'>核心渲染模式</span>,在开始的时候已经提到，教程使用<span class='mark'>3.3</span>的版本。所以在使用此教程的时候，确保你当前电脑的<span class='mark'>OpenGL</span>版本至少是<span class='mark'>3.3</span>。</p>
+<p>如何确定当前系统中<span class='mark'>OpenGL</span>的办法，我相信你有一万种办法。</p>
+<p>由于这是一个<span class='mark'>OpenGL</span>的教程并不是一个<span class='mark'>GLFW</span>的教程，所以有关<span class='mark'>GLFW</span>如何使用可以参考：</p>
+<p><a class='mark' target='_blank' href='https://www.glfw.org/docs/latest/window.html'>https://www.glfw.org/docs/latest/window.html</a></p>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p><span class='mark'>GLFW</span>中包含一百多个函数，<span class='mark'>STGL</span>中全部做了封装。</p>
+</div>
+<p>接下来我们在<span class='mark'>.Net</span>中创建一个<span class='mark'>Console</span>项目并引用<span class='mark'>STGL</span>的库（当然这里你目前可能需要自己编译，或者直接使用此项目的工程作为学习。<span class='mark'>STGL</span>项目的代码语法几乎可以兼容任意<span class='mark'>.Net</span>平台，如<span class='mark'>.Net Core</span><span class='mark'>.Net 6</span>等。）</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>using</span> <span style='color:rgba(0,255,255,1)'>STLib</span><span style='color:rgba(112,128,144,1)'>.OpenGL.GLFW</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>namespace</span> <span style='color:rgba(0,255,255,1)'>STGL</span><span style='color:rgba(112,128,144,1)'>.Tutorials</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>{</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>public class</span> <span style='color:rgba(0,255,255,1)'>_1_1_Hello_Window</span>
+<span class='span_code_line'></span>    <span style='color:rgba(255,255,255,1)'>{</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,0,1)'>// 教程中有很多章节 所以使用Run代替main 并且在main中 xxxx.Run();就可以运行不同的教程Demo</span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>public static</span> <span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>Run</span><span style='color:rgba(255,255,255,1)'>() {</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.Init</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowHint</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.CONTEXT_VERSION_MAJOR</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowHint</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.CONTEXT_VERSION_MINOR</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowHint</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.OPENGL_PROFILE</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.OPENGL_CORE_PROFILE</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,0,1)'>//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(255,255,255,1)'>}
+<span class='span_code_line'></span>    }
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p>如果是在<span class='mark'>Mac</span>系统中需要将下面一行的注释解除。<span style='color:gray'>（你可能会问为什么<span class='mark'>GLFW</span>不自动判断系统版本，然后将这句话自动加入？你这就问到作者了。。你咋不问为什么它不直接提供<span class='mark'>var win = new GLFWWindow()</span>？<span class='mark'>GLFW</span>仅仅是帮我们提供了最底级的封装。）</span></p>
+<p>在<span class='mark'>STGL</span>中提供了系统的判断方式，所以如果你想代码自动兼容平台，最后一行被注释的代码替换成如下就可以了：</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,0,1)'>//RuntimeInfo -&gt; using STLib.OpenGL;</span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>RuntimeInfo</span><span style='color:rgba(112,128,144,1)'>.System</span> <span style='color:rgba(255,255,255,1)'>==</span> <span style='color:rgba(0,255,255,1)'>RuntimeInfo</span><span style='color:rgba(112,128,144,1)'>.SystemType.Mac</span><span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>//GL.GL_TRUE = 1; -&gt; using STLib.OpenGL.GL;</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowHint</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.OPENGL_FORWARD_COMPAT</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_TRUE</span><span style='color:rgba(255,255,255,1)'>);</span> <span style='color:rgba(0,255,0,1)'>// For Mac system</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>}</span></pre>
+</div>
+<div><h2 class='h_option anchor_point' name='a_c'>创建窗口</h2></div>
+<p>当初始化完毕后就可以创建窗口了。</p>
+<p>原版代码：</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span>GLFWwindow<span style='color:rgba(255,255,255,1)'>*</span> window <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(219,112,147,1)'>glfwCreateWindow</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>800</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>600</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,165,0,1)'>"LearnOpenGL"</span><span style='color:rgba(255,255,255,1)'>,</span> NULL<span style='color:rgba(255,255,255,1)'>,</span> NULL<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span>window <span style='color:rgba(255,255,255,1)'>==</span> NULL<span style='color:rgba(255,255,255,1)'>)
+<span class='span_code_line'></span>{</span>
+<span class='span_code_line'></span>    std<span style='color:rgba(255,255,255,1)'>::</span>cout <span style='color:rgba(255,255,255,1)'>&lt;</span><span style='color:rgba(255,255,255,1)'>&lt;</span> <span style='color:rgba(255,165,0,1)'>"Failed to create GLFW window"</span> <span style='color:rgba(255,255,255,1)'>&lt;</span><span style='color:rgba(255,255,255,1)'>&lt;</span> std<span style='color:rgba(255,255,255,1)'>::</span>endl<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>    <span style='color:rgba(219,112,147,1)'>glfwTerminate</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>return</span> <span style='color:rgba(255,255,255,1)'>-</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>}</span>
+<span class='span_code_line'></span><span style='color:rgba(219,112,147,1)'>glfwMakeContextCurrent</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<p><span class='mark'>STGL</span>代码：</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>IntPtr</span> window <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.CreateWindow</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>800</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>600</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,165,0,1)'>"LearnOpenGL"</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span>window <span style='color:rgba(255,255,255,1)'>==</span> <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span><span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>Console</span><span style='color:rgba(219,112,147,1)'>.WriteLine</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,165,0,1)'>"Failed to create GLFW window"</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.Terminate</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>return</span><span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>}</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.MakeContextCurrent</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<div class='div_hightlight' style='background-color:goldenrod;color:black'>
+<p>需要注意的是上面看上去我们创建了一个<span class='mark'>800 * 600</span>的窗口，实际上窗口的大小会比这个大。与<span class='mark'>WinForm</span>不同的是<span class='mark'>GLFW</span>指定的是窗口<span class='mark'>Client</span>区域的大小（不包含窗口边框），而不是整个窗口的大小。而<span class='mark'>WinForm</span>中则是设置的整个窗口的大小。</p>
+<p>不知道你是否注意到在<span class='mark'>System.Windows.Forms.Form</span>中有两个属性<span class='mark'>Size</span><span class='mark'>ClientSize</span>。</p>
+<p>同样大小的窗口在不同系统中或者不同的主题中<span class='mark'>ClientSize</span>可能是不同的。因为不同的系统和不同的主题，窗口的边框样式可能是不一样的。</p>
+</div>
+<img width=385 src='../images/1.2.size.png'/>
+<p><span class='mark'>glfwMakeContextCurrent</span>将当前窗口与<span class='mark'>OpenGL</span>的<span class='mark'>Context</span>绑定。</p>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>将在最后介绍<span class='mark'>Context</span>，所以这里先暂时不纠结<span class='mark'>glfwMakeContextCurrent</span>。</p>
+</div>
+<div><h2 class='h_option anchor_point' name='a_d'>初始化OpenGL</h2></div>
+<p>当窗口创建完毕并绑定好<span class='mark'>Context</span>后我们需要对<span class='mark'>OpenGL</span>的函数进行初始化。</p>
+<p>原版教程采用的是<span class='mark'>GLAD</span>，在上一章节中提到过与之类似的<span class='mark'>GLEW</span></p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,255,255,1)'>!</span><span style='color:rgba(219,112,147,1)'>gladLoadGLLoader</span><span style='color:rgba(255,255,255,1)'>((</span><span style='color:rgba(0,255,255,1)'>GLADloadproc</span><span style='color:rgba(255,255,255,1)'>)</span>glfwGetProcAddress<span style='color:rgba(255,255,255,1)'>))
+<span class='span_code_line'></span>{</span>
+<span class='span_code_line'></span>    std<span style='color:rgba(255,255,255,1)'>::</span>cout <span style='color:rgba(255,255,255,1)'>&lt;</span><span style='color:rgba(255,255,255,1)'>&lt;</span> <span style='color:rgba(255,165,0,1)'>"Failed to initialize GLAD"</span> <span style='color:rgba(255,255,255,1)'>&lt;</span><span style='color:rgba(255,255,255,1)'>&lt;</span> std<span style='color:rgba(255,255,255,1)'>::</span>endl<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>return</span> <span style='color:rgba(255,255,255,1)'>-</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p><span class='mark'>STGL</span>中需要这样初始化：</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>try</span> <span style='color:rgba(255,255,255,1)'>{</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Init</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.GetProcAddress</span><span style='color:rgba(255,255,255,1)'>);</span><span style='color:rgba(0,255,0,1)'>//GL.InitAll(GLFW.GetProcAddress)</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>}</span> <span style='color:rgba(30,144,255,1)'>catch</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>Exception</span> ex<span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>Console</span><span style='color:rgba(219,112,147,1)'>.WriteLine</span><span style='color:rgba(255,255,255,1)'>(</span>ex<span style='color:rgba(112,128,144,1)'>.Message</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.Terminate</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>return</span><span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p><span class='mark'>Init</span>和<span class='mark'>InitAll</span>的区别在于，前者仅仅是在调用某些函数的时候再去初始化，而后者一次性初始化所有函数，当然也更耗时。</p>
+<div><h2 class='h_option anchor_point' name='a_e'>绑定视窗</h2></div>
+<p>当<span class='mark'>OpenGL</span>初始化完成我们就可以使用它的函数了，我们要做的第一件事情就是绑定视窗，简单来说也就是说告诉<span class='mark'>OpenGL</span>我们需要创建多大的画布（像素），通常情况下与窗口大小一致。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Viewport</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>800</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>600</span><span style='color:rgba(255,255,255,1)'>);</span><span style='color:rgba(0,255,0,1)'>//并不严谨 稍后再说</span></pre>
+</div>
+<p>但是这样并不够。因为窗口的大小是可以拖动的，除非你的窗口是禁止改变大小的，我们希望窗口大小变化时更新视窗的大小。<span class='mark'>GLFW</span>中提供了窗口大小变化的事件，我们仅仅需要传入一个回调函数就可以了。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SetFramebufferSizeCallback</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>,</span> framebuffer_size_callback<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,0,1)'>// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+<span class='span_code_line'></span>// ---------------------------------------------------------------------------------------------</span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>static</span> <span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>framebuffer_size_callback</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>IntPtr</span> window<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(100,149,237,1)'>int</span> width<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(100,149,237,1)'>int</span> height<span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>// make sure the viewport matches the new window dimensions; note that width and
+<span class='span_code_line'></span>    // height will be significantly larger than specified on retina displays.</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Viewport</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> width<span style='color:rgba(255,255,255,1)'>,</span> height<span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<div class='div_hightlight' style='background-color:goldenrod;color:black'>
+<p>在<span class='mark'>Retina</span>显示器中，也就是高<span class='mark'>DPI</span>模式下，<span class='mark'>width</span><span class='mark'>height</span>的值可能明显会大于窗口的大小。因为返回的是<span class='mark'>像素</span>值，而同样<span class='mark'>glViewport</span>设置的也是<span class='mark'>像素</span>值。</p>
+<p>在<span class='mark'>DPI=192</span>的情况下，一个<span class='mark'>800*600</span>的窗口，可能在屏幕中实际的像素是<span class='mark'>1600*1200</span>。所以上面才说直接设置<span class='mark'>800 600</span>其实并不严谨，应当使用下面的代码。</p>
+</div>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>int</span> nWidth <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> nHeight <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.GetFramebufferSize</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>ref</span> nWidth<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>ref</span> nHeight<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Viewport</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> nWidth<span style='color:rgba(255,255,255,1)'>,</span> nHeight<span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<div class='div_hightlight' style='background-color:goldenrod;color:black'>
+<p>如果<span class='mark'>Viewport</span>大小与窗口的大小不匹配可能会出现一些神奇的现象。那你可能会问，为什么<span class='mark'>GLFW</span>不直接就给我们绑定成窗口的大小不就好了吗？为什么还要我们自己去设置？万一窗口上的其它位置还有别的用途呢？</p>
+</div>
+<div class='div_hightlight' style='background-color:pink;color:black'>
+<p>当然如果你是通过事件绑定去设置的<span class='mark'>Viewport</span>，那么你可以不用在外面调用<span class='mark'>GL.Viewport</span>，因为窗口第一次显示的时候也会执行事件。</p>
+<p>这是原版教程这么说的。但是经过作者测试，发现好像并不是这样的。可能是因为<span class='mark'>GLFW</span>版本不同的问题吧。</p>
+</div>
+<div><h2 class='h_option anchor_point' name='a_f'>渲染循环</h2></div>
+<p>接下来的过程就是窗口的渲染了，如果你有<span class='mark'>Win32</span>的编程经验，那么你一定知道<span class='mark'>消息循环</span>，<span class='mark'>渲染循环</span>差不多也是这个意思。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>while</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,255,255,1)'>!</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowShouldClose</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>)) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SwapBuffers</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>//GLFW.WaitEvents();</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.PollEvents</span><span style='color:rgba(255,255,255,1)'>();
+<span class='span_code_line'></span>}</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.Terminate</span><span style='color:rgba(255,255,255,1)'>();</span></pre>
+</div>
+<ul>
+<li>glfwWindowShouldClose</li>
+<ul>
+<li>不停的检测当前窗口是否应当被关闭，如果返回<span class='mark'>false</span>说明这个窗口还运行着，就像<span class='mark'>Win32</span>中的<span class='mark'>GetMessage</span>。</li>
+</ul>
+<li>glfwSwapBuffers</li>
+<ul>
+<li>函数会交换颜色缓冲（它是一个储存着<span class='mark'>GLFW</span>窗口每一个像素颜色值的大缓冲），它在这一迭代中被用来绘制，并且将会作为输出显示在屏幕上。</li>
+</ul>
+<li>glfwPollEvents</li>
+<ul>
+<li>函数检查有没有触发什么事件（比如键盘输入、鼠标移动等）、更新窗口状态，并调用对应的回调函数（可以通过回调方法手动设置）。</li>
+</ul>
+</ul>
+<div class='div_hightlight' style='background-color:goldenrod;color:black'>
+<p>或许你已经看到了作者注释掉的代码，那么它和<span class='mark'>glfwPollEvents</span>有什么不同？通过名字不难看出<span class='mark'>glfwWaitEvents</span>会阻塞代码，直到有一个可用的事件发生，而<span class='mark'>glfwPollEvents</span>是不阻塞的，只是当有事件发生的时候会去调用回调函数，所以你会发现你的<span class='mark'>CPU</span>使用率非常的高。</p>
+<p>如果你需要高帧率刷新可以使用<span class='mark'>glfwPollEvents</span>，如果你没有高帧率的需求，那么可以使用<span class='mark'>glfwWaitEvents</span></p>
+</div>
+<p>关于它们的跟多介绍可以查看<span class='mark'>GLFW</span>的教程<a class='mark' target='_blank' href='https://www.glfw.org/docs/latest/group__window.html#ga554e37d781f0a997656c26b2c56c835e'>glfwWaitEvents</a></p>
+<div class='div_hightlight' style='background-color:yellowgreen;color:black'>
+<p><span class='mark'>glfwSwapBuffers</span></p>
+<p>应用程序使用单缓冲绘图时可能会存在图像闪烁的问题。 这是因为生成的图像不是一下子被绘制出来的，而是按照从左到右，由上而下逐像素地绘制而成的。最终图像不是在瞬间显示给用户，而是通过一步一步生成的，这会导致渲染的结果很不真实。为了规避这些问题，我们应用双缓冲渲染窗口应用程序。前缓冲保存着最终输出的图像，它会在屏幕上显示；而所有的的渲染指令都会在后缓冲上绘制。当所有的渲染指令执行完毕后，我们交换(Swap)前缓冲和后缓冲，这样图像就立即呈显出来，之前提到的不真实感就消除了。</p>
+</div>
+<div><h2 class='h_option anchor_point' name='a_g'>渲染窗口</h2></div>
+<p>到此为止你就可以看到运行出来的窗口了。但是黑不溜秋的，甚至你改变窗口大小还会有奇怪的现象产生。</p>
+<img width=563 src='../images/1.2.buffer.png'/>
+<p>其实这是属性正常现象，仔细想想，我们有编写如何渲染窗口的代码吗？</p>
+<p>通常情况下我们渲染的代码都会写在渲染循环中。但是在这之前我们在做一件事情，那就是添加一个输入检测（是输入检测不是事件），当按下<span class='mark'>ESC</span>的时候退出窗口。</p>
+<p>之所以要这么做是为了和原版教程保持一致，顺便多介绍一些<span class='mark'>GLFW</span>。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>static</span> <span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>processInput</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>IntPtr</span> window<span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.GetKey</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.KEY_ESCAPE</span><span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(255,255,255,1)'>==</span> <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.PRESS</span><span style='color:rgba(255,255,255,1)'>)</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SetWindowShouldClose</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>true</span><span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p>把上面的函数加入到代码中，然后就可以开始下一步了。通常一个<span class='mark'>渲染循环</span>是长这样的。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,0,1)'>// 渲染循环</span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>while</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,255,255,1)'>!</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowShouldClose</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>)) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>// 输入检测</span>
+<span class='span_code_line'></span>    <span style='color:rgba(219,112,147,1)'>processInput</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>// 一些渲染代码
+<span class='span_code_line'></span>    // ...
+<span class='span_code_line'></span>    // 检查并调用事件，交换缓冲</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SwapBuffers</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>//GLFW.WaitEvents();</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.PollEvents</span><span style='color:rgba(255,255,255,1)'>();
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p><span class='mark'>glfwGetKey</span>用于主动询问一个按键的状态，当然其实<span class='mark'>GLFW</span>也有提供按键事件<span class='mark'>glfwSetKeyCallback</span>。至于你是喜欢主动还是被动，这就需要看你的运行场景了。</p>
+<p>原版教程中有提到一个<span class='mark'>渲染循环</span>通常和上面的代码结构一致。其实也并没有说错，但是或许能有更好的方式，用<span class='mark'>面向对象</span>的思维。比如将<span class='mark'>GLFW</span>封装成类似<span class='mark'>Form</span>的一个<span class='mark'>Class</span>?然后提供<span class='mark'>Paint</span>事件？但是这里我们先按教程做。所以我们加上了<span class='mark'>processInput</span></p>
+<p>那么接下来添加两句代码</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.ClearColor</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1f</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Clear</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_COLOR_BUFFER_BIT</span><span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<p>如果在<span class='mark'>WinForm</span>中使用过<span class='mark'>GDI</span>是不是感觉这个代码有点熟悉了？</p>
+<span style='display:block'><span class='span_code_title'>WinForm</span></span>
+<div class='div_code title'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>Graphics</span><span style='color:rgba(219,112,147,1)'>.Clear</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>Color</span><span style='color:rgba(112,128,144,1)'>.Gray</span><span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<p>只是为什么<span class='mark'>OpenGL</span>调用了两次？其中第二句又是什么意思？稍后再说。先别管了，赶紧去运行程序吧。看看效果是不是出来了？</p>
+<p>以下是全部代码和运行效果图</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>public class</span> <span style='color:rgba(0,255,255,1)'>_1_1_Hello_Window</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>{</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>public static</span> <span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>Run</span><span style='color:rgba(255,255,255,1)'>() {</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.Init</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowHint</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.CONTEXT_VERSION_MAJOR</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowHint</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.CONTEXT_VERSION_MINOR</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>3</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowHint</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.OPENGL_PROFILE</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.OPENGL_CORE_PROFILE</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>RuntimeInfo</span><span style='color:rgba(112,128,144,1)'>.System</span> <span style='color:rgba(255,255,255,1)'>==</span> <span style='color:rgba(0,255,255,1)'>RuntimeInfo</span><span style='color:rgba(112,128,144,1)'>.SystemType.Mac</span><span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowHint</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.OPENGL_FORWARD_COMPAT</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_TRUE</span><span style='color:rgba(255,255,255,1)'>);</span> <span style='color:rgba(0,255,0,1)'>// For Mac system</span>
+<span class='span_code_line'></span>        <span style='color:rgba(255,255,255,1)'>}</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>IntPtr</span> window <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.CreateWindow</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>800</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>600</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,165,0,1)'>"LearnOpenGL"</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span>window <span style='color:rgba(255,255,255,1)'>==</span> <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span><span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>Console</span><span style='color:rgba(219,112,147,1)'>.WriteLine</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,165,0,1)'>"Failed to create GLFW window"</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.Terminate</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>            <span style='color:rgba(30,144,255,1)'>return</span><span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>        }</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.MakeContextCurrent</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SetFramebufferSizeCallback</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>,</span> framebuffer_size_callback<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>try</span> <span style='color:rgba(255,255,255,1)'>{</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Init</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.GetProcAddress</span><span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>        }</span> <span style='color:rgba(30,144,255,1)'>catch</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>Exception</span> ex<span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>Console</span><span style='color:rgba(219,112,147,1)'>.WriteLine</span><span style='color:rgba(255,255,255,1)'>(</span>ex<span style='color:rgba(112,128,144,1)'>.Message</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.Terminate</span><span style='color:rgba(255,255,255,1)'>();</span>
+<span class='span_code_line'></span>            <span style='color:rgba(30,144,255,1)'>return</span><span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>        }</span>
+<span class='span_code_line'></span>        <span style='color:rgba(100,149,237,1)'>int</span> nWidth <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> nHeight <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.GetFramebufferSize</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>ref</span> nWidth<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>ref</span> nHeight<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Viewport</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> nWidth<span style='color:rgba(255,255,255,1)'>,</span> nHeight<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>while</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,255,255,1)'>!</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowShouldClose</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>)) {</span>
+<span class='span_code_line'></span>            <span style='color:rgba(219,112,147,1)'>processInput</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.ClearColor</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1f</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Clear</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_COLOR_BUFFER_BIT</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SwapBuffers</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WaitEvents</span><span style='color:rgba(255,255,255,1)'>();
+<span class='span_code_line'></span>        }</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.Terminate</span><span style='color:rgba(255,255,255,1)'>();
+<span class='span_code_line'></span>    }</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>static</span> <span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>processInput</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>IntPtr</span> window<span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.GetKey</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.KEY_ESCAPE</span><span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(255,255,255,1)'>==</span> <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(112,128,144,1)'>.PRESS</span><span style='color:rgba(255,255,255,1)'>)</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SetWindowShouldClose</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>true</span><span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>    }</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>static</span> <span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>framebuffer_size_callback</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>IntPtr</span> window<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(100,149,237,1)'>int</span> width<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(100,149,237,1)'>int</span> height<span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Viewport</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> width<span style='color:rgba(255,255,255,1)'>,</span> height<span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>    }
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<img src='../images/1.2.result.png'/>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p><span class='mark'>GL.ClearColor</span>需要四个浮点数参数，而不是常见的<span class='mark'>0-255</span>，<span class='mark'>0-255</span>的色深是<span class='mark'>8-bit</span>，万一硬件支持更大的色深处理呢？是吧。</p>
+</div>
+<div><h2 class='h_option anchor_point' name='a_h'>总结</h2></div>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>刚才上边提到稍后再讲<span class='mark'>Context</span>？好吧，那就稍后再讲吧。以及为何要<span class='mark'>Clear</span>两次。这一篇幅有点长了。目前我们已经接触到了<span class='mark'>OpenGL</span>的三个函数了。</p>
+</div>
+<ul>
+<li><span class='mark'>glViewport</span> 用于设定渲染视窗大小。</li>
+<li><span class='mark'>glClearColor</span> 用于设定清除渲染视窗的颜色。</li>
+<li><span class='mark'>glClear</span> 执行清除。</li>
+</ul>
+
+</div>
+<div id="div_right_list">
+<a name='a_a' href='#a_a'>你好 窗口</a>
+<a name='a_b' href='#a_b'>初始化GLFW</a>
+<a name='a_c' href='#a_c'>创建窗口</a>
+<a name='a_d' href='#a_d'>初始化OpenGL</a>
+<a name='a_e' href='#a_e'>绑定视窗</a>
+<a name='a_f' href='#a_f'>渲染循环</a>
+<a name='a_g' href='#a_g'>渲染窗口</a>
+<a name='a_h' href='#a_h'>总结</a>
+</div>
+</div>
+</body>
+</html>

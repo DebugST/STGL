@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<title>STGL</title>
+<link rel="stylesheet" type="text/css" href="..//css/stdoc.css"/>
+<script type="text/javascript" src="..//js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="..//js/stdoc.js"></script>
+</head>
+<body>
+<div id="div_model" style="display:none">BOOK</div>
+<div id="div_body">
+<div id="div_logo"></div>
+<div id="div_left">
+<div id="div_left_list">
+<ul class='ul_group_root'>
+<li>
+    <a class='a_node_root anchor_btn' name='a_a' href='#a_a'>OpenGL介绍</a>
+    <ul>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_b' href='#a_b'>OpenGL函数介绍</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_c' href='#a_c'>GLEW</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_d' href='#a_d'>OpenGL扩展</a></li>
+    </ul>
+</li>
+</ul><div class='div_left_space_space'></div>
+</div>
+<span id="span_time">2022-08-06 -> by:<span>DebugST</span></span>
+</div>
+<div id="div_right">
+<span class='span_location'>1.入门 &gt; 1.OpenGL介绍<span style='float:right'>2022-07-19</span></span><h1 class='h_title anchor_point' name='a_a'>OpenGL介绍</h1>
+<img width=306 src='../images/1.1.opengl.log.jpeg'/>
+<p>在还没有接触到<span class='mark'>OpenGL</span>之前，作者一直以为<span class='mark'>OpenGL</span>是一个<span class='mark'>SDK</span>需要安装各种东西，然后才可以进行相关的开发。事实上并非如此。基本上现在大多数的电脑都可以直接运行<span class='mark'>OpenGL</span>程序。</p>
+<p><span class='mark'>OpenGL</span>并不是一个<span class='mark'>SDK</span>而是一个<span class='mark'>API</span>规范，由<a class='mark' target='_blank' href='http://www.khronos.org/'>khronos</a>组织所维护的一套编程接口标准。它们规定了一些函数的名称以及需要的参数和输出值。至于功能怎么实现。。。这个是硬件的事情了是吧？也就是<span class='mark'>显卡</span>。</p>
+<p>如果一个显卡生产厂商愿意去支持<span class='mark'>OpenGL</span>的规范，那么他们就会去实现那些<span class='mark'>API</span>接口，然后将这些实现好的接口伴随着驱动程序一起安装在系统中。而基本上显卡厂商都愿意去实现这些<span class='mark'>API</span>，所以基本上每个系统中都天然拥有<span class='mark'>OpenGL</span>的运行环境。不会吧？不会你的电脑上连显卡驱动都没装吧？</p>
+<div><h2 class='h_option anchor_point' name='a_b'>OpenGL函数介绍</h2></div>
+<p><span class='mark'>OpenGL</span>的函数通常以<span class='mark'>gl</span>开头，是<span class='mark'>OpenGL</span>的核心库，它们是平台无关的函数，也是<span class='mark'>STGL</span>所移植的部分，如：<span class='mark'>glGetString</span>。同样还有其他开头的函数，如：<span class='mark'>glx</span><span class='mark'>agl</span><span class='mark'>wgl</span><span class='mark'>glu</span><span class='mark'>glaux</span>等。</p>
+<p><span class='mark'>glu</span>是以核心库函数封装的一些为数不多但是功能强大的绘图函数。目前<span class='mark'>STGL</span>暂未封装这些函数。</p>
+<p><span class='mark'>glx</span><span class='mark'>agl</span><span class='mark'>wgl</span>它们是平台相关的函数，用于在不同平台将图形窗口与<span class='mark'>OpenGL</span>上下文<span class='mark'>Context</span>进行绑定，以<span class='mark'>wgl</span>为例，他是<span class='mark'>windows</span>系统相关的函数。在<span class='mark'>windows</span>系统目录中存在<span class='mark'>opengl32.dll</span>文件。其中包含十几个<span class='mark'>wgl</span>开头的函数，如：<span class='mark'>wglCreateContext</span></p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>HGLRC</span> <span style='color:rgba(255,0,255,1)'>wglCreateContext</span><span style='color:rgba(255,255,255,1)'>(</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>HDC</span> hdc <span style='color:rgba(0,255,0,1)'>// device context of device that the rendering context
+<span class='span_code_line'></span>            // will be suitable for</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<p>在<span class='mark'>windows</span>系统中使用过<span class='mark'>GDI</span>或者<span class='mark'>GDI+</span>的同学都知道，<span class='mark'>windows</span>的绘图设备是<span class='mark'>HDC</span>，但是<span class='mark'>OpenGL</span>使用的是自己的绘图上下文<span class='mark'>Context</span>它是与平台无关的。所以<span class='mark'>wglCreateContext</span>可以看做是把<span class='mark'>HDC</span>转换成<span class='mark'>OpenGL</span>的<span class='mark'>Context</span>，这样就可以使用<span class='mark'>OpenGL</span>中的<span class='mark'>glXXX</span>函数对窗口进行渲染。<span style='color:pink'>（然而事实上要将<span class='mark'>HDC</span>绑定到<span class='mark'>Context</span>中并没有上面说的那么简单）</span></p>
+<p>当然在<span class='mark'>STGL</span>中这个绑定过程无需我们自己实现，因为我们使用了<span class='mark'>GLFW</span>项目，它会帮我们在不同的平台上创建窗口并绑定<span class='mark'>OpenGL</span>上下文。</p>
+<p><span class='mark'>OpenGL</span>的某些函数还会使用特定的后缀，如：<span class='mark'>3f</span><span class='mark'>4f</span><span class='mark'>3i</span>等。<span class='mark'>glColor3f</span>则表示需要<span class='mark'>3</span>个<span class='mark'>float</span>参数。你可能不是很理解为什么要这么设计，但是你需要知道<span class='mark'>OpenGL</span>的<span class='mark'>API</span>是<span class='mark'>C</span>实现的，他可能并不像<span class='mark'>.Net</span>一样拥有函数重载。只能通过这样的方式来达到同样的效果。事实上<span class='mark'>glColor</span>就有很多个函数<span class='mark'>glColor3i</span><span class='mark'>glColor3f</span><span class='mark'>glColor3ui</span>..等。</p>
+<p>关于<span class='mark'>OpenGL</span>更多的规范以及文档，可以查看此链接：<a class='mark' target='_blank' href='https://github.com/KhronosGroup/OpenGL-Registry'>https://github.com/KhronosGroup/OpenGL-Registry</a></p>
+<div><h2 class='h_option anchor_point' name='a_c'>GLEW</h2></div>
+<p>在上面一章中已经提到过<span class='mark'>GLFW</span>和<span class='mark'>GLM</span>。可能在一些别的教程中你可能还会看到<span class='mark'>GLEW</span>或者<span class='mark'>GLAD</span>等。。这里是<span class='mark'>GLEW</span>是<span class='mark'>E</span>不是<span class='mark'>F</span>，和<span class='mark'>GLFW</span>是不一样的。</p>
+<p>那么<span class='mark'>GLEW</span>项目又是做什么的呢？<span class='mark'>GLEW</span>负责帮我们找到正确的<span class='mark'>glXXX</span>函数。什么意思？其实一开始作者也并不理解是什么意思，经过一系列的了解后才得知是怎么回事。</p>
+<p>我们依旧以<span class='mark'>windows</span>系统为例。在上面提到过在<span class='mark'>windows</span>的系统目录中存在一个<span class='mark'>opengl32.dll</span>。<span class='mark'>OpenGL</span>的实现是由硬件厂商实现的，所以调用<span class='mark'>opengl32.dll</span>里面的函数会自动跳转到硬件厂商实现的函数当中去。是不是很方便？这样我们直接引用<span class='mark'>opengl32.dll</span>岂不是就可以进行<span class='mark'>OpenGL</span>的开发了？但是你知道吗？这个文件从<span class='mark'>windows 98</span>开始就一直存在，并且至今没有更新过。它一直保持<span class='mark'>OpenGL-1.1</span>的版本，你用<span class='mark'>dumpbin</span>工具去查看这个<span class='mark'>dll</span>中的导出函数，你会发现里面仅仅只有一百多个函数，<span class='mark'>OpenGL</span>发展到现在已经拥有上千的函数了。显然直接使用<span class='mark'>opengl32.dll</span>是不够的。同时也不要忘了微软自己有一个<span class='mark'>DirectX</span>，它没有必要去帮我们去维护<span class='mark'>OpenGL</span>接口的更新。</p>
+<p>那怎么办？可能聪明的你已经想到了那我们不调用<span class='mark'>opengl32.dll</span>里面的函数，直接调用硬件厂商驱动所提供的<span class='mark'>DLL</span>文件呢？事实上这也是不现实的。你如何知道当前电脑是什么显卡以及装的什么驱动？既然都不知道又如何去调用它呢？或者就算是你知道了并且调用了里面的函数，那么你能保证你的程序放在另一台电脑上去，它也是和你同款显卡并且是同款驱动程序吗？</p>
+<p>显然我们依然需要一个通用的方式去获得这些函数。在<span class='mark'>OpenGL</span>的<span class='mark'>API</span>规范中有这样一些函数<span class='mark'>xxxGetProcAddress</span>。而在<span class='mark'>windows</span>中这个函数叫做：</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>PROC</span> <span style='color:rgba(255,0,255,1)'>wglGetProcAddress</span><span style='color:rgba(255,255,255,1)'>(</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>LPCSTR</span>  lpszProc   <span style='color:rgba(0,255,0,1)'>// name of the extension function</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<p>通过这个函数我们可以使用函数名得到对应的函数地址，然后再将这这个地址转换成对应的函数指针，有点像<span class='mark'>windows</span>开发中的<span class='mark'>LoadLibrary</span> + <span class='mark'>GetProcAddress</span>，大概就像这样：</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,0,1)'>// 定义函数原型</span>
+<span class='span_code_line'></span>typedef <span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,255,255,1)'>*</span>GL_GENBUFFERS<span style='color:rgba(255,255,255,1)'>) (</span>GLsizei<span style='color:rgba(255,255,255,1)'>,</span> GLuint<span style='color:rgba(255,255,255,1)'>*</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,0,1)'>// 找到正确的函数并赋值给函数指针</span>
+<span class='span_code_line'></span>GL_GENBUFFERS glGenBuffers  <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL_GENBUFFERS</span><span style='color:rgba(255,255,255,1)'>)</span><span style='color:rgba(219,112,147,1)'>wglGetProcAddress</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,165,0,1)'>"glGenBuffers"</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,0,1)'>// 现在函数可以被正常调用了</span>
+<span class='span_code_line'></span>GLuint buffer<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span><span style='color:rgba(219,112,147,1)'>glGenBuffers</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,255,255,1)'>&amp;</span>buffer<span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<p>通过这种方式我们就可以动态的获取到<span class='mark'>OpenGL</span>中的函数了。上面演示仅仅是其中一个函数的获取，可是<span class='mark'>OpenGL</span>有上千个函数。所以<span class='mark'>GLEW</span>就帮我们完成了这个事情。</p>
+<p>所以在<span class='mark'>STGL</span>中也会引用<span class='mark'>GLEW</span>吗？不不不。。。庆幸的是<span class='mark'>GLFW</span>给我们提供了一个函数<span class='mark'>glfwGetProcAddress</span>。很显然这个函数适配了不同的系统，在<span class='mark'>windows</span>上它会去调用<span class='mark'>wglGetProcAddress</span>，而在<span class='mark'>X window system</span>中它会去调用<span class='mark'>glxGetProcAddress</span>。</p>
+<p><span class='mark'>STGL</span>和<span class='mark'>GLEW</span>一样，动态的帮我们获取出了<span class='mark'>OpenGL</span>中函数，这也是目前<span class='mark'>STGL</span>项目所做的事情。所以在<span class='mark'>STGL</span>的源码中你会看到如下实现。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>public static</span> <span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>glClear</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(100,149,237,1)'>uint</span> mask<span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(100,149,237,1)'>var</span> _F <span style='color:rgba(255,255,255,1)'>=</span> _GetProc<span style='color:rgba(255,255,255,1)'>&lt;</span><span style='color:rgba(0,255,255,1)'>GLNativeDelegate</span><span style='color:rgba(112,128,144,1)'>.FNglClear</span><span style='color:rgba(255,255,255,1)'>&gt;</span><span style='color:rgba(255,165,0,1)'>"glClear"</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(219,112,147,1)'>_F</span><span style='color:rgba(255,255,255,1)'>(</span>mask<span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>}</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>private static</span> <span style='color:rgba(0,255,255,1)'>T</span> _GetProc<span style='color:rgba(255,255,255,1)'>&lt;</span>T<span style='color:rgba(255,255,255,1)'>&gt;</span><span style='color:rgba(100,149,237,1)'>string</span> strName<span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,255,255,1)'>!</span>m_dic_proc<span style='color:rgba(219,112,147,1)'>.ContainsKey</span><span style='color:rgba(255,255,255,1)'>(</span>strName<span style='color:rgba(255,255,255,1)'>)) {</span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span>m_getter <span style='color:rgba(255,255,255,1)'>==</span> <span style='color:rgba(30,144,255,1)'>null</span><span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>            <span style='color:rgba(30,144,255,1)'>throw new</span> <span style='color:rgba(0,255,255,1)'>InvalidOperationException</span><span style='color:rgba(255,255,255,1)'>(</span>
+<span class='span_code_line'></span>                <span style='color:rgba(255,165,0,1)'>"GL is not initialized, please call [GL.Init()] or [GL.InitAll()] to initialize it first."</span>
+<span class='span_code_line'></span>            <span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>        }</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>IntPtr</span> ptr <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(219,112,147,1)'>m_getter</span><span style='color:rgba(255,255,255,1)'>(</span>strName<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span>ptr <span style='color:rgba(255,255,255,1)'>!=</span> <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span><span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>            <span style='color:rgba(100,149,237,1)'>var</span> func <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>Marshal</span><span style='color:rgba(219,112,147,1)'>.GetDelegateForFunctionPointer</span><span style='color:rgba(255,255,255,1)'>(</span>ptr<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(100,149,237,1)'>typeof</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>T</span><span style='color:rgba(255,255,255,1)'>));</span>
+<span class='span_code_line'></span>            m_dic_proc<span style='color:rgba(219,112,147,1)'>.Add</span><span style='color:rgba(255,255,255,1)'>(</span>strName<span style='color:rgba(255,255,255,1)'>,</span> func<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>            <span style='color:rgba(0,255,255,1)'>GLNative</span><span style='color:rgba(112,128,144,1)'>.InitedFunctions</span><span style='color:rgba(255,255,255,1)'>++</span><span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>        }</span>
+<span class='span_code_line'></span>        <span style='color:rgba(0,255,0,1)'>// _GetProc will not write null to m_dic_proc when it cannot get Proc, but GL.InitAll will.</span>
+<span class='span_code_line'></span>    <span style='color:rgba(255,255,255,1)'>}</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span>m_dic_proc<span style='color:rgba(219,112,147,1)'>.ContainsKey</span><span style='color:rgba(255,255,255,1)'>(</span>strName<span style='color:rgba(255,255,255,1)'>)) {</span>
+<span class='span_code_line'></span>        <span style='color:rgba(100,149,237,1)'>object</span> obj <span style='color:rgba(255,255,255,1)'>=</span> m_dic_proc<span style='color:rgba(255,255,255,1)'>[</span>strName<span style='color:rgba(255,255,255,1)'>];</span>
+<span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>if</span> <span style='color:rgba(255,255,255,1)'>(</span>obj <span style='color:rgba(255,255,255,1)'>!=</span> <span style='color:rgba(30,144,255,1)'>null</span><span style='color:rgba(255,255,255,1)'>) {</span>
+<span class='span_code_line'></span>            <span style='color:rgba(30,144,255,1)'>return</span> <span style='color:rgba(255,255,255,1)'>(</span>T<span style='color:rgba(255,255,255,1)'>)</span>obj<span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>        }
+<span class='span_code_line'></span>    }</span>
+<span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>throw new</span> <span style='color:rgba(0,255,255,1)'>PlatformNotSupportedException</span><span style='color:rgba(255,255,255,1)'>(</span>
+<span class='span_code_line'></span>        <span style='color:rgba(255,165,0,1)'>"The ["</span> <span style='color:rgba(255,255,255,1)'>+</span> strName <span style='color:rgba(255,255,255,1)'>+</span> <span style='color:rgba(255,165,0,1)'>"] function cannot be initialized. "</span> <span style='color:rgba(255,255,255,1)'>+</span>
+<span class='span_code_line'></span>        <span style='color:rgba(255,165,0,1)'>"Or maybe the current OpenGL version ["</span> <span style='color:rgba(255,255,255,1)'>+</span> <span style='color:rgba(0,255,255,1)'>GLNative</span><span style='color:rgba(112,128,144,1)'>.Info.Version</span> <span style='color:rgba(255,255,255,1)'>+</span> <span style='color:rgba(255,165,0,1)'>"]  does not support this function, "</span> <span style='color:rgba(255,255,255,1)'>+</span>
+<span class='span_code_line'></span>        <span style='color:rgba(255,165,0,1)'>"Of course it is also possible that the stupid author wrote the bug."</span>
+<span class='span_code_line'></span>    <span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>目前<span class='mark'>STGL</span>采用的是<span class='mark'>OpenGL-4.6</span>的文档进行封装。</p>
+<p>如何加载<span class='mark'>OpenGL</span>函数<a class='mark' target='_blank' href='https://www.khronos.org/opengl/wiki/Load_OpenGL_Functions'>https://www.khronos.org/opengl/wiki/Load_OpenGL_Functions</a></p>
+</div>
+<div><h2 class='h_option anchor_point' name='a_d'>OpenGL扩展</h2></div>
+<p>在上边提到<span class='mark'>OpenGL</span>仅仅是定义了一些<span class='mark'>API</span>规范，由硬件厂商去提供支持。但是有没有一种可能，<span class='mark'>OpenGL</span>定义了10个函数，某硬件厂商不仅完成了10个函数，甚至还送了10个函数？或者说因为硬件的特性，某硬件厂商可以实现一些其他硬件厂商暂时无法实现的功能，但是又希望开发者使用这些函数怎么办？总不可能让<span class='mark'>OpenGL</span>去修改<span class='mark'>API</span>规范将那10个函数加进去吧？所以这个时候<span class='mark'>Extensions</span>出现了，也就是扩展。<span class='mark'>OpenGL</span>允许不同的厂商制定他们自己的扩展函数。</p>
+<p>通过使用<span class='mark'>glGetString(GL_EXTENSIONS)</span>可以查看当前<span class='mark'>OpenGL</span>环境支持的扩展。<span style='color:pink'>在<span class='mark'>OpenGL-3.0</span>版本开始需要通过<span class='mark'>glGetStringi</span>去获取。</span></p>
+<p>你可能会得到如下信息：</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span>GL_ARB_multisample, GL_EXT_abgr, GL_EXT_bgra, GL_EXT_blend_color,
+<span class='span_code_line'></span>GL_AMD_shader_trinary_minmax,WGL_ARB_create_context,...</span></pre>
+</div>
+<p>第一个部分表示针对哪个部分的扩展，第二个部分表示谁提供的扩展，然后是扩展的名称。</p>
+<p>在扩展的函数中同样遵循<span class='mark'>OpenGL</span>的命名规范，仅仅是再后面加了一个标识符，如：<span class='mark'>glXXXARB</span><span class='mark'>glXXXEXT</span><span class='mark'>wglXXXARB</span></p>
+<p>随着时间的发展，一些扩展也有可能成为<span class='mark'>OpenGL</span>中的正式函数，比如<span class='mark'>ARB</span>的扩展很多已被纳入<span class='mark'>OpenGL</span>成为正式的规范。关于扩展的更多信息这里并过多的做介绍可以参考以下链接：</p>
+<p><a class='mark' target='_blank' href='https://github.com/KhronosGroup/OpenGL-Registry/tree/main/extensions'>https://github.com/KhronosGroup/OpenGL-Registry/tree/main/extensions</a></p>
+<p>在<span class='mark'>STGL</span>中如果你想判断是否支持某一个特性可以使用：</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>if</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.Info.Extensions</span><span style='color:rgba(255,255,255,1)'>[</span><span style='color:rgba(255,165,0,1)'>"GL_ARB_extension_name"</span><span style='color:rgba(255,255,255,1)'>]){</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>// GL.xxxARB(...)</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>}</span><span style='color:rgba(30,144,255,1)'>else</span><span style='color:rgba(255,255,255,1)'>{</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>// GL.xxx(...)</span>
+<span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>}</span></pre>
+</div>
+<div class='div_hightlight' style='background-color:skyblue;color:black'>
+<p>本想再介绍一些<span class='mark'>OpenGL</span>的<span class='mark'>Context</span>，可是到现在为止，我们连第一个<span class='mark'>OpenGL</span>程序都还没有实现，就已经看到作者说了一大堆的废话似乎并不是很合适。所以在之后的章节再来介绍吧。<span style='color:powderblue'>（其实就是下一章，我猜你没看到这句话。）</span></p>
+<p>那么接下来正式进入<span class='mark'>OpenGL</span>的学习。</p>
+</div>
+<div class='div_hightlight' style='background-color:pink;color:black'>
+<p><span class='mark'>glXXX</span>的函数需要在<span class='mark'>OpenGL</span>的<span class='mark'>Context</span>中运行。所以需要在调用前先获得或创建一个<span class='mark'>Context</span>。</p>
+</div>
+<p>GO...GO...GO...</p>
+
+</div>
+<div id="div_right_list">
+<a name='a_a' href='#a_a'>OpenGL介绍</a>
+<a name='a_b' href='#a_b'>OpenGL函数介绍</a>
+<a name='a_c' href='#a_c'>GLEW</a>
+<a name='a_d' href='#a_d'>OpenGL扩展</a>
+</div>
+</div>
+</body>
+</html>

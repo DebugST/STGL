@@ -8,6 +8,6 @@ namespace STLib.OpenGL.GL
     public class GLShaderCompileException : Exception
     {
         public GLShaderCompileException() { }
-        public GLShaderCompileException(string message) : base(message) { }
+        public GLShaderCompileException(string strMessage) : base(strMessage) { }
     }
 }

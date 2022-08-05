@@ -1,0 +1,128 @@
+#T OpenGL介绍
+
+#I3 ../images/1.1.opengl.log.jpeg
+
+在还没有接触到`OpenGL`之前，作者一直以为`OpenGL`是一个`SDK`需要安装各种东西，然后才可以进行相关的开发。事实上并非如此。基本上现在大多数的电脑都可以直接运行`OpenGL`程序。
+`OpenGL`并不是一个`SDK`而是一个`API`规范，由[khronos](http://www.khronos.org/)组织所维护的一套编程接口标准。它们规定了一些函数的名称以及需要的参数和输出值。至于功能怎么实现。。。这个是硬件的事情了是吧？也就是`显卡`。
+如果一个显卡生产厂商愿意去支持`OpenGL`的规范，那么他们就会去实现那些`API`接口，然后将这些实现好的接口伴随着驱动程序一起安装在系统中。而基本上显卡厂商都愿意去实现这些`API`，所以基本上每个系统中都天然拥有`OpenGL`的运行环境。不会吧？不会你的电脑上连显卡驱动都没装吧？
+
+#O OpenGL函数介绍
+
+`OpenGL`的函数通常以`gl`开头，是`OpenGL`的核心库，它们是平台无关的函数，也是`STGL`所移植的部分，如：`glGetString`。同样还有其他开头的函数，如：`glx``agl``wgl``glu``glaux`等。
+`glu`是以核心库函数封装的一些为数不多但是功能强大的绘图函数。目前`STGL`暂未封装这些函数。
+`glx``agl``wgl`它们是平台相关的函数，用于在不同平台将图形窗口与`OpenGL`上下文`Context`进行绑定，以`wgl`为例，他是`windows`系统相关的函数。在`windows`系统目录中存在`opengl32.dll`文件。其中包含十几个`wgl`开头的函数，如：`wglCreateContext`
+
+#CS cs
+HGLRC wglCreateContext(
+    HDC hdc // device context of device that the rendering context 
+            // will be suitable for
+);
+#CE
+在`windows`系统中使用过`GDI`或者`GDI+`的同学都知道，`windows`的绘图设备是`HDC`，但是`OpenGL`使用的是自己的绘图上下文`Context`它是与平台无关的。所以`wglCreateContext`可以看做是把`HDC`转换成`OpenGL`的`Context`，这样就可以使用`OpenGL`中的`glXXX`函数对窗口进行渲染。[pink|（然而事实上要将`HDC`绑定到`Context`中并没有上面说的那么简单）]
+当然在`STGL`中这个绑定过程无需我们自己实现，因为我们使用了`GLFW`项目，它会帮我们在不同的平台上创建窗口并绑定`OpenGL`上下文。
+
+`OpenGL`的某些函数还会使用特定的后缀，如：`3f``4f``3i`等。`glColor3f`则表示需要`3`个`float`参数。你可能不是很理解为什么要这么设计，但是你需要知道`OpenGL`的`API`是`C`实现的，他可能并不像`.Net`一样拥有函数重载。只能通过这样的方式来达到同样的效果。事实上`glColor`就有很多个函数`glColor3i``glColor3f``glColor3ui`..等。
+
+关于`OpenGL`更多的规范以及文档，可以查看此链接：[https://github.com/KhronosGroup/OpenGL-Registry](https://github.com/KhronosGroup/OpenGL-Registry)
+
+#O GLEW
+
+在上面一章中已经提到过`GLFW`和`GLM`。可能在一些别的教程中你可能还会看到`GLEW`或者`GLAD`等。。这里是`GLEW`是`E`不是`F`，和`GLFW`是不一样的。
+那么`GLEW`项目又是做什么的呢？`GLEW`负责帮我们找到正确的`glXXX`函数。什么意思？其实一开始作者也并不理解是什么意思，经过一系列的了解后才得知是怎么回事。
+我们依旧以`windows`系统为例。在上面提到过在`windows`的系统目录中存在一个`opengl32.dll`。`OpenGL`的实现是由硬件厂商实现的，所以调用`opengl32.dll`里面的函数会自动跳转到硬件厂商实现的函数当中去。是不是很方便？这样我们直接引用`opengl32.dll`岂不是就可以进行`OpenGL`的开发了？但是你知道吗？这个文件从`windows 98`开始就一直存在，并且至今没有更新过。它一直保持`OpenGL-1.1`的版本，你用`dumpbin`工具去查看这个`dll`中的导出函数，你会发现里面仅仅只有一百多个函数，`OpenGL`发展到现在已经拥有上千的函数了。显然直接使用`opengl32.dll`是不够的。同时也不要忘了微软自己有一个`DirectX`，它没有必要去帮我们去维护`OpenGL`接口的更新。
+那怎么办？可能聪明的你已经想到了那我们不调用`opengl32.dll`里面的函数，直接调用硬件厂商驱动所提供的`DLL`文件呢？事实上这也是不现实的。你如何知道当前电脑是什么显卡以及装的什么驱动？既然都不知道又如何去调用它呢？或者就算是你知道了并且调用了里面的函数，那么你能保证你的程序放在另一台电脑上去，它也是和你同款显卡并且是同款驱动程序吗？
+显然我们依然需要一个通用的方式去获得这些函数。在`OpenGL`的`API`规范中有这样一些函数`xxxGetProcAddress`。而在`windows`中这个函数叫做：
+#CS cs
+PROC wglGetProcAddress(
+    LPCSTR  lpszProc   // name of the extension function
+);
+#CE
+通过这个函数我们可以使用函数名得到对应的函数地址，然后再将这这个地址转换成对应的函数指针，有点像`windows`开发中的`LoadLibrary` + `GetProcAddress`，大概就像这样：
+#CS cs
+// 定义函数原型
+typedef void (*GL_GENBUFFERS) (GLsizei, GLuint*);
+// 找到正确的函数并赋值给函数指针
+GL_GENBUFFERS glGenBuffers  = (GL_GENBUFFERS)wglGetProcAddress("glGenBuffers");
+// 现在函数可以被正常调用了
+GLuint buffer;
+glGenBuffers(1, &buffer);
+#CE
+
+通过这种方式我们就可以动态的获取到`OpenGL`中的函数了。上面演示仅仅是其中一个函数的获取，可是`OpenGL`有上千个函数。所以`GLEW`就帮我们完成了这个事情。
+所以在`STGL`中也会引用`GLEW`吗？不不不。。。庆幸的是`GLFW`给我们提供了一个函数`glfwGetProcAddress`。很显然这个函数适配了不同的系统，在`windows`上它会去调用`wglGetProcAddress`，而在`X window system`中它会去调用`glxGetProcAddress`。
+`STGL`和`GLEW`一样，动态的帮我们获取出了`OpenGL`中函数，这也是目前`STGL`项目所做的事情。所以在`STGL`的源码中你会看到如下实现。
+
+#CS cs
+public static void glClear(uint mask) {
+    var _F = _GetProc<GLNativeDelegate.FNglClear>("glClear");
+    _F(mask);
+}
+
+private static T _GetProc<T>(string strName) {
+    if (!m_dic_proc.ContainsKey(strName)) {
+        if (m_getter == null) {
+            throw new InvalidOperationException(
+                "GL is not initialized, please call [GL.Init()] or [GL.InitAll()] to initialize it first."
+            );
+        }
+        IntPtr ptr = m_getter(strName);
+        if (ptr != IntPtr.Zero) {
+            var func = Marshal.GetDelegateForFunctionPointer(ptr, typeof(T));
+            m_dic_proc.Add(strName, func);
+            GLNative.InitedFunctions++;
+        }
+        // _GetProc will not write null to m_dic_proc when it cannot get Proc, but GL.InitAll will.
+    }
+    if (m_dic_proc.ContainsKey(strName)) {
+        object obj = m_dic_proc[strName];
+        if (obj != null) {
+            return (T)obj;
+        }
+    }
+    throw new PlatformNotSupportedException(
+        "The [" + strName + "] function cannot be initialized. " +
+        "Or maybe the current OpenGL version [" + GLNative.Info.Version + "]  does not support this function, " +
+        "Of course it is also possible that the stupid author wrote the bug."
+    );
+}
+#CE
+
+#HS skyblue|black
+目前`STGL`采用的是`OpenGL-4.6`的文档进行封装。
+如何加载`OpenGL`函数[https://www.khronos.org/opengl/wiki/Load_OpenGL_Functions](https://www.khronos.org/opengl/wiki/Load_OpenGL_Functions)
+#HE
+
+#O OpenGL扩展
+
+在上边提到`OpenGL`仅仅是定义了一些`API`规范，由硬件厂商去提供支持。但是有没有一种可能，`OpenGL`定义了10个函数，某硬件厂商不仅完成了10个函数，甚至还送了10个函数？或者说因为硬件的特性，某硬件厂商可以实现一些其他硬件厂商暂时无法实现的功能，但是又希望开发者使用这些函数怎么办？总不可能让`OpenGL`去修改`API`规范将那10个函数加进去吧？所以这个时候`Extensions`出现了，也就是扩展。`OpenGL`允许不同的厂商制定他们自己的扩展函数。
+通过使用`glGetString(GL_EXTENSIONS)`可以查看当前`OpenGL`环境支持的扩展。[pink|在`OpenGL-3.0`版本开始需要通过`glGetStringi`去获取。]
+你可能会得到如下信息：
+#CS
+GL_ARB_multisample, GL_EXT_abgr, GL_EXT_bgra, GL_EXT_blend_color,
+GL_AMD_shader_trinary_minmax,WGL_ARB_create_context,...
+#CE
+第一个部分表示针对哪个部分的扩展，第二个部分表示谁提供的扩展，然后是扩展的名称。
+在扩展的函数中同样遵循`OpenGL`的命名规范，仅仅是再后面加了一个标识符，如：`glXXXARB``glXXXEXT``wglXXXARB`
+随着时间的发展，一些扩展也有可能成为`OpenGL`中的正式函数，比如`ARB`的扩展很多已被纳入`OpenGL`成为正式的规范。关于扩展的更多信息这里并过多的做介绍可以参考以下链接：
+[https://github.com/KhronosGroup/OpenGL-Registry/tree/main/extensions](https://github.com/KhronosGroup/OpenGL-Registry/tree/main/extensions)
+
+在`STGL`中如果你想判断是否支持某一个特性可以使用：
+
+#CS cs
+if(GL.Info.Extensions["GL_ARB_extension_name"]){
+    // GL.xxxARB(...)
+}else{
+    // GL.xxx(...)
+}
+#CE
+
+#HS skyblue|black
+本想再介绍一些`OpenGL`的`Context`，可是到现在为止，我们连第一个`OpenGL`程序都还没有实现，就已经看到作者说了一大堆的废话似乎并不是很合适。所以在之后的章节再来介绍吧。[powderblue|（其实就是下一章，我猜你没看到这句话。）]
+那么接下来正式进入`OpenGL`的学习。
+#HE
+
+#HS pink|black
+`glXXX`的函数需要在`OpenGL`的`Context`中运行。所以需要在调用前先获得或创建一个`Context`。
+#HE
+
+GO...GO...GO...

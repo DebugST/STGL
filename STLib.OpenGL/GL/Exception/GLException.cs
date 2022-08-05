@@ -10,21 +10,21 @@ namespace STLib.OpenGL.GL
         public GLException() { }
         public GLException(string message) : base(message) { }
 
-        public void Check() {
+        public static GLException GetException() {
             var nFlag = GL.GetError();
             switch (nFlag) { 
                 case GL.GL_NO_ERROR:
-                    return;
+                    return null;
                 case GL.GL_INVALID_ENUM:
-                    throw new GLInvalidEnumException();
+                    return new GLInvalidEnumException();
                 case GL.GL_INVALID_VALUE:
-                    throw new GLInvalidValueException();
+                    return new GLInvalidValueException();
                 case GL.GL_INVALID_OPERATION:
-                    throw new GLInvalidOperationException();
+                    return new GLInvalidOperationException();
                 case GL.GL_INVALID_FRAMEBUFFER_OPERATION:
-                    throw new GLInvalidFrameBufferOperationException();
+                    return new GLInvalidFrameBufferOperationException();
                 case GL.GL_OUT_OF_MEMORY:
-                    throw new GLOutOfMemoryException();
+                    return new GLOutOfMemoryException();
                 default:
                     throw new GLException("Unknown exception.");
             }

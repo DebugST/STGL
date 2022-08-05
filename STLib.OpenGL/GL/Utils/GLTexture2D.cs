@@ -5,7 +5,7 @@ using System.Text;
 
 namespace STLib.OpenGL.GL
 {
-    public class GLTexture2D : IDisposable
+    public class GLTexture2D : GLObject, IDisposable
     {
         public enum Unit : uint
         {
@@ -47,8 +47,6 @@ GL_CLAMP_TO_BORDER	超出的坐标为用户指定的边缘颜色。
         }
 
         private static GLTexture2D m_current_texture; // current context used texture
-
-        public uint UID { get; private set; }
 
         private void Select() {
             if (m_current_texture == this) {
@@ -132,6 +130,13 @@ GL_CLAMP_TO_BORDER	超出的坐标为用户指定的边缘颜色。
         public static GLTexture2D Create() {
             GLTexture2D t = new GLTexture2D();
             t.UID = GL.GenTextures();
+            return t;
+        }
+
+        public static GLTexture2D Create(Unit unit) {
+            GLTexture2D t = new GLTexture2D();
+            t.UID = GL.GenTextures();
+            t.BindUnit(unit);
             return t;
         }
     }

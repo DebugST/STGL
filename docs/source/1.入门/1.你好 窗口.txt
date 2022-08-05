@@ -1,0 +1,323 @@
+#T 你好 窗口
+
+教程源地址[learnopengl](https://learnopengl.com/Getting-started/Hello-Window)[learnopengl-cn](https://learnopengl-cn.github.io/01%20Getting%20started/03%20Hello%20Window/)
+
+首先我们需要一个窗口来展示`OpenGL`的渲染结果，在`.Net`中我们可以直接`new Form()`得到一个窗体。但是很遗憾`.Net`虽然已经跨平台，但是`GUI`并没有夸平台，所以`Form`目前只有`Window`平台中支持。
+而作者的目的是跨平台，所以使用了`GLFW`项目来创建窗口，但是遗憾的是`GLFW`仅仅只有创建窗口以及一些鼠标键盘游戏手柄等事件的管理，并不包含控件等元素，所以他是非常轻量级的。
+
+#HS skyblue|black
+由于目前`STGL`使用的`GLFW`并没有控件支持，但是你可能确实需要一些控件做交互，在后期作者会单独对`WinForm`提供支持，类似于`SharpGL``OpenTK`那样提供类似`GLControl`的控件。
+并且作者和他的朋友目前正在构思基于`OpenGL`构建`.Net`的跨平台`UI Library`。当然仅仅还在构思阶段。得先把`OpenGL`学会了再说吧？
+所以现在暂时只是学习如何使用`OpenGL`。哦不。。是学习如何使用`STGL`。暂且先把`GUI`相关的一些东西放在一边。
+#HE
+
+#O 初始化GLFW
+
+在使用`GLFW`前你需要先对它进行初始化工作，在原版的教程中你可能会看到如下代码：
+
+#CS cs
+int main()
+{
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    return 0;
+}
+#CE
+上面的代码调用了`glfwInit`和`glfwWindowHint`进行一些初始化，以及窗口属性的一些设置。
+第`4``5`行分别在设置`OpenGL`使用的版本，这里我们采用`3.3`的版本，并且使用`核心渲染模式`,在开始的时候已经提到，教程使用`3.3`的版本。所以在使用此教程的时候，确保你当前电脑的`OpenGL`版本至少是`3.3`。
+如何确定当前系统中`OpenGL`的办法，我相信你有一万种办法。
+由于这是一个`OpenGL`的教程并不是一个`GLFW`的教程，所以有关`GLFW`如何使用可以参考：
+[https://www.glfw.org/docs/latest/window.html](https://www.glfw.org/docs/latest/window.html)
+
+#HS skyblue|black
+`GLFW`中包含一百多个函数，`STGL`中全部做了封装。
+#HE
+
+接下来我们在`.Net`中创建一个`Console`项目并引用`STGL`的库（当然这里你目前可能需要自己编译，或者直接使用此项目的工程作为学习。`STGL`项目的代码语法几乎可以兼容任意`.Net`平台，如`.Net Core``.Net 6`等。）
+
+#CS cs
+using STLib.OpenGL.GLFW;
+
+namespace STGL.Tutorials
+{
+    public class _1_1_Hello_Window
+    {
+        // 教程中有很多章节 所以使用Run代替main 并且在main中 xxxx.Run();就可以运行不同的教程Demo
+        public static void Run() {
+            GLFW.Init();
+            GLFW.WindowHint(GLFW.CONTEXT_VERSION_MAJOR, 3);
+            GLFW.WindowHint(GLFW.CONTEXT_VERSION_MINOR, 3);
+            GLFW.WindowHint(GLFW.OPENGL_PROFILE, GLFW.OPENGL_CORE_PROFILE);
+            //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        }
+    }
+}
+#CE
+
+如果是在`Mac`系统中需要将下面一行的注释解除。[gray|（你可能会问为什么`GLFW`不自动判断系统版本，然后将这句话自动加入？你这就问到作者了。。你咋不问为什么它不直接提供`var win = new GLFWWindow()`？`GLFW`仅仅是帮我们提供了最底级的封装。）]
+在`STGL`中提供了系统的判断方式，所以如果你想代码自动兼容平台，最后一行被注释的代码替换成如下就可以了：
+#CS cs
+//RuntimeInfo -> using STLib.OpenGL;
+if (RuntimeInfo.System == RuntimeInfo.SystemType.Mac) {
+    //GL.GL_TRUE = 1; -> using STLib.OpenGL.GL;
+    GLFW.WindowHint(GLFW.OPENGL_FORWARD_COMPAT, GL.GL_TRUE); // For Mac system
+}
+#CE
+
+#O 创建窗口
+
+当初始化完毕后就可以创建窗口了。
+原版代码：
+#CS cs
+GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+if (window == NULL)
+{
+    std::cout << "Failed to create GLFW window" << std::endl;
+    glfwTerminate();
+    return -1;
+}
+glfwMakeContextCurrent(window);
+#CE
+
+`STGL`代码：
+#CS cs
+IntPtr window = GLFW.CreateWindow(800, 600, "LearnOpenGL", IntPtr.Zero, IntPtr.Zero);
+if (window == IntPtr.Zero) {
+    Console.WriteLine("Failed to create GLFW window");
+    GLFW.Terminate();
+    return;
+}
+GLFW.MakeContextCurrent(window);
+#CE
+
+#HS goldenrod|black
+需要注意的是上面看上去我们创建了一个`800 * 600`的窗口，实际上窗口的大小会比这个大。与`WinForm`不同的是`GLFW`指定的是窗口`Client`区域的大小（不包含窗口边框），而不是整个窗口的大小。而`WinForm`中则是设置的整个窗口的大小。
+不知道你是否注意到在`System.Windows.Forms.Form`中有两个属性`Size``ClientSize`。
+同样大小的窗口在不同系统中或者不同的主题中`ClientSize`可能是不同的。因为不同的系统和不同的主题，窗口的边框样式可能是不一样的。
+#HE
+
+#I2 ../images/1.2.size.png
+
+`glfwMakeContextCurrent`将当前窗口与`OpenGL`的`Context`绑定。
+
+#HS skyblue|black
+将在最后介绍`Context`，所以这里先暂时不纠结`glfwMakeContextCurrent`。
+#HE
+
+#O 初始化OpenGL
+
+当窗口创建完毕并绑定好`Context`后我们需要对`OpenGL`的函数进行初始化。
+原版教程采用的是`GLAD`，在上一章节中提到过与之类似的`GLEW`
+#CS cs
+if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+{
+    std::cout << "Failed to initialize GLAD" << std::endl;
+    return -1;
+}
+#CE
+`STGL`中需要这样初始化：
+#CS cs
+try {
+    GL.Init(GLFW.GetProcAddress);//GL.InitAll(GLFW.GetProcAddress)
+} catch (Exception ex) {
+    Console.WriteLine(ex.Message);
+    GLFW.Terminate();
+    return;
+}
+#CE
+`Init`和`InitAll`的区别在于，前者仅仅是在调用某些函数的时候再去初始化，而后者一次性初始化所有函数，当然也更耗时。
+
+#O 绑定视窗
+
+当`OpenGL`初始化完成我们就可以使用它的函数了，我们要做的第一件事情就是绑定视窗，简单来说也就是说告诉`OpenGL`我们需要创建多大的画布（像素），通常情况下与窗口大小一致。
+#CS cs
+GL.Viewport(0, 0, 800, 600);//并不严谨 稍后再说
+#CE
+
+但是这样并不够。因为窗口的大小是可以拖动的，除非你的窗口是禁止改变大小的，我们希望窗口大小变化时更新视窗的大小。`GLFW`中提供了窗口大小变化的事件，我们仅仅需要传入一个回调函数就可以了。
+#CS cs
+GLFW.SetFramebufferSizeCallback(window, framebuffer_size_callback);
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+static void framebuffer_size_callback(IntPtr window, int width, int height) {
+    // make sure the viewport matches the new window dimensions; note that width and 
+    // height will be significantly larger than specified on retina displays.
+    GL.Viewport(0, 0, width, height);
+}
+#CE
+
+#HS goldenrod|black
+在`Retina`显示器中，也就是高`DPI`模式下，`width``height`的值可能明显会大于窗口的大小。因为返回的是`像素`值，而同样`glViewport`设置的也是`像素`值。
+在`DPI=192`的情况下，一个`800*600`的窗口，可能在屏幕中实际的像素是`1600*1200`。所以上面才说直接设置`800 600`其实并不严谨，应当使用下面的代码。
+#HE
+
+#CS cs
+int nWidth = 0, nHeight = 0;
+GLFW.GetFramebufferSize(window, ref nWidth, ref nHeight);
+GL.Viewport(0, 0, nWidth, nHeight);
+#CE
+
+#HS goldenrod|black
+如果`Viewport`大小与窗口的大小不匹配可能会出现一些神奇的现象。那你可能会问，为什么`GLFW`不直接就给我们绑定成窗口的大小不就好了吗？为什么还要我们自己去设置？万一窗口上的其它位置还有别的用途呢？
+#HE
+
+#HS pink|black
+当然如果你是通过事件绑定去设置的`Viewport`，那么你可以不用在外面调用`GL.Viewport`，因为窗口第一次显示的时候也会执行事件。
+这是原版教程这么说的。但是经过作者测试，发现好像并不是这样的。可能是因为`GLFW`版本不同的问题吧。
+#HE
+
+#O 渲染循环
+
+接下来的过程就是窗口的渲染了，如果你有`Win32`的编程经验，那么你一定知道`消息循环`，`渲染循环`差不多也是这个意思。
+
+#CS cs
+while (!GLFW.WindowShouldClose(window)) {
+    GLFW.SwapBuffers(window);
+    //GLFW.WaitEvents();
+    GLFW.PollEvents();
+}
+GLFW.Terminate();
+#CE
+
+#US
+glfwWindowShouldClose
+    #US
+    不停的检测当前窗口是否应当被关闭，如果返回`false`说明这个窗口还运行着，就像`Win32`中的`GetMessage`。
+    #UE
+glfwSwapBuffers
+    #US
+    函数会交换颜色缓冲（它是一个储存着`GLFW`窗口每一个像素颜色值的大缓冲），它在这一迭代中被用来绘制，并且将会作为输出显示在屏幕上。
+    #UE
+glfwPollEvents
+    #US
+    函数检查有没有触发什么事件（比如键盘输入、鼠标移动等）、更新窗口状态，并调用对应的回调函数（可以通过回调方法手动设置）。
+    #UE
+#UE
+
+#HS goldenrod|black
+或许你已经看到了作者注释掉的代码，那么它和`glfwPollEvents`有什么不同？通过名字不难看出`glfwWaitEvents`会阻塞代码，直到有一个可用的事件发生，而`glfwPollEvents`是不阻塞的，只是当有事件发生的时候会去调用回调函数，所以你会发现你的`CPU`使用率非常的高。
+如果你需要高帧率刷新可以使用`glfwPollEvents`，如果你没有高帧率的需求，那么可以使用`glfwWaitEvents`
+#HE
+关于它们的跟多介绍可以查看`GLFW`的教程[glfwWaitEvents](https://www.glfw.org/docs/latest/group__window.html#ga554e37d781f0a997656c26b2c56c835e)
+
+#HS yellowgreen|black
+`glfwSwapBuffers`
+应用程序使用单缓冲绘图时可能会存在图像闪烁的问题。 这是因为生成的图像不是一下子被绘制出来的，而是按照从左到右，由上而下逐像素地绘制而成的。最终图像不是在瞬间显示给用户，而是通过一步一步生成的，这会导致渲染的结果很不真实。为了规避这些问题，我们应用双缓冲渲染窗口应用程序。前缓冲保存着最终输出的图像，它会在屏幕上显示；而所有的的渲染指令都会在后缓冲上绘制。当所有的渲染指令执行完毕后，我们交换(Swap)前缓冲和后缓冲，这样图像就立即呈显出来，之前提到的不真实感就消除了。
+#HE
+
+#O 渲染窗口
+
+到此为止你就可以看到运行出来的窗口了。但是黑不溜秋的，甚至你改变窗口大小还会有奇怪的现象产生。
+
+#I2 ../images/1.2.buffer.png
+
+其实这是属性正常现象，仔细想想，我们有编写如何渲染窗口的代码吗？
+通常情况下我们渲染的代码都会写在渲染循环中。但是在这之前我们在做一件事情，那就是添加一个输入检测（是输入检测不是事件），当按下`ESC`的时候退出窗口。
+之所以要这么做是为了和原版教程保持一致，顺便多介绍一些`GLFW`。
+
+#CS cs
+static void processInput(IntPtr window) {
+    if (GLFW.GetKey(window, GLFW.KEY_ESCAPE) == GLFW.PRESS)
+        GLFW.SetWindowShouldClose(window, true);
+}
+#CE
+
+把上面的函数加入到代码中，然后就可以开始下一步了。通常一个`渲染循环`是长这样的。
+
+#CS cs
+// 渲染循环
+while (!GLFW.WindowShouldClose(window)) {
+    // 输入检测
+    processInput(window);
+    // 一些渲染代码
+    // ...
+    // 检查并调用事件，交换缓冲
+    GLFW.SwapBuffers(window);
+    //GLFW.WaitEvents();
+    GLFW.PollEvents();
+}
+#CE
+
+`glfwGetKey`用于主动询问一个按键的状态，当然其实`GLFW`也有提供按键事件`glfwSetKeyCallback`。至于你是喜欢主动还是被动，这就需要看你的运行场景了。
+原版教程中有提到一个`渲染循环`通常和上面的代码结构一致。其实也并没有说错，但是或许能有更好的方式，用`面向对象`的思维。比如将`GLFW`封装成类似`Form`的一个`Class`?然后提供`Paint`事件？但是这里我们先按教程做。所以我们加上了`processInput`
+
+那么接下来添加两句代码
+#CS cs
+GL.ClearColor(.5f, .5f, .5f, 1f);
+GL.Clear(GL.GL_COLOR_BUFFER_BIT);
+#CE
+如果在`WinForm`中使用过`GDI`是不是感觉这个代码有点熟悉了？
+#CS cs,WinForm
+Graphics.Clear(Color.Gray);
+#CE
+只是为什么`OpenGL`调用了两次？其中第二句又是什么意思？稍后再说。先别管了，赶紧去运行程序吧。看看效果是不是出来了？
+以下是全部代码和运行效果图
+#CS cs
+public class _1_1_Hello_Window
+{
+    public static void Run() {
+        GLFW.Init();
+        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MAJOR, 3);
+        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MINOR, 3);
+        GLFW.WindowHint(GLFW.OPENGL_PROFILE, GLFW.OPENGL_CORE_PROFILE);
+        if (RuntimeInfo.System == RuntimeInfo.SystemType.Mac) {
+            GLFW.WindowHint(GLFW.OPENGL_FORWARD_COMPAT, GL.GL_TRUE); // For Mac system
+        }
+        IntPtr window = GLFW.CreateWindow(800, 600, "LearnOpenGL", IntPtr.Zero, IntPtr.Zero);
+        if (window == IntPtr.Zero) {
+            Console.WriteLine("Failed to create GLFW window");
+            GLFW.Terminate();
+            return;
+        }
+        GLFW.MakeContextCurrent(window);
+        GLFW.SetFramebufferSizeCallback(window, framebuffer_size_callback);
+        try {
+            GL.Init(GLFW.GetProcAddress);
+        } catch (Exception ex) {
+            Console.WriteLine(ex.Message);
+            GLFW.Terminate();
+            return;
+        }
+        int nWidth = 0, nHeight = 0;
+        GLFW.GetFramebufferSize(window, ref nWidth, ref nHeight);
+        GL.Viewport(0, 0, nWidth, nHeight);
+        while (!GLFW.WindowShouldClose(window)) {
+            processInput(window);
+            GL.ClearColor(.5f, .5f, .5f, 1f);
+            GL.Clear(GL.GL_COLOR_BUFFER_BIT);
+            GLFW.SwapBuffers(window);
+            GLFW.WaitEvents();
+        }
+        GLFW.Terminate();
+    }
+
+    static void processInput(IntPtr window) {
+        if (GLFW.GetKey(window, GLFW.KEY_ESCAPE) == GLFW.PRESS)
+            GLFW.SetWindowShouldClose(window, true);
+    }
+
+    static void framebuffer_size_callback(IntPtr window, int width, int height) {
+        GL.Viewport(0, 0, width, height);
+    }
+}
+#CE
+
+#I ../images/1.2.result.png
+
+#HS skyblue|black
+`GL.ClearColor`需要四个浮点数参数，而不是常见的`0-255`，`0-255`的色深是`8-bit`，万一硬件支持更大的色深处理呢？是吧。
+#HE
+
+#O 总结
+
+#HS skyblue|black
+刚才上边提到稍后再讲`Context`？好吧，那就稍后再讲吧。以及为何要`Clear`两次。这一篇幅有点长了。目前我们已经接触到了`OpenGL`的三个函数了。
+#HE
+#US
+`glViewport` 用于设定渲染视窗大小。
+`glClearColor` 用于设定清除渲染视窗的颜色。
+`glClear` 执行清除。
+#UE
