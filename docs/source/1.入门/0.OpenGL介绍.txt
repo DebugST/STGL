@@ -9,7 +9,7 @@
 #O OpenGL函数介绍
 
 `OpenGL`的函数通常以`gl`开头，是`OpenGL`的核心库，它们是平台无关的函数，也是`STGL`所移植的部分，如：`glGetString`。同样还有其他开头的函数，如：`glx``agl``wgl``glu``glaux`等。
-`glu`是以核心库函数封装的一些为数不多但是功能强大的绘图函数。目前`STGL`暂未封装这些函数。
+`glu`是以核心库函数封装的一些为数不多但是功能强大的绘图函数。由于太古老无法在`核心模式`下使用，`STGL`暂未封装这些函数。
 `glx``agl``wgl`它们是平台相关的函数，用于在不同平台将图形窗口与`OpenGL`上下文`Context`进行绑定，以`wgl`为例，他是`windows`系统相关的函数。在`windows`系统目录中存在`opengl32.dll`文件。其中包含十几个`wgl`开头的函数，如：`wglCreateContext`
 
 #CS cs

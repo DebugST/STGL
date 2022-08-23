@@ -183,15 +183,15 @@ GLFW.Terminate();
 #CE
 
 #US
-glfwWindowShouldClose
+`glfwWindowShouldClose`
     #US
     不停的检测当前窗口是否应当被关闭，如果返回`false`说明这个窗口还运行着，就像`Win32`中的`GetMessage`。
     #UE
-glfwSwapBuffers
+`glfwSwapBuffers`
     #US
     函数会交换颜色缓冲（它是一个储存着`GLFW`窗口每一个像素颜色值的大缓冲），它在这一迭代中被用来绘制，并且将会作为输出显示在屏幕上。
     #UE
-glfwPollEvents
+`glfwPollEvents`
     #US
     函数检查有没有触发什么事件（比如键盘输入、鼠标移动等）、更新窗口状态，并调用对应的回调函数（可以通过回调方法手动设置）。
     #UE

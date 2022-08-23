@@ -29,10 +29,10 @@
 </li>
 </ul><div class='div_left_space_space'></div>
 </div>
-<span id="span_time">2022-08-06 -> by:<span>DebugST</span></span>
+<span id="span_time">2022-08-22 -> by:<span>DebugST</span></span>
 </div>
 <div id="div_right">
-<span class='span_location'>1.入门 &gt; 2.你好 窗口<span style='float:right'>2022-07-20</span></span><h1 class='h_title anchor_point' name='a_a'>你好 窗口</h1>
+<span class='span_location'>1.入门 &gt; 2.你好 窗口<span style='float:right'>2022-08-17</span></span><h1 class='h_title anchor_point' name='a_a'>你好 窗口</h1>
 <p>教程源地址<a class='mark' target='_blank' href='https://learnopengl.com/Getting-started/Hello-Window'>learnopengl</a><a class='mark' target='_blank' href='https://learnopengl-cn.github.io/01%20Getting%20started/03%20Hello%20Window/'>learnopengl-cn</a></p>
 <p>首先我们需要一个窗口来展示<span class='mark'>OpenGL</span>的渲染结果，在<span class='mark'>.Net</span>中我们可以直接<span class='mark'>new Form()</span>得到一个窗体。但是很遗憾<span class='mark'>.Net</span>虽然已经跨平台，但是<span class='mark'>GUI</span>并没有夸平台，所以<span class='mark'>Form</span>目前只有<span class='mark'>Window</span>平台中支持。</p>
 <p>而作者的目的是跨平台，所以使用了<span class='mark'>GLFW</span>项目来创建窗口，但是遗憾的是<span class='mark'>GLFW</span>仅仅只有创建窗口以及一些鼠标键盘游戏手柄等事件的管理，并不包含控件等元素，所以他是非常轻量级的。</p>
@@ -187,15 +187,15 @@
 <span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.Terminate</span><span style='color:rgba(255,255,255,1)'>();</span></pre>
 </div>
 <ul>
-<li>glfwWindowShouldClose</li>
+<li><span class='mark'>glfwWindowShouldClose</span></li>
 <ul>
 <li>不停的检测当前窗口是否应当被关闭，如果返回<span class='mark'>false</span>说明这个窗口还运行着，就像<span class='mark'>Win32</span>中的<span class='mark'>GetMessage</span>。</li>
 </ul>
-<li>glfwSwapBuffers</li>
+<li><span class='mark'>glfwSwapBuffers</span></li>
 <ul>
 <li>函数会交换颜色缓冲（它是一个储存着<span class='mark'>GLFW</span>窗口每一个像素颜色值的大缓冲），它在这一迭代中被用来绘制，并且将会作为输出显示在屏幕上。</li>
 </ul>
-<li>glfwPollEvents</li>
+<li><span class='mark'>glfwPollEvents</span></li>
 <ul>
 <li>函数检查有没有触发什么事件（比如键盘输入、鼠标移动等）、更新窗口状态，并调用对应的回调函数（可以通过回调方法手动设置）。</li>
 </ul>

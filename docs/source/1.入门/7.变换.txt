@@ -1,0 +1,115 @@
+#T 变换
+#HS goldenrod|black
+在原版的教程中，此章节有教读者一些`矩阵`和`向量`的数学知识简单介绍，但是在这里作者并不打算对它们做介绍，因为作者也是一个学渣文盲，建议读者先查看原教程。因为在`OpenGL`中的变换几乎都是靠`矩阵`完成的。
+#HE
+[learnopengl](https://learnopengl.com/Getting-started/Transformations) [learnopengl-cn](https://learnopengl-cn.github.io/01%20Getting%20started/07%20Transformations/)
+
+#O Graphics
+对于在`.Net`中使用过`Graphics`的读者来说，这几个函数一定并不陌生。`TranslateTransform`，`ScaleTransform`，`RotateTransform`，这三个函数分别可以对我们当前坐标进行`平移``缩放``旋转`。
+#CS cs
+Graphics.Transformations(float x, float y);
+Graphics.ScaleTransform(float x, float y);
+Graphics.RotateTransform(float angle);
+#CE
+或者高级一点的。
+#CS cs
+Graphics.MultiplyTransform(Matrix matrix);
+#CE
+在`3D`的世界中我们同样也需要这样的功能。在`OpenGL`中也有这样的函数，比如`glTranslate`。但是很遗憾。`OpenGL`的官方文档中这样描述它：[pink|Compatibility-only GL 1.0 features removed from GL 3.2]
+这是一个上古时期的函数，现在几乎已经不支持，而且我们的教程采用的是`3.3`的版本。那么没有了这些函数我们要如何变换我们的坐标？那就是`矩阵`+`着色器`。而我们要做的就是构造变换矩阵传递给着色器程序。
+
+#HS goldenrod|black
+在原版教程中有如何教我们构造一个旋转矩阵，但是会导致一个问题：`万向节死锁`(Gimbal Lock)。很难用语言将万向节死锁描述出来，所以这里准备了两个视频[bilibili](https://www.bilibili.com/video/BV1da411U78s)[youtube](https://www.youtube.com/watch?v=zc8b2Jo7mno&t=419s)。
+虽然原版教程中提到了`四元数`(Quaternion)。但是造成`万向节死锁`的根本原因并不是因为使用了`欧拉角`，欧拉旋转本身是没有任何问题，问题在于多轴同时旋转的时候，优先选择哪个轴旋转的问题。而这个问题与其叫做`万向节死锁`倒不如叫做`歧义`更加合适。
+此教程并不打算讲解`四元数`，如果实在要问为什么的话。。。。。因为作者也没搞懂😂😂😂😂😂。虽然作者已经从`GLM`中抄袭了`四元数`的代码，可作者也并不是很理解如何正确使用。即便在后面的`摄像机`章节中，作者也是采用的`欧拉角`，但是可以无死角旋转。
+#HE
+
+#O GLM
+`GLM`是OpenGL Mathematics的缩写，它是一个只有头文件的库，也就是说我们只需包含对应的头文件就行了，不用链接和编译。是不是很方便？可惜并不能在`.Net`中使用。但是作者对它进行了部分移植。
+接下来就是实践一下如何使用`GLM`。
+首先我们准备一个坐标点`(1,0,0)`让它位移`(1,1,0)`个单位。
+#CS cs
+Vector4F vec = new Vector4F(1, 0, 0, 1);                // 构造坐标
+Matrix4F trans = Matrix4F.Identity;                     // 创建单位矩阵
+//trans = GLM.Translate(trans, new Vector3F(1, 1, 0));  // 平移
+trans.Translate(new Vector3F(1, 1, 0));                 // 平移
+vec = trans * vec;
+Console.WriteLine(vec.ToString());  // out: (2, 1, 0, 1)
+#CE
+或许你会奇怪，我们的坐标不是`(1,0,0)`吗？为什么要使用一个四维向量`(1,0,0,1)`？还记得在顶点着色器中`gl_Position`我们也是使用的四维向量吗？首先可以看到我们需要使用一个`4*4`的矩阵做运算，而一个三维向量是无法和`4*4`矩阵做运算的，所以我们需要一个四维向量，并且我们也确实需要第四维`w`分量，也叫齐次坐标。
+最终的结果也确实把坐标平移了。当然上面的代码仅仅是演示数学运算后的效果，并没有实际的应用到`OpenGL`中。接下来我们使用上一章节的案例进行更改。
+
+#O 实践
+
+让我们来旋转和缩放之前教程中的那个箱子。首先我们把箱子逆时针旋转90度。然后缩放0.5倍，使它变成原来的一半大。我们先来创建变换矩阵。
+#CS cs
+var mat = Matrix4F.Identity;
+mat.Rotate(90, new Vector3F(0, 0, 1));
+mat.Scale(new Vector3F(0.5f, 0.5f, 0.5f));
+// mat = GLM.Scale(...) * GLM.Rotate(...);
+// 如果使用下面的代码 矩阵乘法顺序要和我们想要操作的效果反过来。
+#CE
+#HS goldenrod|black
+在作者移植的`GLM`中变换函数接受的是`角度`不是`弧度`，在`GLM`中提供了两个转换函数`GLM.Radians(float)``GLM.Degress(float)`。
+#HE
+接下来就是将这个矩阵传递给着色器。
+#CS cs
+#version 330 core
+
+layout (location = 0) in vec3 dotPos;
+layout (location = 1) in vec3 dotColor;
+layout (location = 2) in vec2 dotTexCoord;
+
+out vec3 DotColor;
+out vec2 DotTexCoord;
+
+uniform mat4 mat_transform;   // 接受变换矩阵
+
+void main(){
+    gl_Position = mat_transform * vec4(dotPos, 1.0);
+    DotColor = dotColor;
+    DotTexCoord = dotTexCoord;
+}
+#CE
+由于`gl_Position`是要传递给下一个步骤的坐标点，而`dotPos`是我们原本传入的坐标点。但是赋值给`gl_Position`的时候与我们传入的矩阵`mat_transform`做了一次运算，所以坐标点会发生改变。
+通过`program`我们可以将我们的矩阵传递给着色器。
+#CS cs
+program.SetUniform("mat_transform", mat);
+#CE
+然后你会看到如下的效果。
+#I ../images/1.8.rotate.png
+
+接下来我们尝试在渲染循环中修改代码。
+#CS cs
+while (!GLFW.WindowShouldClose(window)) {
+    processInput(window);
+
+    GL.ClearColor(.5f, .5f, .5f, 1f);
+    GL.Clear(GL.GL_COLOR_BUFFER_BIT);
+    // GL.BindVertexArray(vao);
+    var mat = Matrix4F.Identity;
+    mat.Translate(new Vector3F(0.5f, -0.5f, 0));
+    mat.Rotate((float)(DateTime.Now.Ticks / 100000 % 360), new Vector3F(0, 0, 1));
+    program.SetUniform("mat_transform", mat);
+    GL.DrawElements(GL.GL_TRIANGLES, 6, GL.GL_UNSIGNED_INT, IntPtr.Zero);
+
+    GLFW.SwapBuffers(window);
+    GLFW.PollEvents();
+}
+#CE
+运行后你会看到一个旋转的图形。
+#I ../images/1.8.rotate.gif
+
+可以看到通过`矩阵`，我们可以很方便的就实现坐标的变换，所以说`矩阵`在图形领域是一个很重要的工具。我们可以定义无限数量的变换，而把它们组合为仅仅一个矩阵，如果愿意的话我们还可以重复使用它。在着色器中使用矩阵可以省去重新定义顶点数据的功夫，它也能够节省处理时间，因为我们没有重新发送新的顶点坐标到`GPU`中（这是个非常慢的过程），所有的变换都在着色器中通过`Mat4*vec4`完成的。
+
+
+
+
+
+
+
+
+
+
+
+

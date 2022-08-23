@@ -36,11 +36,11 @@ namespace STGL.Tutorials
 
             out vec4 fragColor;
 
-            uniform sampler2D u_texture_1;
-            uniform sampler2D u_texture_2;
+            uniform sampler2D tex_1;
+            uniform sampler2D tex_2;
 
             void main(){
-                fragColor = mix(texture(u_texture_1, DotTexCoord), texture(u_texture_2, DotTexCoord), 0.2);
+                fragColor = mix(texture(tex_1, DotTexCoord), texture(tex_2, DotTexCoord), 0.2);
             }";
         public static void Run() {
             GLFW.Init();
@@ -140,8 +140,8 @@ namespace STGL.Tutorials
             var texture_2 = GLTexture2D.Create(GLTexture2D.Unit.Texture01);
             texture_2.SetPixels(pi.Pixels, (int)GL.GL_RGB, pi.Width, pi.Height, GL.GL_RGB);
 
-            program.SetUniform("u_texture_1", 0);
-            program.SetUniform("u_texture_2", 1);
+            program.SetUniform("tex_1", 0);
+            program.SetUniform("tex_2", 1);
             //====================================
 
             while (!GLFW.WindowShouldClose(window)) {

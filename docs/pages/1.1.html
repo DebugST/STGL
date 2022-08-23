@@ -25,17 +25,17 @@
 </li>
 </ul><div class='div_left_space_space'></div>
 </div>
-<span id="span_time">2022-08-06 -> by:<span>DebugST</span></span>
+<span id="span_time">2022-08-22 -> by:<span>DebugST</span></span>
 </div>
 <div id="div_right">
-<span class='span_location'>1.入门 &gt; 1.OpenGL介绍<span style='float:right'>2022-07-19</span></span><h1 class='h_title anchor_point' name='a_a'>OpenGL介绍</h1>
+<span class='span_location'>1.入门 &gt; 1.OpenGL介绍<span style='float:right'>2022-08-17</span></span><h1 class='h_title anchor_point' name='a_a'>OpenGL介绍</h1>
 <img width=306 src='../images/1.1.opengl.log.jpeg'/>
 <p>在还没有接触到<span class='mark'>OpenGL</span>之前，作者一直以为<span class='mark'>OpenGL</span>是一个<span class='mark'>SDK</span>需要安装各种东西，然后才可以进行相关的开发。事实上并非如此。基本上现在大多数的电脑都可以直接运行<span class='mark'>OpenGL</span>程序。</p>
 <p><span class='mark'>OpenGL</span>并不是一个<span class='mark'>SDK</span>而是一个<span class='mark'>API</span>规范，由<a class='mark' target='_blank' href='http://www.khronos.org/'>khronos</a>组织所维护的一套编程接口标准。它们规定了一些函数的名称以及需要的参数和输出值。至于功能怎么实现。。。这个是硬件的事情了是吧？也就是<span class='mark'>显卡</span>。</p>
 <p>如果一个显卡生产厂商愿意去支持<span class='mark'>OpenGL</span>的规范，那么他们就会去实现那些<span class='mark'>API</span>接口，然后将这些实现好的接口伴随着驱动程序一起安装在系统中。而基本上显卡厂商都愿意去实现这些<span class='mark'>API</span>，所以基本上每个系统中都天然拥有<span class='mark'>OpenGL</span>的运行环境。不会吧？不会你的电脑上连显卡驱动都没装吧？</p>
 <div><h2 class='h_option anchor_point' name='a_b'>OpenGL函数介绍</h2></div>
 <p><span class='mark'>OpenGL</span>的函数通常以<span class='mark'>gl</span>开头，是<span class='mark'>OpenGL</span>的核心库，它们是平台无关的函数，也是<span class='mark'>STGL</span>所移植的部分，如：<span class='mark'>glGetString</span>。同样还有其他开头的函数，如：<span class='mark'>glx</span><span class='mark'>agl</span><span class='mark'>wgl</span><span class='mark'>glu</span><span class='mark'>glaux</span>等。</p>
-<p><span class='mark'>glu</span>是以核心库函数封装的一些为数不多但是功能强大的绘图函数。目前<span class='mark'>STGL</span>暂未封装这些函数。</p>
+<p><span class='mark'>glu</span>是以核心库函数封装的一些为数不多但是功能强大的绘图函数。由于太古老无法在<span class='mark'>核心模式</span>下使用，<span class='mark'>STGL</span>暂未封装这些函数。</p>
 <p><span class='mark'>glx</span><span class='mark'>agl</span><span class='mark'>wgl</span>它们是平台相关的函数，用于在不同平台将图形窗口与<span class='mark'>OpenGL</span>上下文<span class='mark'>Context</span>进行绑定，以<span class='mark'>wgl</span>为例，他是<span class='mark'>windows</span>系统相关的函数。在<span class='mark'>windows</span>系统目录中存在<span class='mark'>opengl32.dll</span>文件。其中包含十几个<span class='mark'>wgl</span>开头的函数，如：<span class='mark'>wglCreateContext</span></p>
 <div class='div_code'>
 <pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>HGLRC</span> <span style='color:rgba(255,0,255,1)'>wglCreateContext</span><span style='color:rgba(255,255,255,1)'>(</span>

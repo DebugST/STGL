@@ -7,10 +7,30 @@ namespace STLib.OpenGL.GLM
 {
     partial class GLM
     {
+        public enum EulerOrder
+        {
+            XYZ,
+            XZY,
+            YXZ,
+            YZX,
+            ZXY,
+            ZYX,
+        };
+
+        public static Matrix4F Translate(Vector3F v) {
+            var m = Matrix4F.Identity;
+            return GLM.Translate(m, v);
+        }
+
         public static Matrix4F Translate(Matrix4F m, Vector3F v) {
             Vector4F temp = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3];
             m[3] = temp;
             return m;
+        }
+
+        public static Matrix4F Scale(Vector3F v) {
+            var m = Matrix4F.Identity;
+            return GLM.Scale(m, v);
         }
 
         public static Matrix4F Scale(Matrix4F m, Vector3F v) {
@@ -20,6 +40,11 @@ namespace STLib.OpenGL.GLM
             result[2] = m[2] * v.Z;
             result[3] = m[3];
             return result;
+        }
+
+        public static Matrix4F Rotate(float angle, Vector3F v) {
+            var m = Matrix4F.Identity;
+            return GLM.Rotate(m, angle, v);
         }
 
         public static Matrix4F Rotate(Matrix4F m, float angle, Vector3F v) {
@@ -50,6 +75,39 @@ namespace STLib.OpenGL.GLM
             return result;
         }
 
+        public static Matrix4F EulerRotate(EulerOrder order, Vector3F vecAngle) {
+            var r_x = GLM.Rotate(vecAngle.X, new Vector3F(1, 0, 0));
+            var r_y = GLM.Rotate(vecAngle.Y, new Vector3F(0, 1, 0));
+            var r_z = GLM.Rotate(vecAngle.Z, new Vector3F(0, 0, 1));
+            switch (order) {
+                case EulerOrder.XYZ:
+                    return r_z * r_y * r_x;
+                case EulerOrder.XZY:
+                    return r_y * r_z * r_x;
+                case EulerOrder.YXZ:
+                    return r_z * r_x * r_y;
+                case EulerOrder.YZX:
+                    return r_x * r_z * r_y;
+                case EulerOrder.ZXY:
+                    return r_y * r_x * r_z;
+                case EulerOrder.ZYX:
+                    return r_x * r_y * r_z;
+            }
+            return Matrix4F.Identity;
+        }
+
+        public static Matrix4F EulerRotate(Matrix4F m, EulerOrder order, Vector3F vecAngle) {
+            return m * GLM.EulerRotate(order, vecAngle);
+        }
+
+        //public static Matrix4F Rotate(Vector3F vecAngle) {
+        //    return Matrix4F.Identity * new Quaternion(vecAngle).ToMatrix4F();
+        //}
+
+        //public static Matrix4F Rotate(Matrix4F m, Vector3F vecAngle) {
+        //    return m * new Quaternion(vecAngle).ToMatrix4F();
+        //}
+
         public static Matrix4F Ortho(float left, float right, float bottom, float top, float zNear, float zFar) {
             Matrix4F result = Matrix4F.Identity;
             result[0, 0] = 2 / (right - left);
@@ -61,7 +119,7 @@ namespace STLib.OpenGL.GLM
             return result;
         }
 
-        public static Matrix4F Rotho(float left, float right, float bottom, float top) {
+        public static Matrix4F Ortho(float left, float right, float bottom, float top) {
             Matrix4F result = Matrix4F.Identity;
             result[0, 0] = 2 / (right - left);
             result[1, 1] = 2 / (top - bottom);
@@ -96,7 +154,7 @@ namespace STLib.OpenGL.GLM
             result[1, 1] = temp / (top - bottom);
             result[2, 2] = -(zFar + zNear) / (zFar - zNear);
             result[2, 3] = -1;
-            result[3, 2] = (temp * zFar) / (zFar - zNear);
+            result[3, 2] = -(temp * zFar) / (zFar - zNear);
             return result;
         }
 

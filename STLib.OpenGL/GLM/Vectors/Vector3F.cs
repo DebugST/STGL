@@ -29,6 +29,12 @@ namespace STLib.OpenGL.GLM
             this.Z = z;
         }
 
+        public Vector3F(Vector4F v) {
+            this.X = v.X;
+            this.Y = v.Y;
+            this.Z = v.Z;
+        }
+
         public override string ToString() {
             return string.Format("({0}, {1}, {2})", this.X, this.Y, this.Z);
         }
@@ -168,6 +174,17 @@ namespace STLib.OpenGL.GLM
             vec.Y = v / vec.Y;
             vec.Z = v / vec.Z;
             return vec;
+        }
+
+        public static bool operator ==(Vector3F a, Vector3F b) {
+            if (a.X != b.X) return false;
+            if (a.Y != b.Y) return false;
+            if (a.Z != b.Z) return false;
+            return true;
+        }
+
+        public static bool operator !=(Vector3F a, Vector3F b) {
+            return !(a == b);
         }
     }
 }

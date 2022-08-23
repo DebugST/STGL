@@ -16,20 +16,121 @@
 <div id="div_left_list">
 <ul class='ul_group_root'>
 <li>
-
+    <a class='a_node_root anchor_btn' name='a_a' href='#a_a'>变换</a>
     <ul>
-        
+        <li class='li_node_sub'><a class='anchor_btn' name='a_b' href='#a_b'>Graphics</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_c' href='#a_c'>GLM</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_d' href='#a_d'>实践</a></li>
     </ul>
 </li>
 </ul><div class='div_left_space_space'></div>
 </div>
-<span id="span_time">2022-08-06 -> by:<span>DebugST</span></span>
+<span id="span_time">2022-08-23 -> by:<span>DebugST</span></span>
 </div>
 <div id="div_right">
-<span class='span_location'>1.入门 &gt; 8.变换<span style='float:right'>2022-07-18</span></span>
+<span class='span_location'>1.入门 &gt; 8.变换<span style='float:right'>2022-08-23</span></span><h1 class='h_title anchor_point' name='a_a'>变换</h1>
+<div class='div_hightlight' style='background-color:goldenrod;color:black'>
+<p>在原版的教程中，此章节有教读者一些<span class='mark'>矩阵</span>和<span class='mark'>向量</span>的数学知识简单介绍，但是在这里作者并不打算对它们做介绍，因为作者也是一个学渣文盲，建议读者先查看原教程。因为在<span class='mark'>OpenGL</span>中的变换几乎都是靠<span class='mark'>矩阵</span>完成的。</p>
+</div>
+<p><a class='mark' target='_blank' href='https://learnopengl.com/Getting-started/Transformations'>learnopengl</a> <a class='mark' target='_blank' href='https://learnopengl-cn.github.io/01%20Getting%20started/07%20Transformations/'>learnopengl-cn</a></p>
+<div><h2 class='h_option anchor_point' name='a_b'>Graphics</h2></div>
+<p>对于在<span class='mark'>.Net</span>中使用过<span class='mark'>Graphics</span>的读者来说，这几个函数一定并不陌生。<span class='mark'>TranslateTransform</span>，<span class='mark'>ScaleTransform</span>，<span class='mark'>RotateTransform</span>，这三个函数分别可以对我们当前坐标进行<span class='mark'>平移</span><span class='mark'>缩放</span><span class='mark'>旋转</span>。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>Graphics</span><span style='color:rgba(219,112,147,1)'>.Transformations</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(100,149,237,1)'>float</span> x<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(100,149,237,1)'>float</span> y<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>Graphics</span><span style='color:rgba(219,112,147,1)'>.ScaleTransform</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(100,149,237,1)'>float</span> x<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(100,149,237,1)'>float</span> y<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>Graphics</span><span style='color:rgba(219,112,147,1)'>.RotateTransform</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(100,149,237,1)'>float</span> angle<span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<p>或者高级一点的。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>Graphics</span><span style='color:rgba(219,112,147,1)'>.MultiplyTransform</span><span style='color:rgba(255,255,255,1)'>(</span>Matrix matrix<span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<p>在<span class='mark'>3D</span>的世界中我们同样也需要这样的功能。在<span class='mark'>OpenGL</span>中也有这样的函数，比如<span class='mark'>glTranslate</span>。但是很遗憾。<span class='mark'>OpenGL</span>的官方文档中这样描述它：<span style='color:pink'>Compatibility-only GL 1.0 features removed from GL 3.2</span></p>
+<p>这是一个上古时期的函数，现在几乎已经不支持，而且我们的教程采用的是<span class='mark'>3.3</span>的版本。那么没有了这些函数我们要如何变换我们的坐标？那就是<span class='mark'>矩阵</span>+<span class='mark'>着色器</span>。而我们要做的就是构造变换矩阵传递给着色器程序。</p>
+<div class='div_hightlight' style='background-color:goldenrod;color:black'>
+<p>在原版教程中有如何教我们构造一个旋转矩阵，但是会导致一个问题：<span class='mark'>万向节死锁</span>(Gimbal Lock)。很难用语言将万向节死锁描述出来，所以这里准备了两个视频<a class='mark' target='_blank' href='https://www.bilibili.com/video/BV1da411U78s'>bilibili</a><a class='mark' target='_blank' href='https://www.youtube.com/watch?v=zc8b2Jo7mno&amp;t=419s'>youtube</a>。</p>
+<p>虽然原版教程中提到了<span class='mark'>四元数</span>(Quaternion)。但是造成<span class='mark'>万向节死锁</span>的根本原因并不是因为使用了<span class='mark'>欧拉角</span>，欧拉旋转本身是没有任何问题，问题在于多轴同时旋转的时候，优先选择哪个轴旋转的问题。而这个问题与其叫做<span class='mark'>万向节死锁</span>倒不如叫做<span class='mark'>歧义</span>更加合适。</p>
+<p>此教程并不打算讲解<span class='mark'>四元数</span>，如果实在要问为什么的话。。。。。因为作者也没搞懂😂😂😂😂😂。虽然作者已经从<span class='mark'>GLM</span>中抄袭了<span class='mark'>四元数</span>的代码，可作者也并不是很理解如何正确使用。即便在后面的<span class='mark'>摄像机</span>章节中，作者也是采用的<span class='mark'>欧拉角</span>，但是可以无死角旋转。</p>
+</div>
+<div><h2 class='h_option anchor_point' name='a_c'>GLM</h2></div>
+<p><span class='mark'>GLM</span>是OpenGL Mathematics的缩写，它是一个只有头文件的库，也就是说我们只需包含对应的头文件就行了，不用链接和编译。是不是很方便？可惜并不能在<span class='mark'>.Net</span>中使用。但是作者对它进行了部分移植。</p>
+<p>接下来就是实践一下如何使用<span class='mark'>GLM</span>。</p>
+<p>首先我们准备一个坐标点<span class='mark'>(1,0,0)</span>让它位移<span class='mark'>(1,1,0)</span>个单位。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>Vector4F</span> vec <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(30,144,255,1)'>new</span> <span style='color:rgba(0,255,255,1)'>Vector4F</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>);</span>                <span style='color:rgba(0,255,0,1)'>// 构造坐标</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>Matrix4F</span> trans <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>Matrix4F</span><span style='color:rgba(112,128,144,1)'>.Identity</span><span style='color:rgba(255,255,255,1)'>;</span>                     <span style='color:rgba(0,255,0,1)'>// 创建单位矩阵
+<span class='span_code_line'></span>//trans = GLM.Translate(trans, new Vector3F(1, 1, 0));  // 平移</span>
+<span class='span_code_line'></span>trans<span style='color:rgba(219,112,147,1)'>.Translate</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(30,144,255,1)'>new</span> <span style='color:rgba(0,255,255,1)'>Vector3F</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>));</span>                 <span style='color:rgba(0,255,0,1)'>// 平移</span>
+<span class='span_code_line'></span>vec <span style='color:rgba(255,255,255,1)'>=</span> trans <span style='color:rgba(255,255,255,1)'>*</span> vec<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>Console</span><span style='color:rgba(219,112,147,1)'>.WriteLine</span><span style='color:rgba(255,255,255,1)'>(</span>vec<span style='color:rgba(219,112,147,1)'>.ToString</span><span style='color:rgba(255,255,255,1)'>());</span>  <span style='color:rgba(0,255,0,1)'>// out: (2, 1, 0, 1)</span></pre>
+</div>
+<p>或许你会奇怪，我们的坐标不是<span class='mark'>(1,0,0)</span>吗？为什么要使用一个四维向量<span class='mark'>(1,0,0,1)</span>？还记得在顶点着色器中<span class='mark'>gl_Position</span>我们也是使用的四维向量吗？首先可以看到我们需要使用一个<span class='mark'>4*4</span>的矩阵做运算，而一个三维向量是无法和<span class='mark'>4*4</span>矩阵做运算的，所以我们需要一个四维向量，并且我们也确实需要第四维<span class='mark'>w</span>分量，也叫齐次坐标。</p>
+<p>最终的结果也确实把坐标平移了。当然上面的代码仅仅是演示数学运算后的效果，并没有实际的应用到<span class='mark'>OpenGL</span>中。接下来我们使用上一章节的案例进行更改。</p>
+<div><h2 class='h_option anchor_point' name='a_d'>实践</h2></div>
+<p>让我们来旋转和缩放之前教程中的那个箱子。首先我们把箱子逆时针旋转90度。然后缩放0.5倍，使它变成原来的一半大。我们先来创建变换矩阵。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>var</span> mat <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>Matrix4F</span><span style='color:rgba(112,128,144,1)'>.Identity</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>mat<span style='color:rgba(219,112,147,1)'>.Rotate</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>90</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(30,144,255,1)'>new</span> <span style='color:rgba(0,255,255,1)'>Vector3F</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>));</span>
+<span class='span_code_line'></span>mat<span style='color:rgba(219,112,147,1)'>.Scale</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(30,144,255,1)'>new</span> <span style='color:rgba(0,255,255,1)'>Vector3F</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>));</span>
+<span class='span_code_line'></span><span style='color:rgba(0,255,0,1)'>// mat = GLM.Scale(...) * GLM.Rotate(...);
+<span class='span_code_line'></span>// 如果使用下面的代码 矩阵乘法顺序要和我们想要操作的效果反过来。</span></pre>
+</div>
+<div class='div_hightlight' style='background-color:goldenrod;color:black'>
+<p>在作者移植的<span class='mark'>GLM</span>中变换函数接受的是<span class='mark'>角度</span>不是<span class='mark'>弧度</span>，在<span class='mark'>GLM</span>中提供了两个转换函数<span class='mark'>GLM.Radians(float)</span><span class='mark'>GLM.Degress(float)</span>。</p>
+</div>
+<p>接下来就是将这个矩阵传递给着色器。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span>#version <span style='color:rgba(144,238,144,1)'>330</span> <span style='color:rgba(0,255,255,1)'>core</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(255,0,255,1)'>layout</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>location</span> <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(30,144,255,1)'>in</span> vec3 dotPos<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span><span style='color:rgba(219,112,147,1)'>layout</span> <span style='color:rgba(255,255,255,1)'>(</span>location <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(30,144,255,1)'>in</span> vec3 dotColor<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span><span style='color:rgba(219,112,147,1)'>layout</span> <span style='color:rgba(255,255,255,1)'>(</span>location <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(144,238,144,1)'>2</span><span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(30,144,255,1)'>in</span> vec2 dotTexCoord<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>out</span> vec3 DotColor<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>out</span> vec2 DotTexCoord<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>uniform mat4 mat_transform<span style='color:rgba(255,255,255,1)'>;</span>   <span style='color:rgba(0,255,0,1)'>// 接受变换矩阵</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>main</span><span style='color:rgba(255,255,255,1)'>(){</span>
+<span class='span_code_line'></span>    gl_Position <span style='color:rgba(255,255,255,1)'>=</span> mat_transform <span style='color:rgba(255,255,255,1)'>*</span> <span style='color:rgba(219,112,147,1)'>vec4</span><span style='color:rgba(255,255,255,1)'>(</span>dotPos<span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    DotColor <span style='color:rgba(255,255,255,1)'>=</span> dotColor<span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>    DotTexCoord <span style='color:rgba(255,255,255,1)'>=</span> dotTexCoord<span style='color:rgba(255,255,255,1)'>;
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p>由于<span class='mark'>gl_Position</span>是要传递给下一个步骤的坐标点，而<span class='mark'>dotPos</span>是我们原本传入的坐标点。但是赋值给<span class='mark'>gl_Position</span>的时候与我们传入的矩阵<span class='mark'>mat_transform</span>做了一次运算，所以坐标点会发生改变。</p>
+<p>通过<span class='mark'>program</span>我们可以将我们的矩阵传递给着色器。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span>program<span style='color:rgba(219,112,147,1)'>.SetUniform</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,165,0,1)'>"mat_transform"</span><span style='color:rgba(255,255,255,1)'>,</span> mat<span style='color:rgba(255,255,255,1)'>);</span></pre>
+</div>
+<p>然后你会看到如下的效果。</p>
+<img src='../images/1.8.rotate.png'/>
+<p>接下来我们尝试在渲染循环中修改代码。</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>while</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,255,255,1)'>!</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowShouldClose</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>)) {</span>
+<span class='span_code_line'></span>    <span style='color:rgba(219,112,147,1)'>processInput</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.ClearColor</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1f</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.Clear</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_COLOR_BUFFER_BIT</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,0,1)'>// GL.BindVertexArray(vao);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(100,149,237,1)'>var</span> mat <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>Matrix4F</span><span style='color:rgba(112,128,144,1)'>.Identity</span><span style='color:rgba(255,255,255,1)'>;</span>
+<span class='span_code_line'></span>    mat<span style='color:rgba(219,112,147,1)'>.Translate</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(30,144,255,1)'>new</span> <span style='color:rgba(0,255,255,1)'>Vector3F</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(255,255,255,1)'>-</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(112,128,144,1)'>.</span><span style='color:rgba(144,238,144,1)'>5f</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>));</span>
+<span class='span_code_line'></span>    mat<span style='color:rgba(219,112,147,1)'>.Rotate</span><span style='color:rgba(255,255,255,1)'>((</span><span style='color:rgba(100,149,237,1)'>float</span><span style='color:rgba(255,255,255,1)'>)(</span><span style='color:rgba(0,255,255,1)'>DateTime</span><span style='color:rgba(112,128,144,1)'>.Now.Ticks</span> <span style='color:rgba(255,255,255,1)'>/</span> <span style='color:rgba(144,238,144,1)'>100000</span> % <span style='color:rgba(144,238,144,1)'>360</span><span style='color:rgba(255,255,255,1)'>),</span> <span style='color:rgba(30,144,255,1)'>new</span> <span style='color:rgba(0,255,255,1)'>Vector3F</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>1</span><span style='color:rgba(255,255,255,1)'>));</span>
+<span class='span_code_line'></span>    program<span style='color:rgba(219,112,147,1)'>.SetUniform</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,165,0,1)'>"mat_transform"</span><span style='color:rgba(255,255,255,1)'>,</span> mat<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.DrawElements</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_TRIANGLES</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(144,238,144,1)'>6</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(112,128,144,1)'>.GL_UNSIGNED_INT</span><span style='color:rgba(255,255,255,1)'>,</span> <span style='color:rgba(0,255,255,1)'>IntPtr</span><span style='color:rgba(112,128,144,1)'>.Zero</span><span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SwapBuffers</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.PollEvents</span><span style='color:rgba(255,255,255,1)'>();
+<span class='span_code_line'></span>}</span></pre>
+</div>
+<p>运行后你会看到一个旋转的图形。</p>
+<img src='../images/1.8.rotate.gif'/>
+<p>可以看到通过<span class='mark'>矩阵</span>，我们可以很方便的就实现坐标的变换，所以说<span class='mark'>矩阵</span>在图形领域是一个很重要的工具。我们可以定义无限数量的变换，而把它们组合为仅仅一个矩阵，如果愿意的话我们还可以重复使用它。在着色器中使用矩阵可以省去重新定义顶点数据的功夫，它也能够节省处理时间，因为我们没有重新发送新的顶点坐标到<span class='mark'>GPU</span>中（这是个非常慢的过程），所有的变换都在着色器中通过<span class='mark'>Mat4*vec4</span>完成的。</p>
+
 </div>
 <div id="div_right_list">
-
+<a name='a_a' href='#a_a'>变换</a>
+<a name='a_b' href='#a_b'>Graphics</a>
+<a name='a_c' href='#a_c'>GLM</a>
+<a name='a_d' href='#a_d'>实践</a>
 </div>
 </div>
 </body>

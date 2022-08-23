@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace STLib.OpenGL.GLFW
 {
@@ -35,6 +36,7 @@ namespace STLib.OpenGL.GLFW
         /// </param>
         /// <param name="description">[in] A UTF-8 encoded string describing the error.</param>
         /// <seealso cref="SetErrorCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBError(int error_code, string description);
         /// <summary>
         /// The function pointer type for window position callbacks.
@@ -63,6 +65,7 @@ namespace STLib.OpenGL.GLFW
         /// upper-left corner of the content area of the window.
         /// </param>
         /// <seealso cref="SetWindowPosCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBWindowPos(IntPtr window, int xpos, int ypos);
         /// <summary>
         /// The function pointer type for window size callbacks.
@@ -86,6 +89,7 @@ namespace STLib.OpenGL.GLFW
         /// <param name="width">[in] The new width, in screen coordinates, of the window.</param>
         /// <param name="height">[in] The new height, in screen coordinates, of the window.</param>
         /// <seealso cref="SetWindowSizeCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBWindowSize(IntPtr window, int width, int height);
         /// <summary>
         /// The function pointer type for window close callbacks.
@@ -107,6 +111,7 @@ namespace STLib.OpenGL.GLFW
         /// </summary>
         /// <param name="window">[in] The window that the user attempted to close.</param>
         /// <seealso cref="SetWindowCloseCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBWindowClose(IntPtr window);
         /// <summary>
         /// The function pointer type for window content refresh callbacks.
@@ -128,6 +133,7 @@ namespace STLib.OpenGL.GLFW
         /// </summary>
         /// <param name="window">[in] The window whose content needs to be refreshed.</param>
         /// <seealso cref="SetWindowRefreshCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBWindowRefresh(IntPtr window);
         /// <summary>
         /// The function pointer type for window focus callbacks.
@@ -152,6 +158,7 @@ namespace STLib.OpenGL.GLFW
         /// <c>GLFW_FALSE</c> if it lost it.
         /// </param>
         /// <seealso cref="SetWindowFocusCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBWindowFocus(IntPtr window, int focused);
         /// <summary>
         /// The function pointer type for window iconify callbacks.
@@ -176,6 +183,7 @@ namespace STLib.OpenGL.GLFW
         /// <c>GLFW_FALSE</c> if it was restored.
         /// </param>
         /// <seealso cref="SetWindowIconifyCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBWindowIconify(IntPtr window, int iconified);
         /// <summary>
         /// The function pointer type for window maximize callbacks.
@@ -199,6 +207,7 @@ namespace STLib.OpenGL.GLFW
         /// [in] <c>GLFW_TRUE</c> if the window was maximized, or
         /// <c>GLFW_FALSE</c> if it was restored.
         /// </param>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBWindowMaximize(IntPtr window, int maximized);
         /// <summary>
         /// The function pointer type for framebuffer size callbacks.
@@ -221,6 +230,7 @@ namespace STLib.OpenGL.GLFW
         /// <param name="width">[in] The new width, in pixels, of the framebuffer.</param>
         /// <param name="height">[in] The new height, in pixels, of the framebuffer.</param>
         /// <seealso cref="SetFramebufferSizeCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBFrameBufferSize(IntPtr window, int width, int height);
         /// <summary>
         /// The function pointer type for window content scale callbacks.
@@ -243,6 +253,7 @@ namespace STLib.OpenGL.GLFW
         /// <param name="xscale">[in] The new x-axis content scale of the window.</param>
         /// <param name="yscale">[in] The new y-axis content scale of the window.</param>
         /// <seealso cref="SetWindowContentScaleCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBWindowContentScale(IntPtr window, float xscale, float yscale);
         /// <summary>
         /// The function pointer type for mouse button callbacks.
@@ -276,6 +287,7 @@ namespace STLib.OpenGL.GLFW
         /// held down.
         /// </param>
         /// <seealso cref="SetMouseButtonCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBMouseButton(IntPtr window, int button, int action, int mods);
         /// <summary>
         /// The function pointer type for cursor position callbacks.
@@ -304,6 +316,7 @@ namespace STLib.OpenGL.GLFW
         /// content area.
         /// </param>
         /// <seealso cref="SetCursorPosCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBCursorPos(IntPtr window, double xpos, double ypos);
         /// <summary>
         /// The function pointer type for cursor enter/leave callbacks.
@@ -328,6 +341,7 @@ namespace STLib.OpenGL.GLFW
         /// area, or <c>GLFW_FALSE</c> if it left it.
         /// </param>
         /// <seealso cref="SetCursorEnterCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBCursorEnter(IntPtr window, int entered);
         /// <summary>
         /// The function pointer type for scroll callbacks.
@@ -350,6 +364,7 @@ namespace STLib.OpenGL.GLFW
         /// <param name="xoffset">[in] The scroll offset along the x-axis.</param>
         /// <param name="yoffset">[in] The scroll offset along the y-axis.</param>
         /// <seealso cref="SetScrollCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBScroll(IntPtr window, double xoffset, double yoffset);
         /// <summary>
         /// The function pointer type for keyboard key callbacks.
@@ -381,6 +396,7 @@ namespace STLib.OpenGL.GLFW
         /// held down.
         /// </param>
         /// <seealso cref="SetKeyCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBKey(IntPtr window, int key, int scancode, int action, int mods);
         /// <summary>
         /// The function pointer type for Unicode character callbacks.
@@ -404,6 +420,7 @@ namespace STLib.OpenGL.GLFW
         /// <param name="codepoint">[in] The Unicode code point of the character.</param>
         /// <seealso cref="SetCharCallback"/>
         [Obsolete("Scheduled for removal in version 4.0.")]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBChar(IntPtr window, uint codepoint);
         /// <summary>
         /// The function pointer type for Unicode character with modifiers
@@ -434,6 +451,7 @@ namespace STLib.OpenGL.GLFW
         /// </param>
         /// <seealso cref="SetCharModsCallback"/>
         [Obsolete("Scheduled for removal in version 4.0.")]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBCharMods(IntPtr window, uint codepoint, int mods);
         /// <summary>
         /// The function pointer type for path drop callbacks.
@@ -460,6 +478,7 @@ namespace STLib.OpenGL.GLFW
         /// <param name="window">[in] The window that received the event.</param>
         /// <param name="paths">[in] The UTF-8 encoded file and/or directory path names.</param>
         /// <seealso cref="SetDropCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBDrop(IntPtr window, string[] paths);
         /// <summary>
         /// The function pointer type for monitor configuration callbacks.
@@ -484,6 +503,7 @@ namespace STLib.OpenGL.GLFW
         /// releases may add more events.
         /// </param>
         /// <seealso cref="SetMonitorCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBMonitor(IntPtr monitor, int event_num);
         /// <summary>
         /// The function pointer type for joystick configuration callbacks.
@@ -508,6 +528,7 @@ namespace STLib.OpenGL.GLFW
         /// releases may add more events.
         /// </param>
         /// <seealso cref="SetJoystickCallback"/>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CBJoystick(int jid, int event_num);
     }
 }

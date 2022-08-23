@@ -21,17 +21,18 @@
         <li class='li_node_sub'><a class='anchor_btn' name='a_b' href='#a_b'>3D世界</a></li>
         <li class='li_node_sub'><a class='anchor_btn' name='a_c' href='#a_c'>3D到2D</a></li>
         <li class='li_node_sub'><a class='anchor_btn' name='a_d' href='#a_d'>开始三角形</a></li>
-        <li class='li_node_sub'><a class='anchor_btn' name='a_e' href='#a_e'>着色器</a></li>
-        <li class='li_node_sub'><a class='anchor_btn' name='a_f' href='#a_f'>千呼万唤始出来</a></li>
-        <li class='li_node_sub'><a class='anchor_btn' name='a_g' href='#a_g'>回顾</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_e' href='#a_e'>创建对象</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_f' href='#a_f'>着色器</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_g' href='#a_g'>千呼万唤始出来</a></li>
+        <li class='li_node_sub'><a class='anchor_btn' name='a_h' href='#a_h'>回顾</a></li>
     </ul>
 </li>
 </ul><div class='div_left_space_space'></div>
 </div>
-<span id="span_time">2022-08-06 -> by:<span>DebugST</span></span>
+<span id="span_time">2022-08-22 -> by:<span>DebugST</span></span>
 </div>
 <div id="div_right">
-<span class='span_location'>1.入门 &gt; 4.你好 三角形<span style='float:right'>2022-08-03</span></span><h1 class='h_title anchor_point' name='a_a'>你好 三角形</h1>
+<span class='span_location'>1.入门 &gt; 4.你好 三角形<span style='float:right'>2022-08-22</span></span><h1 class='h_title anchor_point' name='a_a'>你好 三角形</h1>
 <p>欢迎来到<span class='mark'>OpenGL</span>的世界，在进入之前作者不知道读者是否在<span class='mark'>.Net</span>中有使用<span class='mark'>Graphics</span>的经验。那就假设有吧。在<span class='mark'>Graphics</span>中有大量的<span class='mark'>DrawXXX</span>函数。</p>
 <div class='div_code'>
 <pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>Graphics</span><span style='color:rgba(219,112,147,1)'>.DrawLine</span><span style='color:rgba(255,255,255,1)'>(</span>Pen<span style='color:rgba(255,255,255,1)'>,</span>x1<span style='color:rgba(255,255,255,1)'>,</span>y1<span style='color:rgba(255,255,255,1)'>,</span>x2<span style='color:rgba(255,255,255,1)'>,</span>y2<span style='color:rgba(255,255,255,1)'>);</span>
@@ -44,12 +45,14 @@
 <div><h2 class='h_option anchor_point' name='a_b'>3D世界</h2></div>
 <p>在<span class='mark'>OpenGL</span>的世界中，任何事物都是<span class='mark'>3D</span>的。所以当我们需要渲染一些东西的时候，<span class='mark'>X</span><span class='mark'>Y</span>坐标是无法满足需求的，在<span class='mark'>OpenGL</span>中还会增加一个<span class='mark'>Z</span>坐标。这个作者应该不用解释<span class='mark'>Z</span>坐标是什么意思了。</p>
 <p>在<span class='mark'>Graphics</span>中我们要绘制一个矩形是很容易的，使用<span class='mark'>DrawRectangle</span>就可以了。那么现在使用你智商高达250的大脑思考一下，现在需要绘制一个立方体应该怎么办？</p>
-<p>聪明的你：这还不简单？直接再设计一个<span class='mark'>DrawBox</span>函数并且接收<span class='mark'>8</span>个顶点<span class='mark'>坐标</span>，然后内部实现立方体的绘制。</p>
-<p>哇喔。。。好厉害的样子。。可是这个函数要<span class='mark'>8</span>个坐标参数耶，会不会好长啊好难用啊？</p>
-<p>聪明的你：哦？好像是哦。。要不参数用数组的方式传递？</p>
-<p>啊对对对。。你说的都对。可是现在还想再画个<span class='mark'>球</span>不不不。。。不只是<span class='mark'>球</span>。还想要<span class='mark'>圆柱体</span><span class='mark'>三角锥</span><span class='mark'>圆环</span>。。。</p>
-<p>聪明的你：那就把所有的几何物体都设计一个函数去绘制。这样问题就解决了。完美。发现自己简直就是个天才。</p>
-<p>哇喔。。。所有的几何物体耶。。。那可不可以画一只喵星人啊？</p>
+<div class='div_code'>
+<pre class='pre_code'><span class='span_code_line'></span><span>聪明的你：这还不简单？直接再设计一个<span style='color:rgba(255,165,0,1)'>"DrawBox"</span>函数并且接收 <span style='color:rgba(144,238,144,1)'>8</span> 个顶点<span style='color:rgba(255,165,0,1)'>"坐标"</span>，然后内部实现立方体的绘制。
+<span class='span_code_line'></span>哇喔。。。好厉害的样子。。可是这个函数要 <span style='color:rgba(144,238,144,1)'>8</span> 个坐标参数耶，会不会好长啊好难用啊？
+<span class='span_code_line'></span>聪明的你：哦？好像是哦。。要不参数用数组的方式传递？
+<span class='span_code_line'></span>啊对对对。。你说的都对。可是现在还想再画个<span style='color:rgba(255,165,0,1)'>"球"</span>不不不。。。不只是<span style='color:rgba(255,165,0,1)'>"球"</span>。还想要<span style='color:rgba(255,165,0,1)'>"圆柱体" "三角锥" "圆环"</span>。。。
+<span class='span_code_line'></span>聪明的你：那就把所有的几何物体都设计一个函数去绘制。这样问题就解决了。完美。发现自己简直就是个天才。
+<span class='span_code_line'></span>哇喔。。。所有的几何物体耶。。。那可不可以画一只喵星人啊？</span></pre>
+</div>
 <img width=167 src='../images/1.4.mb.png'/>
 <p>实际上<span class='mark'>OpenGL</span>并没有提供上面说的那些函数，因为根本就无法通用。但是有一点是一样的，它们都需要一系列的坐标点。<span class='mark'>OpenGL</span>可以接受一系列的坐标点，然后再告诉<span class='mark'>OpenGL</span>那些坐标点构成一个平面，这样就显得很通用了。</p>
 <p>那既然这样说的话要画一个喵星人要怎么办？很遗憾<span class='mark'>OpenGL</span>并没有生产喵星人的能力，你应当使用其他建模软件生产一个喵星人，然后让<span class='mark'>OpenGL</span>帮你渲染。要知道<span class='mark'>OpenGL</span>是一个3D<span class='mark'>渲染接口</span>，并不是一个3D<span class='mark'>建模软件</span>。</p>
@@ -78,10 +81,13 @@
 <span class='span_code_line'></span><span style='color:rgba(255,255,255,1)'>};</span></pre>
 </div>
 <div class='div_hightlight' style='background-color:skyblue;color:black'>
-<p>上面的坐标看上去似乎没啥问题，但是仔细一看，好像这些坐标都在<span class='mark'>-1</span>-<span class='mark'>1</span>之间，是不是和你想象中的坐标不太一样？这个叫做<span class='mark'>标准化设备坐标</span>（Normalized Device Coordinates, NDC）</p>
+<p>上面的坐标看上去似乎没啥问题，但是仔细一看，好像这些坐标都在<span class='mark'>-1</span>-<span class='mark'>1</span>之间，是不是和你想象中的坐标不太一样？这个叫做<span class='mark'>标准化设备坐标</span>（Normalized Device Coordinates, NDC），而<span class='mark'>-1</span>-<span class='mark'>1</span>形成的一个<span class='mark'>2*2*2</span>的立方体，我们称之为<span class='mark'>归一化空间</span>，在此空间之外的数据会被<span class='mark'>OpenGL</span>裁剪掉。</p>
 </div>
 <img src='../images/1.4.ndc.png'/>
-<p>想象一下，假设从别的软件导出了一个<span class='mark'>3D</span>模型，然后我们在<span class='mark'>OpenGL</span>中渲染并显示，那么我们应该用一个什么样的比例去显示呢？<span class='mark'>3D</span>的世界里面虽然有坐标，但是它并不是<span class='mark'>像素</span>坐标。而且它还可以任意的缩放。如果没有一个参照很难知道这个模型有多大。而标准化设备坐标就相当于给了一个大小为<span class='mark'>2 * 2 * 2</span>的立方体作为参考，立方体的中心就是原点坐标，这样就可以知道应该渲染多大了。</p>
+<p>可能在之前使用<span class='mark'>Graphics</span>的时候我们使用的都是<span class='mark'>像素</span>作为单位的，对于一个<span class='mark'>二维</span>的图片来说用<span class='mark'>像素</span>作为单位没有任何的问题。可是现在我们并不是在一个图片中，而是在一个<span class='mark'>空间</span>中，一个<span class='mark'>三维空间</span>。如果用<span class='mark'>像素</span>去做一个<span class='mark'>空间</span>的单位是不是很不合适？请问读者你的身高是多少<span class='mark'>像素</span>？</p>
+<p>既然这样那么你可能会问在<span class='mark'>三维空间</span>中我们应该使用什么作为单位？很遗憾，似乎很难统一，就像现实世界中的距离单位一些国家使用<span class='mark'>公里</span>，一些国家使用<span class='mark'>英里</span>。而<span class='mark'>归一化空间</span>就像是一个<span class='mark'>标准</span>，<span class='mark'>OpenGL</span>并不关心模型在建模的时候使用的是什么单位，只要你的模型对于你来说是符合比例的就行了，不管你在建模的时候采用的是什么单位，但肯定是需要一个<span class='mark'>数字</span>去表示，而一个模型是可以缩放的，将模型的大小缩放到<span class='mark'>-1</span>-<span class='mark'>1</span>之间的话，那么就可以被<span class='mark'>OpenGL</span>全部渲染。</p>
+<p>或者在游戏场景中，有很大的地图，我们不可能全部渲染出来，我们只需要通过<span class='mark'>平移</span><span class='mark'>缩放</span><span class='mark'>旋转</span>等操作，把需要渲染的数据放置在<span class='mark'>归一化空间</span>中即可。<span style='color:pink'>所以其实我们传入的坐标数据并不是必须要在<span class='mark'>-1</span>-<span class='mark'>1</span>之间的。</span>只是现在我们还并没有到后面的课程，不知道如何去变换。</p>
+<div><h2 class='h_option anchor_point' name='a_e'>创建对象</h2></div>
 <p>现在就开始处理这些顶点数据了吗？不不不。在那之前我们需要创建一个<span class='mark'>模型</span>也就是<span class='mark'>VAO</span>。</p>
 <div class='div_code'>
 <pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(100,149,237,1)'>uint</span> vao <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.GenVertexArrays</span><span style='color:rgba(255,255,255,1)'>();</span>
@@ -115,7 +121,7 @@
 <span class='span_code_line'></span>    <span style='color:rgba(255,255,255,1)'>);</span>
 <span class='span_code_line'></span><span style='color:rgba(0,255,255,1)'>GL</span><span style='color:rgba(219,112,147,1)'>.EnableVertexAttribArray</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>);</span>  <span style='color:rgba(0,255,0,1)'>// 启用0号通道 下面会做说明</span></pre>
 </div>
-<div><h2 class='h_option anchor_point' name='a_e'>着色器</h2></div>
+<div><h2 class='h_option anchor_point' name='a_f'>着色器</h2></div>
 <p>接下来头疼的事情就开始了，<span class='mark'>VAO</span>创建了，<span class='mark'>VBO</span>也有了，并且也指定了数据处理的规则了。那么接下应该怎么办？接下来就是要进入<span class='mark'>OpenGL</span>的<span class='mark'>图形渲染管线</span>（Graphics Pipeline）。</p>
 <p>上面已经提到了，第一步是进入<span class='mark'>顶点着色器</span>，而它需要一串代码，一串使用<span class='mark'>GLSL</span>语言编写的代码。</p>
 <div class='div_code'>
@@ -130,7 +136,8 @@
 </div>
 <p>按照上面的解释<span class='mark'>dotPos</span>只是获取到了一个点？是的，每获取一个点就会执行一次这段代码。但是由于这段代码是执行在<span class='mark'>GPU</span>上的所以它的效率非常高。</p>
 <div class='div_hightlight' style='background-color:skyblue;color:black'>
-<p>在图形编程中我们经常会使用向量这个数学概念，因为它简明地表达了任意空间中的位置和方向，并且它有非常有用的数学属性。在<span class='mark'>GLSL</span>中一个向量有最多4个分量，每个分量值都代表空间中的一个坐标，它们可以通过<span class='mark'>vec.x</span>、<span class='mark'>vec.y</span>、<span class='mark'>vec.z</span>和<span class='mark'>vec.w</span>来获取。注意<span class='mark'>vec.w</span>分量不是用作表达空间中的位置的（我们处理的是3D不是4D），而是用在所谓透视除法(Perspective Division)上。我们会在后面的教程中更详细地讨论向量。</p>
+<p>在图形编程中我们经常会使用向量这个数学概念，因为它简明地表达了任意空间中的位置和方向，并且它有非常有用的数学属性。在<span class='mark'>GLSL</span>中一个向量有最多4个分量，每个分量值都代表空间中的一个坐标，它们可以通过<span class='mark'>vec.x</span>、<span class='mark'>vec.y</span>、<span class='mark'>vec.z</span>和<span class='mark'>vec.w</span>来获取。注意<span class='mark'>vec.w</span>分量不是用作表达空间中的位置的（我们处理的是3D不是4D），而是用在所谓透视除法(Perspective Division)上。我们会在后面的教程中更详细地讨论向量。现在只需要记住我们要加上一维就可以了。</p>
+<p>通常将一个原本是n维的坐标用一个n+1维的坐标来表示的方式被我们称之为<span class='mark'>齐次坐标</span>。</p>
 </div>
 <p>着色器代码有了，现在我们需要编译它，下面的代码看起来可真是繁琐啊。</p>
 <div class='div_code'>
@@ -198,7 +205,7 @@
 <p>着色器程序对象(Shader Program Object)是多个着色器合并之后并最终链接完成的版本。如果要使用刚才编译的着色器我们必须把它们链接(Link)为一个着色器程序对象，然后在渲染对象的时候激活这个着色器程序。已激活着色器程序的着色器将在我们发送渲染调用的时候被使用。</p>
 <p>当链接着色器至一个程序的时候，它会把每个着色器的输出链接到下个着色器的输入。当输出和输入不匹配的时候，你会得到一个连接错误。</p>
 </div>
-<div><h2 class='h_option anchor_point' name='a_f'>千呼万唤始出来</h2></div>
+<div><h2 class='h_option anchor_point' name='a_g'>千呼万唤始出来</h2></div>
 <p>开始渲染把。</p>
 <div class='div_code'>
 <pre class='pre_code'><span class='span_code_line'></span><span style='color:rgba(30,144,255,1)'>while</span> <span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(255,255,255,1)'>!</span><span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WindowShouldClose</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>)) {</span>
@@ -212,13 +219,13 @@
 <span class='span_code_line'></span>        <span style='color:rgba(144,238,144,1)'>0</span><span style='color:rgba(255,255,255,1)'>,</span>                      <span style='color:rgba(0,255,0,1)'>// 开始位子</span>
 <span class='span_code_line'></span>        <span style='color:rgba(144,238,144,1)'>3</span>                       <span style='color:rgba(0,255,0,1)'>// 一共有三个顶点</span>
 <span class='span_code_line'></span>        <span style='color:rgba(255,255,255,1)'>);</span>
-<span class='span_code_line'></span>
-<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SwapBuffers</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.SwapBuffers</span><span style='color:rgba(255,255,255,1)'>(</span>window<span style='color:rgba(255,255,255,1)'>);</span>
+<span class='span_code_line'></span>    <span style='color:rgba(0,255,255,1)'>GLFW</span><span style='color:rgba(219,112,147,1)'>.WaitEvents</span><span style='color:rgba(255,255,255,1)'>();
 <span class='span_code_line'></span>}</span></pre>
 </div>
 <img src='../images/1.4.triangle.png'/>
 <p>全部代码：<a class='mark' target='_blank' href='./1.4.triangle.txt'>点击此链接</a></p>
-<div><h2 class='h_option anchor_point' name='a_g'>回顾</h2></div>
+<div><h2 class='h_option anchor_point' name='a_h'>回顾</h2></div>
 <p>上面提到了<span class='mark'>VAO</span><span class='mark'>VBO</span>，其实还有一个<span class='mark'>EBO</span>（稍后再说）。因为上面为了快速的让读者看到效果，所以很多描述很浅显。</p>
 <img src='../images/1.4.vao.png'/>
 <p>上图是<span class='mark'>VAO</span>和<span class='mark'>VBO</span>之间的关系。可以看到一个<span class='mark'>VAO</span>有16个<span class='mark'>attribute pointer</span>，还记得这句代码吗？</p>
@@ -287,9 +294,10 @@
 <a name='a_b' href='#a_b'>3D世界</a>
 <a name='a_c' href='#a_c'>3D到2D</a>
 <a name='a_d' href='#a_d'>开始三角形</a>
-<a name='a_e' href='#a_e'>着色器</a>
-<a name='a_f' href='#a_f'>千呼万唤始出来</a>
-<a name='a_g' href='#a_g'>回顾</a>
+<a name='a_e' href='#a_e'>创建对象</a>
+<a name='a_f' href='#a_f'>着色器</a>
+<a name='a_g' href='#a_g'>千呼万唤始出来</a>
+<a name='a_h' href='#a_h'>回顾</a>
 </div>
 </div>
 </body>

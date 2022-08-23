@@ -192,6 +192,11 @@ namespace STLib.OpenGL.GL
             GL.UniformMatrix4fv(loc, 1, false, ref mat.Col0.X);
         }
 
+        public void SetUniform(string strName, Matrix4F mat, bool bTranspose) {
+            var loc = this.GetLocation(strName);
+            GL.UniformMatrix4fv(loc, 1, bTranspose, ref mat.Col0.X);
+        }
+
         #endregion
 
         #endregion

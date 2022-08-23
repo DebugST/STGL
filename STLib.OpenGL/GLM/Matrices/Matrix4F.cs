@@ -109,21 +109,21 @@ namespace STLib.OpenGL.GLM
         }
 
         public static Matrix4F operator *(Matrix4F a, Matrix4F b) {
-            var a0 = a.Col0;
-            var a1 = a.Col1;
-            var a2 = a.Col2;
-            var a3 = a.Col3;
+            var srcA0 = a[0];
+            var srcA1 = a[1];
+            var srcA2 = a[2];
+            var srcA3 = a[3];
 
-            var bc0 = b.Col0;
-            var b1 = b.Col1;
-            var b2 = b.Col2;
-            var b3 = b.Col3;
+            var srcB0 = b[0];
+            var srcB1 = b[1];
+            var srcB2 = b[2];
+            var srcB3 = b[3];
 
             Matrix4F mat = Matrix4F.Zero;
-            mat[0] = a0 * bc0[0] + a1 * bc0[1] + a2 * bc0[2] + a3 * bc0[3];
-            mat[1] = a0 * b1[0] + a1 * b1[1] + a2 * b1[2] + a3 * b1[3];
-            mat[2] = a0 * b2[0] + a1 * b2[1] + a2 * b2[2] + a3 * b2[3];
-            mat[3] = a0 * b3[0] + a1 * b3[1] + a2 * b3[2] + a3 * b3[3];
+            mat[0] = srcA0 * srcB0[0] + srcA1 * srcB0[1] + srcA2 * srcB0[2] + srcA3 * srcB0[3];
+            mat[1] = srcA0 * srcB1[0] + srcA1 * srcB1[1] + srcA2 * srcB1[2] + srcA3 * srcB1[3];
+            mat[2] = srcA0 * srcB2[0] + srcA1 * srcB2[1] + srcA2 * srcB2[2] + srcA3 * srcB2[3];
+            mat[3] = srcA0 * srcB3[0] + srcA1 * srcB3[1] + srcA2 * srcB3[2] + srcA3 * srcB3[3];
             return mat;
         }
 
@@ -211,5 +211,21 @@ namespace STLib.OpenGL.GLM
 
             return Inverse;
         }
+
+        public void Translate(Vector3F v) {
+            this = GLM.Translate(this, v);
+        }
+
+        public void Scale(Vector3F v) {
+            this = GLM.Scale(this, v);
+        }
+
+        public void Rotate(float angle, Vector3F v) {
+            this = GLM.Rotate(this, angle, v);
+        }
+
+        //public void Rotate(Vector3F vecAngle) {
+        //    this = GLM.Rotate(this, vecAngle);
+        //}
     }
 }

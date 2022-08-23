@@ -1,0 +1,392 @@
+#T 坐标系统
+
+#HS pink|black
+这一章节中可能有些概念描述并不是很正确，仅仅是为了更加容易理解，所以还请一定阅读下一章节内容。这一节的内容可能有点多，可能需要反复阅读去理解。
+#HE
+
+虽然在很早以前我们就说了`OpenGL`是一个`3D`的世界，但是似乎你可能并没有太多的感受，因为到目前为止我们一直都是在绘制平面。偶尔可能会有一些旋转的操作，但是感受却是不明显。
+
+#O 立方体
+
+既然这样那我们就先来一个立方体吧。
+#CS cs
+float[] vertices = {
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+};
+#CE
+上面是一个立方体的数据，数据格式`[3*float(坐标)] + [2*float(纹理)]`。相信你已经掌握了如何使用上面的数据绘制一个立方体。当然这里并没有提供`Indices`数据，所以上面的数据需要`DrawArrays`而不是`DrawElements`。
+#CS cs
+GL.DrawArrays(GL.GL_TRIANGLES, 0, 36);
+#CE
+当然运行的效果和之前看到的没什么区别。毕竟是正面，所以我们只能看到一个平面这很正常。但是如果在绘制之前你开启`线框模式`，再看效果。
+#CS cs
+GL.PolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE);
+#CE
+#I ../images/1.9.cube_line.png
+咦！。。( ′◔ ‸◔`)。。怎么回事？不是立方体吗？为什么还是只有一个平面？这个时候你终于发现不对劲了，并且再仔细的观看，你会发现我们传入的数据明明是一个正立方体，即便只绘制了一个平面也应该是正方形。或许对于这个问题你很早就发现了，绘制的目标会随着我们的窗体大小变化而变化。
+而你想象中的最起码也应该是这个样子的。
+#I ../images/1.9.cube_line_1.png
+[pink|注意：一个平面是由两个三角形组成。]
+#HS skyblue|black
+在上面为了演示，并没有使用纹理坐标，而使用了黄色作为输出。
+#HE
+
+难道是传入的数据有错误吗？不！并没有，取消掉线框模式在着色器中添加一个矩阵，并沿着`X`旋转`45`度再看看？
+#CS cs
+program.SetUniform("mat_transform", GLM.Rotate(45, new Vector3F(1, 0, 0)));
+#CE
+#I ../images/1.9.cube_45.png
+#CS cs
+"你说他是立方体？"
+"是的，那个时候它还很胖。"
+"我说它不是立方体。"
+"你说他不是立方体？"
+"不是。"
+"我也说它不是立方体，这TM根本就不是立方体。"
+"那到底怎么回事？"
+"..."
+#CE
+
+#O 观察视角
+
+之所以会出现上面的情况是因为我们并没有告诉`OpenGL`如何去渲染,仅仅是给了它一些坐标数据。试想一个场景：在同一个地方即便我们使用同一个相机拍照，如果我们使用不同焦段的镜头，最后的得到画面会是一样的吗？
+目前我们提供的数据还缺少很多参数，`OpenGL`只能默默地帮我们把传入的坐标傻傻的映射到`viewport`中。才出现了上面的情况。
+如果读者有使用过3D建模软件，那么一定知道`相机`或者`世界坐标`这样的词汇。虽然他们都是一个虚拟的概念，但是作为一个三维场景它们都是不可缺少的数据。我们需要知道我们上面的那一堆数据是如何最终呈现在我们的屏幕上的。
+
+#I ../images/1.9.coordinate_systems.png
+
+#US
+`Local Space`
+    #US
+    （被观察者）。上面的那一堆`vertices`就是`Local Space`，默认情况下它是相对于世界坐标原点位置，而我们肯定不希望在场景中每一个物体都在世界坐标的原点位置，所以在之前的案例中我们有使用矩阵对它进行一些变换，而这个矩阵通常叫做`Model Matrix`。用于设置物体在世界空间中的姿态。
+    #UE
+`World Space`
+    #US
+    世界坐标原点通常情况下位于视窗（`viewport`）的中心。是所有物体的参照中心。我们可以通过构造矩阵让物体在`World Space`上做任意的姿态变换。
+    #UE
+`View Space`
+    #US
+    （观察者）。物体在世界空间中的某一个位置，而观察者（相机）可能在世界空间中的另一个位置，而观察者看到的画面才是屏幕上需要渲染的画面，所以我们还需要构造一个观察者。而观察者也可以看做是一个物体（相机），既然是一个物体，那么它也可以有属于自己的姿态，而我们可以通过一个矩阵去调整它。通常这个矩阵叫做`View Matrix`。
+    #UE
+`Clip Space`
+    #US
+    被拍摄物体（被观察者）有了，相机（观察者）也有了，接下来就需要调整相机参数，使用长焦镜头还是短焦镜头，拍摄画面选取（因为我们并不能拍摄整个场景，只能拍摄部分。）等。而这些参数我们也会通过一个矩阵去完成，叫做`Projection Matrix`。
+    #UE
+`Screen Space`
+    #US
+    现在所有的数据都准备好了，被拍摄物体、相机、相对位置、镜头参数。现在我们就可以在相机中看到画面了。
+    #UE
+#UE
+
+上面的图和描述貌似很唬人，看起来很高大上的样子，其实我们要做的就是在构造三个矩阵就完事儿了😂😂😂。
+
+#O 提前预览
+由于接下来的内容文字内容比较多，作者猜测读者肯定并不是很愿意一头雾水的去看这些文字，所以为了让读者看到一些效果，先提前放一段代码上来。之后在慢慢的解释这些代码。
+#CS cs
+//将这段代码放到渲染循环中
+var matM = GLM.Rotate(45, new Vector3F(1, 0, 0));   // Mode Matrix
+var matV = GLM.Translate(new Vector3F(0, 0, -3));   // View Matrix
+var matP = GLM.Perspective(                         // Projection Matrix
+    45,                                             // 45度的观察视角
+    (float)m_nWidth / m_nHeight,                    // 画面宽高比，m_nWidth 是窗口客户区宽度。
+    .1f,                                            // 最近有效距离
+    100f                                            // 最远有效距离
+    );
+program.SetUniform("mat_transform", matP * matV * matM);
+#CE
+但是上面的代码并不一定能让你得到正确的结果，因为还没有开启`深度测试`，但是立体效果是会有的。可以看到上面仅仅3句代码。但是我们却需要用很多的文字将它们解释清楚。
+
+#O 投影
+
+上面的`Model Matrix`和`View Matrix`都挺好理解的，就像之前的案例中一样的使用方式。而`Projection Matrix`是什么东西？其实在`3D`的世界中用的最多的就是`正交投影`和`透视投影`。
+
+不知道读者是否知道`平截头体`这个东西。
+#I3 ../images/1.9.frustum.jpeg
+就是一个被截取了头部的棱锥体，而我们的视觉区域就可以看做是一个`平截头体`。在`STGL`中抄袭了两个函数去创建一个`平截头体`，`GLM.Frustum`和`GLM.Perspective`。
+还记得我们之前提到过的`归一化空间`吗？，而`平截头体`中的内容最终将被映射到`OpenGL`的`归一化空间`中。[pink|所以在`平截头体`之外的数据将被裁剪，此时不再是`-1`-`1`之外的数据会被裁剪掉，而是取决于`平截头体`的大小。]
+
+所以我们可以使用超过`-1`-`1`的坐标，创建一个大于它们的`平截头体`是完全可以的。
+
+#O 透视投影
+
+`透视投影`很好理解，我们平常观察物体的时候都知道`远大近小`的原理，而`透视投影`就是模拟这个过程。
+
+#I ../images/1.9.perspective_frustum.png
+
+可以看到上图有`Near Plane`和`Far Plane`，分别代表最近的和最远的有效视觉区域。就好比人类的眼睛，当物体靠近眼睛到了一定距离就开始变得模糊，太远的物体也会变得太小而无法辨认。所以我们只能看到一定距离内的事物，而在`OpenGL`也是一样，在`Near Plane`和`Far Plane`之外的物体不会进行渲染。这也是为什么有时候游戏中，人物靠的物体太近的时候，物体会被裁切看到里面，或者视线会穿过物体。
+而`Fov`则代表可视角度。就好比相机镜头的可视角度，一些广角镜头有很大的可视空间，而一些长焦镜头的可视空间并没有那么大。而图中相机所在的位置就是观察者所在的位置。
+
+#CS cs
+// 通过 GLM.Perspective() 可以创建一个 透视矩阵。
+Matrix4F Perspective(
+    float fovy,         // 视角的大小
+    float aspect,       // 近平面或者远平面的宽高比(画面比例，如：16/9的画面)
+    float zNear,        // 近平面距离视点中心的距离
+    float zFar          // 远平面距离视点中心的距离
+    )
+#CE
+
+#I2 ../images/1.9.frustum_func.png
+#CS cs
+// 通过 GLM.Frustum() 也可以创建一个 透视矩阵，他的原理如上图。
+Matrix4F Frustum(
+    float left,         // 近平面最左边对应的坐标
+    float right,        // 近平面最右边对应的坐标
+    float bottom,       // 近平面最下边对应的坐标
+    float top,          // 近平面最上面对应的坐标
+    float nearVal,      // 近平面距离视点中心的距离
+    float farVal        // 远平面距离视点中心的距离
+    )
+#CE
+可以看到`GLM.Perspective()`是通过`视角``宽高比``距离`去唯一确定一个`平截头体`，而`GLM.Frustum()`是通过确定`近平面大小``距离`来唯一确定一个`平截头体`。
+
+#O 正交投影
+
+`正交投影`并不会产强烈的`3D`感觉，就像上面被旋转了`45`度的箱子。因为正交投影的`平截头体`并不是锥形的，更像是一个长方体。
+
+#I ../images/1.9.orthographic_frustum.png
+
+可以看到他的`Near Plane`和`Far Plane`是一样大小的。所以在它并不会产生`远大近小`的视觉感官。那么有什么应用场景呢？比如用于创建`UI`或者在`建模软件`中我们长看到的一些`左视图``顶视图`等，它们需要的就是平行投影。
+
+#HS skyblue|black
+通过`GLM.Ortho()`可以创建一个`正交矩阵`。
+#HE
+#CS cs
+Matrix4F Ortho(float left, float right, float bottom, float top, float zNear, float zFar)
+#CE
+
+#HS skyblue|black
+如果用于`UI`项目构建，那么`UI`元素可以直接使用`像素`作为顶点的坐标输入。
+#HE
+#CS cs
+int[] vertices = {          // 假设这是一个 70*20 大小的按钮
+    0,0, 70,0, 70,20, 0,20  // 在shader中补上z坐标
+};
+uint[] indices = {
+    0,3,1,
+    3,2,1
+};
+
+var matV = GLM.Ortho(0, win_width, win_height, 0, -1, 1);
+#CE
+还记得在`你好 三角形`中说过，我们传入的坐标不一定是在`-1`-`1`之间的，虽然`OpenGL`只会渲染`归一化空间`中的数据，但是我们创建的`投影矩阵`会对空间中的坐标进行缩放。
+#CS cs
+/* 
+ * NDC坐标并不是一个绝对单位，而是一个相对单位，我们使用glViewport其实就是在设置`归一化空间`近平面在UI上的映射关系。
+ * glViewport(0,0,win_width,win_height) => {
+ *      NDC 左边界 = -1 ->(映射) viewport.Left    = 0
+ *      NDC 上边界 =  1 ->(映射) viewport.Top     = 0
+ *      NDC 右边界 =  1 ->(映射) viewport.Right   = win_width
+ *      NDC 下边界 = -1 ->(映射) viewport.Bottom  = win_height
+ * }
+ * 所以当我们使用(1,1,0)的时候 会把这个坐标映射到veiwport的右上角去(win_width,0,0)。
+ *
+ * 当我们元素的顶点 用了一个很大的坐标值，并不在(-1,1)的范围里面，但是。。。
+ * Ortho 矩阵会把我们的数据重新映射到 NDC 坐标中去。
+ * GLM.Ortho(0, m_width, m_height, 0, -1, 1) => {
+ *      正交透视空间.Left     = 0          ->(映射) NDC.Left    = -1
+ *      正交透视空间.Right    = win_width  ->(映射) NDC.Right   =  1
+ *      正交透视空间.Bottom   = win_height ->(映射) NDC.Bottom  = -1
+ *      正交透视空间.Top      = 0          ->(映射) NDC.Top     =  1
+ * }
+ * 所以当我们使用(win_width,0,-1)的时候 直接被映射到了归一化空间近平面的右上角，
+ * 使用效果和直接使用像素作为单位的效果一致。
+ * 
+ * 在透视投影中也是同样的，如果我们使用了很大的坐标，比如每个坐标数据所代表的是单位`米`，
+ * 那么在构建摄像机位置的时候我们同样使用`米`作为单位来处理与物体之间的距离关系即可，
+ * 最终的坐标会通过矩阵运算把我们需要的数据自动映射到归一化空间中。
+ */
+#CE
+#HS goldenrod|black
+总之：`平截头体`，就是`OpenGL`渲染的`归一化空间`。所有数据将被投影到`归一化空间`的近平面，然后`归一化空间`近平面上的画面将被映射到`viewport`中。
+#HE
+`透视投影`和`正交投影`的效果。
+#I ../images/1.9.perspective_orthographic.png
+
+#O 投影原理
+#-
+#I ../images/1.9.frustum_1.png
+在上图中，红色为近平面，蓝色为远平面。中间放着一个绿色的立方体。图是侧面的切面图效果。
+近平面和远平面的参数我们都是已知的，中间的立方体在`平截头体`中的位置同样也是已知的，那么下面开始展示魔法，如果我们对这个空间进行拉伸操作，让`平截头体`变成一个`长方体`。因为空间的拉伸，所以空间内的物体也同样会被拉伸。而空间中每一个位置被拉伸后的新坐标我们是可以计算出来的。
+会得到下图的效果。
+#I ../images/1.9.frustum_2.png
+但是由于我们渲染的结果是一个`平面`而不是一个`长方体`所以再给它一张`二向箔`，从远平面直接压缩到近平面，也就是全部投影到红色的近平面上去。这样一个三维空间的数据全部就被投影到了二维空间中去了，然后再把这个二维空间中的数据映射到我们指定的`glViewport`上。这样我们就看到了最终的画面。
+所以再从第二张图的红色面看过去后的立方体就会是这样的效果了。
+#I ../images/1.9.cube_line_1.png
+
+而对于`正交投影`来说，因为他的近平面和远平面是一样大的，所以就不会存在空间拉伸这样的操作。
+
+既然有空间拉伸操作，那么就意味着需要缩放。随着`Z`坐标的不同，这个缩放比例也不同。当然这个值是可以根据`三角函数`计算出在每个`Z`上的缩放分量的。
+
+#O 齐次坐标
+
+还记得我们在`你好 三角形`中第一次接触到着色器的时候`gl_Position = vec4(dotPos, 1)`这句代码相信各位读者肯定很熟悉，我们一直没有提到为什么需要把一个三维的坐标变成四维的。
+通常多加上了一个维度的坐标被叫做`齐次坐标`。比如`(x,y)`->`(x,y,w)`或者`(x,y,z)`->`(x,y,z,w)`。那么那个`w`的作用是什么？简单来说就是在空间坐标系中控制坐标缩放用的。一个三维坐标我们直接使用`(x,y,z)`但是一个三维的`齐次坐标`我们是这样来表示坐标的`(x/w,y/w,z/w)`。
+这也是为什么我们会在`vec4(dotPos, 1)`。补上`1`，因为当`w=1`的时候`x``y``z`不变。感兴趣的读者可以试试`gl_Position = vec4(dotPos, 2)`你会发现绘制效果会缩小一半。
+
+
+我们通常都是`gl_Position = Mat4 * vec4`来得到变换后的新坐标，如果我们不使用`齐次坐标`那么代码可能就是`Mat3 * vec3`。对于`旋转``缩放`等操作确实没有问题。但是无法完成`透视`或者`平移`变换。
+而在上面的`透视投影`中我们提到了`空间拉伸`的操作，既然拉伸那么就会对坐标进行缩放操作，比如要对`X`进行缩放那么我们可以`X * Scale`，这个很好理解，但是`Scale`并非一个`常量`，它和`Z`轴相关，`Z`的不同缩放比例也应该不同。所以`Scale`应该是这样被得到的`Scale=?*Z`。那么对`X`的缩放就相当于`X * (?*Z)`。
+
+显然我们无法在`Matrix * Vector`中完成上面的计算，因为矩阵和向量的乘法规则如下：
+#CS cs
+A1 A2 A3     X     A1*X + A2*Y + A3*Z
+B1 B2 B3  *  Y  =  B1*X + B2*Y + B3*Z
+C1 C2 C3     Z     C1*X + C2*Y + C3*Z
+#CE
+用矩阵每一行的数据和向量中的每个数据分别相乘，然后再加起来得到一个新的数。其最后结果也是一个向量。
+所以，如果我们想把`X``Y``Z`分别缩放`A``B``C`那么我们可以构造一个下面这样的矩阵。
+#CS cs
+A  0  0      X     X*A + 0   +   0     X*A
+0  B  0   *  Y  =  0   + Y*B +   0  =  Y*B
+0  0  C      Z     0   + 0   + Z*C     Z*C
+#CE
+通过上面的规则无论怎么去构造矩阵中的数据都无法实现`X*?*Z`的运算，现在我们来做一个大胆一点的事情，用`4*4`的矩阵和一个四维向量看看效果。
+#CS cs
+1  0  0  0   X     X + 0 + 0   + 0    X
+0  1  0  0   Y     0 + Y + 0   + 0    Y
+0  0  1  0   Z     0 + 0 + Z   + 0    Z
+0  0  ?  0   W     0 + 0 + ?*Z + 0    ?*Z
+#CE
+上面的`?*Z`是不是很熟悉？是的`Scale=?*Z`。虽然并没有直接的得到`X*?*Z`，但是我们得到了一个`?*Z`，再结合上面的`齐次坐标`表示法，那么最终的坐标就是`(X/(?*Z),Y/(?*Z),Z/(?*Z))`虽然`X/(?*Z)`和刚才上面提到的`X*?*Z`不一样，但这个已经不是问题了。
+而我们仅仅是通过增加了一个维度，就很好的解决这个问题。这也就是为什么会有`齐次坐标`的存在。
+
+#O 实践
+
+我们这里并不打算讲解如何构造我们需要的矩阵，有兴趣的读者可以自己查阅相关资料。上面我们提到了三个矩阵`Model Matrix``View Matrix``Projection Matrix`。
+没错，把他们合并在一起就是`M-V-P`，已经说了那么多废话了，那么我们下面就来让上面的立方体变成真正的立方体。
+#CS cs
+//将这段代码放到渲染循环中
+var matM = GLM.Rotate(45, new Vector3F(1, 0, 0));   // 让物体沿着X旋转45度
+var matV = GLM.Translate(new Vector3F(0, 0, -3));   // 其实摄像机的位置并不在(0,0,-3)位置 下一节中介绍
+var matP = GLM.Perspective(     // 创建透视矩阵
+    45,                                             // 45度的观察视角
+    (float)m_nWidth / m_nHeight,                    // 画面宽高比
+    .1f,                                            // 最近有效距离
+    100f                                            // 最远有效距离
+    );
+program.SetUniform("mat_transform", matP * matV * matM);
+#CE
+#I ../images/1.9.cube_45_no_depth.png
+感觉对了，但是又感觉那里不对。似乎感觉被掏空了。
+#HS pink|black
+注意乘法顺序，`P` * `V` * `M`。矩阵相乘的顺序和我们想要的步骤相反，效果是从右往左。
+#HE
+
+#O Z缓冲
+
+出现上面的情况是我们给了`OpenGL`很多`三角形`，而`OpenGL`会一个一个不停的给我们绘制，但事实上有些在箱子后面的三角形由于最后被绘制，所以就覆盖在了画面上。所以我们不能让`OpenGL`按照三角形的顺序傻傻的绘制，需要告诉在绘制的时候先检测一下当前需要绘制的元素是否被挡住了。
+`OpenGL`存储它的所有深度信息于一个`Z缓冲`(Z-buffer)中，也被称为`深度缓冲`(Depth Buffer)。`GLFW`会自动为你生成这样一个缓冲（就像它也有一个颜色缓冲来存储输出图像的颜色）。深度值存储在每个片段里面（作为片段的z值），当片段想要输出它的颜色时，`OpenGL`会将它的深度值和`z缓冲`进行比较，如果当前的片段在其它片段之后，它将会被丢弃，否则将会覆盖。这个过程称为`深度测试`(Depth Testing)，它是由`OpenGL`自动完成的。
+
+然而，如果我们想要确定`OpenGL`真的执行了深度测试，首先我们要告诉`OpenGL`我们想要启用深度测试；它默认是关闭的。我们可以通过`glEnable`函数来开启深度测试。`glEnable`和`glDisable`函数允许我们启用或禁用某个`OpenGL`功能。这个功能会一直保持启用/禁用状态，直到另一个调用来禁用/启用它。现在我们想启用深度测试，需要开启`GL_DEPTH_TEST`：
+#CS cs
+GL.Enable(GL.GL_DEPTH_TEST);
+#CE
+因为我们使用了深度测试，我们也想要在每次渲染迭代之前清除深度缓冲（否则前一帧的深度信息仍然保存在缓冲中）。就像清除颜色缓冲一样，我们可以通过在`glClear`函数中指定`DEPTH_BUFFER_BIT`位来清除深度缓冲：
+#CS cs
+GL.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+#CE
+然后就可以看到正确的画面了。
+#I ../images/1.9.cube_45_depth.png
+#CS cs
+GL.Enable(GL.GL_DEPTH_TEST);
+while (!GLFW.WindowShouldClose(window)) {
+    processInput(window);
+
+    GL.ClearColor(.5f, .5f, .5f, 1f);
+    GL.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+    
+    var matM = GLM.Rotate(-45, new Vector3F(1, 0, 0));
+    var matV = GLM.Translate(new Vector3F(0, 0, -3));
+    var matP = GLM.Perspective(45, (float)m_nWidth / m_nHeight, .1f, 100f);
+    program.SetUniform("mat_transform", matP * matV * matM);
+    GL.DrawArrays(GL.GL_TRIANGLES, 0, 36);
+
+    GLFW.SwapBuffers(window);
+    GLFW.WaitEvents();
+}
+
+static void framebuffer_size_callback(IntPtr window, int width, int height) {
+    m_nWidth = width;
+    m_nHeight = height;
+    GL.Viewport(0, 0, width, height);
+}
+#CE
+
+#O 更多立方体
+要不再多加几个立方体？
+#CS cs
+Vector3F[] cubePositions = {
+    new Vector3F( 0.0f,  0.0f,  0.0f), 
+    new Vector3F( 2.0f,  5.0f, -15.0f), 
+    new Vector3F(-1.5f, -2.2f, -2.5f),  
+    new Vector3F(-3.8f, -2.0f, -12.3f),  
+    new Vector3F( 2.4f, -0.4f, -3.5f),  
+    new Vector3F(-1.7f,  3.0f, -7.5f),  
+    new Vector3F( 1.3f, -2.0f, -2.5f),  
+    new Vector3F( 1.5f,  2.0f, -2.5f), 
+    new Vector3F( 1.5f,  0.2f, -1.5f), 
+    new Vector3F(-1.3f,  1.0f, -1.5f)
+};
+
+GL.Enable(GL.GL_DEPTH_TEST);
+while (!GLFW.WindowShouldClose(window)) {
+    processInput(window);
+
+    GL.ClearColor(.5f, .5f, .5f, 1f);
+    GL.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+    // GL.BindVertexArray(vao);
+    for (int i = 0; i < cubePositions.Length; i++) {
+        var matM = GLM.Translate(cubePositions[i]);
+        matM.Rotate(20 * i, new Vector3F(1, .3f, .5f));
+        var matV = GLM.Translate(new Vector3F(0, 0, -3));
+        var matP = GLM.Perspective(45, (float)m_nWidth / m_nHeight, .1f, 100f);
+        program.SetUniform("mat_transform", matP * matV * matM);
+        //GL.DrawElements(GL.GL_TRIANGLES, 6, GL.GL_UNSIGNED_INT, IntPtr.Zero);
+        GL.DrawArrays(GL.GL_TRIANGLES, 0, 36);
+    }
+    GLFW.SwapBuffers(window);
+    GLFW.WaitEvents();
+}
+#CE
+#I ../images/1.9.cube_more.png

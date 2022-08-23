@@ -7,12 +7,12 @@ namespace STLib.OpenGL.GLM
 {
     public partial class GLM
     {
-        public static double Radians(double degress) {
-            return degress * (Math.PI / 180);
+        public static double Radians(double angle) {
+            return angle * (Math.PI / 180);
         }
 
-        public static double Degress(double radians) {
-            return radians * (180 / Math.PI);
+        public static double Degress(double angle) {
+            return angle * (180 / Math.PI);
         }
     }
 }

@@ -32,10 +32,10 @@
 </li>
 </ul><div class='div_left_space_space'></div>
 </div>
-<span id="span_time">2022-08-06 -> by:<span>DebugST</span></span>
+<span id="span_time">2022-08-22 -> by:<span>DebugST</span></span>
 </div>
 <div id="div_right">
-<span class='span_location'>STGL<span style='float:right'>2022-08-01</span></span><h1 class='h_title anchor_point' name='a_a'>欢迎来到 STGL</h1>
+<span class='span_location'>STGL<span style='float:right'>2022-08-17</span></span><h1 class='h_title anchor_point' name='a_a'>欢迎来到 STGL</h1>
 <p><span class='mark'>STGL</span>是<span class='mark'>.Net</span>对<span class='mark'>OpenGL</span>的一个封装，目前功能尚未完善仅仅是将原生<span class='mark'>OpenGL</span>的<span class='mark'>核心库</span>函数移植完成，如果以面向过程的方式开发，那么现在的<span class='mark'>STGL</span>已经可以胜任，如果是想要面向对象的方式进行开发的话。。。正在持续开发中。。。<span style='color:pink'>当然不排除作者中途摆烂的情况发生😏因为作者就是一条死咸鱼</span>。</p>
 <p>等等。。<span class='mark'>.Net</span>版本的<span class='mark'>OpenGL</span>？不是有<span class='mark'>SharpGL</span>和<span class='mark'>OpenTK</span>项目吗？为什么还要在编写一个？。。。你管我？你在教我做事？</p>
 <div class='div_hightlight' style='background-color:skyblue;color:black'>
@@ -85,7 +85,7 @@
 </table>
 </div>
 <p>如果需要在<span class='mark'>linux</span>或者其他平台中尝试运行可能需要自己手动编译<span class='mark'>GLFW</span>的源码。作者尝试过编译一些<span class='mark'>linux</span>的库发现程序很难在另一台<span class='mark'>linux</span>中运行即便是同一个系统。</p>
-<p>因为<span class='mark'>linux</span>的自由性，导致很多发行版的桌面环境并不统一。如果需要很畅通的进行移植需要编译很多版本的<span class='mark'>SO</span>文件内嵌在<span class='mark'>STGL</span>中，而且还不一定在目标平台上能正常运行，所以有需要的同学请手工编译<span class='mark'>GLFW</span>并且将编译好的<span class='mark'>SO</span>文件拷贝到<span class='mark'>runtime目录中</span>并命名为<span class='mark'>glfw3.so</span></p>
+<p>因为<span class='mark'>linux</span>的自由性，导致很多发行版的桌面环境并不统一。如果需要很畅通的进行移植需要编译很多版本的<span class='mark'>SO</span>文件内嵌在<span class='mark'>STGL</span>中，而且还不一定在目标平台上能正常运行，所以有需要的同学请手工编译<span class='mark'>GLFW</span>并且将编译好的<span class='mark'>SO</span>文件拷贝到<span class='mark'>runtime</span>目录中并命名为<span class='mark'>glfw3.so</span></p>
 <p>编译方式请参考官网教程：</p>
 <p><a class='mark' target='_blank' href='https://www.glfw.org/docs/latest/compile_guide.html#compile_deps_x11'>https://www.glfw.org/docs/latest/compile_guide.html#compile_deps_x11</a></p>
 <p>在<span class='mark'>CMake</span>的时候请加上<span class='mark'>-D BUILD_SHARED_LIBS=ON</span>不然不会生成<span class='mark'>SO</span>文件。</p>
@@ -94,8 +94,7 @@
 <p>在<span class='mark'>learnopengl</span>的教程中仅仅提到了3种类型的矩阵构造<span class='mark'>translate</span><span class='mark'>rotate</span><span class='mark'>scale</span>。通常情况下坐标系的变换也确实是这三种，可是在<span class='mark'>OpenGL</span>中并不是只有坐标系的变换那么简单，还有坐标系的转换，需要构建的矩阵远不止这3中。所以作为学渣的作者学习了两晚上的<span class='mark'>线性代数</span>后，果断决定去抄作业。学习现代？开玩笑。。。这辈子都不可能去学的。</p>
 <p>所以作者抄的作业就是<span class='mark'>GLM</span>，之所以选择抄<span class='mark'>GLM</span>还有一个原因。矩阵的内存布局。在<span class='mark'>OpenGL</span>的<span class='mark'>Shader</span>中矩阵是以<span class='mark'>列</span>存储优先的而不是<span class='mark'>行</span>存储优先。<span style='color:pink'>其实就是因为<span class='mark'>learnopengl</span>中使用的也是<span class='mark'>glm</span>🤐🤐🤐</span></p>
 <div class='div_hightlight' style='background-color:goldenrod;color:black'>
-<p>通常情况下一个<span class='mark'>4X4</span>矩阵<span class='mark'>matrix[1][2]</span>表示的是矩阵中第<span class='mark'>1</span>行第<span class='mark'>2</span>列的数据，可是<span class='mark'>OpenGL</span>是反过来的，所以作者在一开始自己编写的矩阵代码中，无论怎么测试都是没有问题的，可是一旦将矩阵传递给<span class='mark'>shader</span>他就不灵了。。。</p>
-<p>后来去查看<span class='mark'>GLM</span>的代码发现<span class='mark'>Matrix * Vector</span>的代码并不是<span class='mark'>行 * 列</span>的方式，而是用的矩阵的<span class='mark'>列</span>去做的运算。至于为什么<span class='mark'>OpenGL</span>采用<span class='mark'>列</span>存储优先读者可以自己去查询相关资料。事实上似乎在微软的<span class='mark'>DX</span>内部，矩阵也是采用的<span class='mark'>列</span>存储优先，虽然传入的矩阵是<span class='mark'>行</span>存储优先的，接口在收到矩阵后会进行自动翻转。</p>
+<p>通常情况下一个<span class='mark'>4X4</span>矩阵<span class='mark'>matrix[1][2]</span>表示的是矩阵中第<span class='mark'>1</span>行第<span class='mark'>2</span>列的数据，可是<span class='mark'>OpenGL</span>是反过来的。</p>
 </div>
 <div class='div_hightlight' style='background-color:pink;color:black'>
 <p>目前作者并没有抄完<span class='mark'>GLM</span>中所有的代码，只是在学习过程中用到了什么函数再去移植什么函数。</p>

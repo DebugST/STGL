@@ -53,6 +53,11 @@
     <Compile Include="Tutorials\1_Getting_Started\1_6_Vertex_Color.cs" />
     <Compile Include="Tutorials\1_Getting_Started\1_6_Uniform_STGL.cs" />
     <Compile Include="Tutorials\1_Getting_Started\1_7_Texture.cs" />
+    <Compile Include="Tutorials\1_Getting_Started\1_8_Transform.cs" />
+    <Compile Include="Tutorials\1_Getting_Started\1_9_Coordinat_Systems.cs" />
+    <Compile Include="Tutorials\1_Getting_Started\1_9_Coordinat_Systems_More.cs" />
+    <Compile Include="Tutorials\1_Getting_Started\1_A_Camera.cs" />
+    <Compile Include="Tutorials\1_Getting_Started\OrthoTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\STlib.OpenGL\STlib.OpenGL.csproj">

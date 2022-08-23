@@ -26,10 +26,10 @@
 </li>
 </ul><div class='div_left_space_space'></div>
 </div>
-<span id="span_time">2022-08-06 -> by:<span>DebugST</span></span>
+<span id="span_time">2022-08-22 -> by:<span>DebugST</span></span>
 </div>
 <div id="div_right">
-<span class='span_location'>1.入门 &gt; 3.Context<span style='float:right'>2022-07-21</span></span><h1 class='h_title anchor_point' name='a_a'>Context</h1>
+<span class='span_location'>1.入门 &gt; 3.Context<span style='float:right'>2022-08-17</span></span><h1 class='h_title anchor_point' name='a_a'>Context</h1>
 <div class='div_hightlight' style='background-color:goldenrod;color:black'>
 <p>这一章是原版教程没有的部分，纯属作者个人瞎YY，毫无权威性可言。</p>
 </div>
@@ -73,7 +73,7 @@
 <span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>public static</span> <span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>wglMakeContext</span><span style='color:rgba(255,255,255,1)'>(</span>...<span style='color:rgba(255,255,255,1)'>){</span>
 <span class='span_code_line'></span>        <span style='color:rgba(0,255,0,1)'>// ...</span>
 <span class='span_code_line'></span>        <span style='color:rgba(0,255,255,1)'>GLContext</span> context <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(30,144,255,1)'>new</span> <span style='color:rgba(0,255,255,1)'>GLContext</span><span style='color:rgba(255,255,255,1)'>();</span>
-<span class='span_code_line'></span>        m_dic<span style='color:rgba(219,112,147,1)'>.Add</span><span style='color:rgba(255,255,255,1)'>(</span>getCurrentThreadID<span style='color:rgba(255,255,255,1)'>,</span>context<span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>        m_dic<span style='color:rgba(219,112,147,1)'>.Add</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(219,112,147,1)'>getCurrentThreadID</span><span style='color:rgba(255,255,255,1)'>(),</span>context<span style='color:rgba(255,255,255,1)'>);
 <span class='span_code_line'></span>    }</span>
 <span class='span_code_line'></span>
 <span class='span_code_line'></span>    <span style='color:rgba(30,144,255,1)'>public static</span> <span style='color:rgba(100,149,237,1)'>void</span> <span style='color:rgba(255,0,255,1)'>glViewport</span><span style='color:rgba(255,255,255,1)'>(</span><span style='color:rgba(100,149,237,1)'>int</span> x<span style='color:rgba(255,255,255,1)'>,</span><span style='color:rgba(100,149,237,1)'>int</span> y<span style='color:rgba(255,255,255,1)'>,</span><span style='color:rgba(100,149,237,1)'>int</span> width<span style='color:rgba(255,255,255,1)'>,</span><span style='color:rgba(100,149,237,1)'>int</span> height<span style='color:rgba(255,255,255,1)'>){</span>
@@ -90,7 +90,7 @@
 <span class='span_code_line'></span>        <span style='color:rgba(100,149,237,1)'>var</span> context <span style='color:rgba(255,255,255,1)'>=</span> <span style='color:rgba(219,112,147,1)'>_GetContext</span><span style='color:rgba(255,255,255,1)'>();</span>
 <span class='span_code_line'></span>        <span style='color:rgba(30,144,255,1)'>if</span><span style='color:rgba(255,255,255,1)'>((</span>nFlag <span style='color:rgba(255,255,255,1)'>&amp;</span> GL_COLOR_BUFFER_BIT<span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(255,255,255,1)'>==</span> GL_COLOR_BUFFER_BIT<span style='color:rgba(255,255,255,1)'>){</span>
 <span class='span_code_line'></span>            <span style='color:rgba(0,255,0,1)'>// 清空背景并填充成指定颜色</span>
-<span class='span_code_line'></span>            <span style='color:rgba(219,112,147,1)'>_SetBackgroundColor</span><span style='color:rgba(255,255,255,1)'>(</span>context<span style='color:rgba(112,128,144,1)'>.Buffer</span><span style='color:rgba(255,255,255,1)'>,</span>context<span style='color:rgba(112,128,144,1)'>.ClearColor</span><span style='color:rgba(255,255,255,1)'>);
+<span class='span_code_line'></span>            <span style='color:rgba(219,112,147,1)'>_SetBackgroundColor</span><span style='color:rgba(255,255,255,1)'>(</span>context<span style='color:rgba(112,128,144,1)'>.DisplayBuffer</span><span style='color:rgba(255,255,255,1)'>,</span>context<span style='color:rgba(112,128,144,1)'>.ClearColor</span><span style='color:rgba(255,255,255,1)'>);
 <span class='span_code_line'></span>        }</span><span style='color:rgba(30,144,255,1)'>else if</span><span style='color:rgba(255,255,255,1)'>(</span>nFlag <span style='color:rgba(255,255,255,1)'>&amp;</span> GL_DEPTH_BUFFER_BIT<span style='color:rgba(255,255,255,1)'>)</span> <span style='color:rgba(255,255,255,1)'>==</span> GL_DEPTH_BUFFER_BIT<span style='color:rgba(255,255,255,1)'>){</span>
 <span class='span_code_line'></span>            <span style='color:rgba(0,255,0,1)'>// ...</span>
 <span class='span_code_line'></span>        <span style='color:rgba(255,255,255,1)'>}</span><span style='color:rgba(30,144,255,1)'>else if</span><span style='color:rgba(255,255,255,1)'>(</span>...<span style='color:rgba(255,255,255,1)'>){</span>...<span style='color:rgba(255,255,255,1)'>}

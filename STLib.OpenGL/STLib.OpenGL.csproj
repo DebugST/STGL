@@ -47,12 +47,12 @@
     <Compile Include="GLFW\GLFW.Init.cs" />
     <Compile Include="GLFW\GLFW.Method.cs" />
     <Compile Include="GLFW\GLFWNative.cs" />
-    <Compile Include="GLM\GLM.TransformD.cs" />
     <Compile Include="GLM\GLM.cs" />
     <Compile Include="GLM\GLM.TransformF.cs" />
     <Compile Include="GLM\Matrices\Matrix2F.cs" />
     <Compile Include="GLM\Matrices\Matrix3F.cs" />
     <Compile Include="GLM\Matrices\Matrix4F.cs" />
+    <Compile Include="GLM\Quaternion.cs" />
     <Compile Include="GLM\Vectors\Vector2F.cs" />
     <Compile Include="GLM\Vectors\Vector3F.cs" />
     <Compile Include="GLM\Vectors\Vector4F.cs" />
@@ -65,6 +65,7 @@
     <Compile Include="GL\Exception\GLProgramLinkException.cs" />
     <Compile Include="GL\Exception\GLProgramUniformException.cs" />
     <Compile Include="GL\Exception\GLShaderCompileException.cs" />
+    <Compile Include="GL\Utils\GLCamera.cs" />
     <Compile Include="GL\Utils\GLObject.cs" />
     <Compile Include="GL\Utils\GLShader.cs" />
     <Compile Include="GL\Utils\GLProgram.cs" />

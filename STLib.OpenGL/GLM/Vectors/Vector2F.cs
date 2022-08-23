@@ -18,7 +18,7 @@ namespace STLib.OpenGL.GLM
 
         public double Length {
             get {
-                return Math.Abs(this.X - this.Y);
+                return Math.Sqrt(this.X * this.X + this.Y * this.Y);
             }
         }
 
@@ -142,6 +142,16 @@ namespace STLib.OpenGL.GLM
             vec.X = v / vec.X;
             vec.Y = v / vec.Y;
             return vec;
+        }
+
+        public static bool operator ==(Vector2F a, Vector2F b) {
+            if (a.X != b.X) return false;
+            if (a.Y != b.Y) return false;
+            return true;
+        }
+
+        public static bool operator !=(Vector2F a, Vector2F b) {
+            return !(a == b);
         }
     }
 }

@@ -32,6 +32,13 @@ namespace STLib.OpenGL.GLM
             this.W = w;
         }
 
+        public Vector4F(Vector3F vec, float w) {
+            this.X = vec.X;
+            this.Y = vec.Y;
+            this.Z = vec.Z;
+            this.W = w;
+        }
+
         public float this[int nIndex] {
             get {
                 switch (nIndex) {
